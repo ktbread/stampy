@@ -1,8 +1,12 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Stampy</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&family=Caveat:wght@500;700&family=Noto+Sans+HK:wght@500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&family=Caveat:wght@500;700&display=swap">
 <style>
 /* Layout: a pinboard of stamps; each city stamp opens an illustrated, pastel top-down map. Photos stay real, the world is drawn. */
 :root{
@@ -18,10 +22,11 @@
   --chip:#EEF3F7;
   --stamp-paper:#FFFBF2;  /* stamps are physical objects: same in both themes */
   --stamp-ink:#1F2A44;
-  --f-display:"Baloo 2","Noto Sans HK",ui-rounded,system-ui,sans-serif;
-  --f-body:"Nunito","Noto Sans HK",system-ui,-apple-system,sans-serif;
-  --f-hand:"Caveat","Noto Sans HK",cursive;
-  --f-zh:"Noto Sans HK","Nunito",sans-serif;
+  --cream:#F6F0DF;
+  --f-big:"Bowlby One",Impact,sans-serif;
+  --f-display:"Baloo 2",ui-rounded,system-ui,sans-serif;
+  --f-body:"Nunito",system-ui,-apple-system,sans-serif;
+  --f-hand:"Caveat",cursive;
   --r:18px;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
@@ -34,26 +39,27 @@
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 html,body{min-height:100%}
-body{background:var(--wall);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5;
-  background-image:radial-gradient(var(--line) 1px,transparent 1.2px);background-size:22px 22px}
+body{margin:0;background:var(--wall);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5}
+body[data-view="wall"]{overflow:hidden}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--wall)}
 h1,h2,h3{font-family:var(--f-display);line-height:1.1;text-wrap:balance;margin:0}
 button,input{font:inherit;color:inherit}
 button{cursor:pointer}
 :focus-visible{outline:3px solid var(--neon);outline-offset:3px;border-radius:8px}
-.zh{font-family:var(--f-zh);font-weight:700}
 .wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 
 /* top bar */
-.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--wall) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
-.top .wrap{display:flex;align-items:center;gap:16px;padding-block:10px;flex-wrap:wrap}
-.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit;margin-right:auto}
-.brand b{font-family:var(--f-display);font-size:24px;letter-spacing:-.01em}
-.brand small{font-family:var(--f-zh);font-size:12px;background:var(--neon);color:#fff;padding:2px 7px;border-radius:999px}
-.nav{display:flex;gap:4px;flex-wrap:wrap}
-.nav a{text-decoration:none;color:var(--ink-soft);font-weight:800;font-size:14px;padding:7px 12px;border-radius:999px}
-.nav a[aria-current="page"]{background:var(--ink);color:var(--wall)}
-.nav a:hover{color:var(--ink)}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--wall) 88%,transparent);backdrop-filter:blur(8px)}
+body[data-view="wall"] .top{position:fixed;left:0;right:0;background:none;backdrop-filter:none;color:var(--stage-fg,var(--cream));transition:color .6s ease}
+.top .wrap{max-width:none;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding-block:10px}
+.nav{display:contents}
+.nav a{justify-self:start;text-decoration:none;color:inherit;font-weight:800;font-size:13px;letter-spacing:.06em;text-transform:uppercase;padding:10px 0;white-space:nowrap}
+.nav a:nth-child(2){justify-self:center}
+.nav a:nth-child(3){justify-self:end}
+.nav a[aria-current="page"]::after{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:currentColor;margin-left:8px;vertical-align:1px}
+.bighead{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin:8px 0 28px}
+.bighead h1{font-family:var(--f-big);font-weight:400;text-transform:uppercase;font-size:clamp(44px,9vw,120px);line-height:.95}
 main{padding-block:28px 64px}
 .eyebrow{font-weight:800;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}
 .btn{display:inline-flex;align-items:center;gap:8px;border:0;border-radius:999px;padding:10px 18px;font-weight:800;background:var(--ink);color:var(--wall);text-decoration:none}
@@ -68,29 +74,33 @@ main{padding-block:28px 64px}
   filter:drop-shadow(0 6px 10px rgba(20,30,60,.16))}
 .stamp-face{position:relative;overflow:hidden;border:1.5px solid rgba(31,42,68,.25);height:100%}
 .stamp-val{position:absolute;font-family:var(--f-display);font-weight:800;line-height:1}
-.wall-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:26px;align-items:start}
-.city{border:0;background:none;padding:0;text-align:left;transition:transform .35s cubic-bezier(.3,1.4,.5,1)}
-.city:hover{transform:rotate(-1.5deg) translateY(-4px)}
-.city .stamp{aspect-ratio:4/5}
-.city.hk{grid-column:span 2;grid-row:span 2}
-.city.hk .stamp{aspect-ratio:auto;height:100%;min-height:330px;--hole:9px;padding:18px}
-.city.locked .stamp{filter:none;background:transparent;-webkit-mask:none;mask:none;border:2.5px dashed var(--line);border-radius:6px;display:grid;place-items:center;color:var(--ink-soft);text-align:center}
-.city.locked{cursor:default}
-.city.locked:hover{transform:none}
-.city .cap{margin-top:10px;font-weight:800;font-size:14px;display:flex;justify-content:space-between;gap:8px}
-.city .cap span{color:var(--ink-soft);font-weight:600}
+/* landing: one colour field, one row of stamps, one big name. Colours are print colours, same in both themes. */
+.stage{--sw:min(72vw,44svh);position:fixed;inset:0;z-index:1;overflow:hidden;display:flex;flex-direction:column;padding-top:64px;
+  background:#C4202E;color:var(--stage-fg,var(--cream));transition:background-color .6s ease,color .6s ease;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
+.stage.dragging{cursor:grabbing}
+.stage::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(90deg,transparent calc(48% - 1px),rgba(0,0,0,.09) 48%,rgba(255,255,255,.08) calc(48% + 1px),transparent calc(48% + 3px)),linear-gradient(transparent calc(61% - 1px),rgba(0,0,0,.08) 61%,rgba(255,255,255,.07) calc(61% + 1px),transparent calc(61% + 3px))}
+.stage::after{content:"";position:absolute;inset:0;z-index:4;pointer-events:none;mix-blend-mode:soft-light;opacity:.6;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.track{position:relative;flex:1;min-height:0;z-index:1;animation:stampIn .7s cubic-bezier(.2,.8,.3,1) both}
+@keyframes stampIn{from{opacity:0;transform:translateY(36px) scale(.96)}}
+.slide{position:absolute;left:50%;top:50%;width:var(--sw);border:0;background:none;padding:0;color:inherit;cursor:inherit;perspective:900px;will-change:transform}
+.slide.is-center{cursor:pointer}
+.slide:focus-visible{outline-color:var(--stage-fg,var(--cream))}
+.slide .stamp{aspect-ratio:4/5;--hole:9px;padding:18px}
+.tilt{transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .5s ease-out}
+.shine{position:absolute;inset:0;opacity:0;transition:opacity .5s ease-out;pointer-events:none;background:radial-gradient(circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,.4),transparent 65%)}
+.tilt.lit .shine{opacity:1}
+.stage-foot{position:relative;z-index:2;text-align:center;padding:0 16px max(20px,env(safe-area-inset-bottom,0px));pointer-events:none}
+.stage-foot h1{font-family:var(--f-big);font-weight:400;text-transform:uppercase;white-space:nowrap;line-height:.95;font-size:min(calc(112vw / var(--len,9)),15svh)}
+.stage-foot p{margin:8px 0 0;font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
 .zoomout{animation:zoom .55s cubic-bezier(.6,0,.4,1) forwards;z-index:40;position:relative}
 @keyframes zoom{to{transform:scale(3.2) rotate(4deg);opacity:0}}
 
-.hero{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:end;margin-bottom:28px}
-.hero h1{font-size:clamp(34px,6vw,62px);letter-spacing:-.02em;font-weight:800}
-.hero h1 em{font-style:normal;color:var(--neon)}
-.hero p{max-width:56ch;color:var(--ink-soft);margin:10px 0 0;font-size:17px}
 .hand{font-family:var(--f-hand);font-size:26px;color:var(--tram);transform:rotate(-4deg);display:inline-block}
 
-.section{margin-top:48px}
-.section-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:18px}
-.section-head h2{font-size:28px}
+.empty{text-align:center;padding:10vh 0;color:var(--ink-soft)}
+.empty p{margin:0 0 18px;font-size:18px}
 .book{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:22px}
 .mini{border:0;background:none;padding:0;text-align:left;color:inherit}
 .mini .stamp{aspect-ratio:4/5;--hole:6px;padding:10px}
@@ -101,17 +111,15 @@ main{padding-block:28px 64px}
 .mini:nth-child(3n+1) .stamp{transform:rotate(-1.2deg)}
 .postmark{position:absolute;right:-18px;top:-10px;width:120px;height:80px;pointer-events:none;mix-blend-mode:multiply;opacity:.82}
 .sticker{position:absolute;left:-4px;bottom:-4px;font-size:22px;background:#fff;border-radius:50%;width:38px;height:38px;display:grid;place-items:center;box-shadow:0 2px 0 rgba(0,0,0,.12),0 0 0 3px #fff;transform:rotate(-10deg)}
-.slot{aspect-ratio:4/5;border:2.5px dashed var(--line);border-radius:6px;display:grid;place-items:center;text-align:center;color:var(--ink-soft);padding:14px;font-size:14px}
 .toon{filter:url(#toon)}
 
-.moodstrip{display:flex;flex-wrap:wrap;gap:10px}
+.moodstrip{display:flex;flex-wrap:wrap;gap:10px;margin-top:40px}
 .moodstrip .m{display:flex;align-items:center;gap:6px;background:var(--card);border-radius:999px;padding:6px 12px 6px 6px;font-weight:700;font-size:14px;box-shadow:0 1px 0 var(--line)}
 .moodstrip .m i{font-style:normal;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:17px}
 
 /* ---------- map ---------- */
-.maphead{display:flex;gap:16px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;margin-bottom:14px}
-.maphead h1{font-size:clamp(28px,4.5vw,44px)}
-.maphead p{margin:4px 0 0;color:var(--ink-soft)}
+.maphead{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:14px}
+.maptools{display:flex;gap:12px;align-items:center}
 .tod{display:inline-flex;background:var(--card);border-radius:999px;padding:4px;box-shadow:inset 0 0 0 1px var(--line)}
 .tod button{border:0;background:none;border-radius:999px;padding:6px 12px;font-weight:800;font-size:13px;color:var(--ink-soft)}
 .tod button[aria-pressed="true"]{background:var(--ink);color:var(--wall)}
@@ -125,12 +133,12 @@ main{padding-block:28px 64px}
 .mapscroll{position:relative}
 .mapwrap{position:relative;border-radius:28px;overflow:hidden;box-shadow:0 18px 40px -18px rgba(20,30,60,.45),inset 0 0 0 1px var(--line);
   aspect-ratio:5/3;max-width:100%;background:var(--m-sea)}
-.mapwrap[data-tod="day"]{--m-sea:#9ED8DB;--m-wave:#C4ECEB;--m-land:#CFE8B4;--m-land2:#B9DD9C;--m-shadow:#7FB7B9;--m-hill:#A6D18C;--m-hill2:#93C47A;--m-tree:#7DBB6C;--m-bld:#F6F1E6;--m-bld2:#E8DFF0;--m-win:#9CC8E0;--m-route:#FFFFFF;--m-tint:transparent;--m-label:#1F2A44;--m-labelbg:#FFFFFF}
-.mapwrap[data-tod="golden"]{--m-sea:#F2B8A2;--m-wave:#F8D2BE;--m-land:#E9D79F;--m-land2:#DDC686;--m-shadow:#D08F86;--m-hill:#D8BE80;--m-hill2:#C9AB6E;--m-tree:#B59C5C;--m-bld:#FFE9CF;--m-bld2:#F8D3C6;--m-win:#FFD27A;--m-route:#FFF4E6;--m-tint:rgba(255,170,90,.12);--m-label:#4A2A2A;--m-labelbg:#FFF6EA}
-.mapwrap[data-tod="night"]{--m-sea:#1C2A4E;--m-wave:#2A3B66;--m-land:#33406B;--m-land2:#3A4A7A;--m-shadow:#0F1733;--m-hill:#3E4D80;--m-hill2:#46578E;--m-tree:#2F5B66;--m-bld:#4A4F7E;--m-bld2:#5A4C7E;--m-win:#FFD66B;--m-route:#6C7DB8;--m-tint:rgba(10,15,40,.05);--m-label:#FFFFFF;--m-labelbg:#2A3560}
+.mapwrap[data-tod="day"]{--m-sea:#9ED8DB;--m-wave:#C4ECEB;--m-land:#CFE8B4;--m-far:#E3E7D6;--m-land2:#B9DD9C;--m-shadow:#7FB7B9;--m-hill:#A6D18C;--m-hill2:#93C47A;--m-tree:#7DBB6C;--m-bld:#F6F1E6;--m-bld2:#E8DFF0;--m-win:#9CC8E0;--m-route:#FFFFFF;--m-tint:transparent;--m-label:#1F2A44;--m-labelbg:#FFFFFF}
+.mapwrap[data-tod="golden"]{--m-sea:#F2B8A2;--m-wave:#F8D2BE;--m-land:#E9D79F;--m-far:#EFE3C4;--m-land2:#DDC686;--m-shadow:#D08F86;--m-hill:#D8BE80;--m-hill2:#C9AB6E;--m-tree:#B59C5C;--m-bld:#FFE9CF;--m-bld2:#F8D3C6;--m-win:#FFD27A;--m-route:#FFF4E6;--m-tint:rgba(255,170,90,.12);--m-label:#4A2A2A;--m-labelbg:#FFF6EA}
+.mapwrap[data-tod="night"]{--m-sea:#1C2A4E;--m-wave:#2A3B66;--m-land:#33406B;--m-far:#2A3457;--m-land2:#3A4A7A;--m-shadow:#0F1733;--m-hill:#3E4D80;--m-hill2:#46578E;--m-tree:#2F5B66;--m-bld:#4A4F7E;--m-bld2:#5A4C7E;--m-win:#FFD66B;--m-route:#6C7DB8;--m-tint:rgba(10,15,40,.05);--m-label:#FFFFFF;--m-labelbg:#2A3560}
 .mapsvg{position:absolute;inset:0;width:100%;height:100%;display:block}
 .mapsvg *{transition:fill .7s ease,stroke .7s ease,opacity .7s ease}
-.neon-glow{opacity:0}
+.neon-glow{opacity:0;filter:blur(14px)}
 .mapwrap[data-tod="night"] .neon-glow{opacity:1}
 .mapwrap[data-tod="night"] .cloud{opacity:0}
 .hot{position:absolute;transform:translate(-50%,-50%);border:0;background:none;padding:0;display:flex;flex-direction:column;align-items:center;gap:4px;z-index:3}
@@ -142,6 +150,7 @@ main{padding-block:28px 64px}
 .hot:hover .badge,.hot.on .badge{transform:scale(1.14) rotate(-4deg)}
 .hot.dim{opacity:.45}
 .hot.dim:hover{opacity:1}
+.mapcredit{position:absolute;right:10px;bottom:6px;z-index:3;font-size:10px;font-weight:600;color:var(--m-label);opacity:.6}
 .pins{position:absolute;inset:0;pointer-events:none;z-index:2}
 .pol{position:absolute;pointer-events:auto;background:#fff;padding:4px 4px 12px;width:52px;box-shadow:0 4px 10px rgba(0,0,0,.25);border:0;transform-origin:50% 0}
 .pol img{width:44px;height:44px;object-fit:cover;display:block}
@@ -156,27 +165,20 @@ main{padding-block:28px 64px}
 .pop-h{display:flex;gap:12px;align-items:center}
 .pop-h svg{width:46px;height:46px;flex:none}
 .pop-h h3{font-size:22px}
-.pop-h .zh{font-size:13px;color:var(--ink-soft)}
 .pop .blurb{font-size:14px;color:var(--ink-soft);margin:8px 0 4px}
 .pop .prog{font-size:12px;font-weight:800;color:var(--tram)}
 .pop .x{position:absolute;right:10px;top:10px;border:0;background:var(--chip);width:30px;height:30px;border-radius:50%;font-weight:800}
 .grp{margin-top:12px}
 .grp h4{margin:0 0 6px;font-family:var(--f-display);font-size:14px;display:flex;align-items:center;gap:6px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.08em}
-.grp h4 .zh{background:var(--ink);color:var(--card);width:22px;height:22px;display:grid;place-items:center;border-radius:6px;font-size:12px;letter-spacing:0}
 .spot{display:grid;grid-template-columns:1fr auto;gap:4px 10px;padding:8px 0;border-top:1px dashed var(--line);align-items:center}
 .spot .n{font-weight:800;font-size:15px;line-height:1.25}
 .spot .d{font-size:13px;color:var(--ink-soft);grid-column:1;line-height:1.35}
-.spot .tags{grid-column:1;display:flex;gap:4px;flex-wrap:wrap}
-.spot .tags span{font-size:11px;font-weight:800;background:var(--chip);color:var(--ink-soft);border-radius:999px;padding:1px 7px}
-.spot .tags span.hit{background:color-mix(in srgb,var(--tram) 18%,transparent);color:var(--tram)}
-.spot .act{grid-column:2;grid-row:1/span 3}
+.spot .act{grid-column:2;grid-row:1/span 2}
 .spot.dim{opacity:.42}
 .dk{border:0;border-radius:12px;background:var(--neon);color:#fff;font-weight:800;font-size:13px;padding:7px 10px;line-height:1.1;text-align:center}
-.dk .zh{display:block;font-size:15px}
 .dkd{border:0;background:none;padding:0;width:52px;height:52px;position:relative}
 .dkd img{width:52px;height:52px;object-fit:cover;border-radius:8px;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.2);transform:rotate(4deg)}
 .dkd i{position:absolute;left:-8px;bottom:-6px;font-style:normal;font-size:18px}
-.maptips{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:13px;color:var(--ink-soft);margin-top:12px}
 
 /* ---------- quiz ---------- */
 .quiz{max-width:760px;margin:0 auto}
@@ -200,20 +202,16 @@ main{padding-block:28px 64px}
 .postcard .r div{font-family:var(--f-hand);font-size:24px;border-bottom:1.5px solid rgba(31,42,68,.2)}
 
 /* ---------- me ---------- */
-.me{display:grid;grid-template-columns:minmax(220px,320px) 1fr;gap:32px;align-items:start}
-.me-stage{background:var(--card);border-radius:28px;padding:20px;text-align:center;position:sticky;top:90px}
-.me-stage svg{width:190px;height:247px}
-.me-stage{background-image:radial-gradient(rgba(0,0,0,.035) 1px,transparent 1.2px);background-size:5px 5px}
-.me-stage input{width:100%;text-align:center;font-family:var(--f-hand);font-size:30px;border:0;border-bottom:2px dashed var(--line);background:none;padding:2px}
-.optrow{margin-bottom:22px}
-.optrow h3{font-size:18px;margin-bottom:10px}
-.sw{display:flex;flex-wrap:wrap;gap:10px}
+.me{max-width:520px;margin:0 auto;text-align:center}
+#meBig svg{width:200px;height:260px}
+#meName{width:min(280px,100%);text-align:center;font-family:var(--f-hand);font-size:30px;border:0;background:none;padding:2px}
+.me-tabs{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:26px 0 18px}
+.me-quiz{margin:26px 0 0}
+.sw{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
 .sw button{border:0;width:42px;height:42px;border-radius:50%;box-shadow:inset 0 0 0 3px rgba(0,0,0,.08)}
 .sw button[aria-pressed="true"]{box-shadow:0 0 0 3px var(--wall),0 0 0 6px var(--ink)}
 .sw .txt{width:auto;border-radius:999px;padding:0 14px;background:var(--chip);font-weight:800;font-size:14px}
 .sw .txt[aria-pressed="true"]{background:var(--ink);color:var(--wall);box-shadow:none}
-.friends{display:flex;gap:14px;align-items:flex-end;margin-top:8px}
-.friends svg{width:58px;height:75px;opacity:.4}
 
 /* ---------- dialog ---------- */
 dialog{border:0;padding:0;border-radius:28px;background:var(--card);color:var(--ink);width:min(560px,calc(100% - 24px));max-height:calc(100% - 24px)}
@@ -234,7 +232,6 @@ dialog::backdrop{background:rgba(16,22,40,.55);backdrop-filter:blur(3px)}
 .mood i{font-style:normal;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-size:24px;background:#fff;box-shadow:0 0 0 3px #fff,0 3px 0 3px rgba(0,0,0,.08);transition:transform .2s}
 .mood:nth-child(odd) i{transform:rotate(-7deg)}
 .mood:nth-child(even) i{transform:rotate(6deg)}
-.mood small{font-family:var(--f-zh);font-weight:500;color:var(--ink-soft);font-size:11px}
 .mood[aria-pressed="true"]{background:var(--card)}
 .mood[aria-pressed="true"] i{transform:scale(1.15) rotate(0);box-shadow:0 0 0 3px var(--neon)}
 .dlg input[type=text]{width:100%;border:0;border-bottom:2px dashed var(--line);background:none;font-family:var(--f-hand);font-size:24px;padding:4px 2px}
@@ -255,20 +252,15 @@ dialog::backdrop{background:rgba(16,22,40,.55);backdrop-filter:blur(3px)}
 .lb .close{position:absolute;top:max(16px,env(safe-area-inset-top,0px));right:max(16px,env(safe-area-inset-right,0px))}
 
 @media (max-width:720px){
-  .hero{grid-template-columns:1fr}
-  .city.hk{grid-column:1/-1}
   .mapscroll{overflow-x:auto;margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding-inline:max(16px,env(safe-area-inset-left,0px));scrollbar-width:none}
-  .mapwrap{width:780px;max-width:none;border-radius:22px}
+  .mapwrap{width:980px;max-width:none;border-radius:22px}
   .hot .badge{width:46px;height:46px}
   .hot .badge svg{width:34px;height:34px}
   .hot .lbl{font-size:11px}
   .pop{position:fixed;left:max(10px,env(safe-area-inset-left,0px))!important;right:max(10px,env(safe-area-inset-right,0px));top:auto!important;bottom:max(10px,env(safe-area-inset-bottom,0px));width:auto;max-height:62vh}
-  .me{grid-template-columns:1fr}
-  .me-stage{position:static}
   .postcard{grid-template-columns:1fr}
   .postcard .l{border-right:0;border-bottom:2px dashed rgba(31,42,68,.2);padding:0 0 16px}
   .sheet{grid-template-columns:repeat(3,1fr)}
-  .wall-grid{grid-template-columns:repeat(2,1fr);gap:18px}
 }
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
@@ -302,54 +294,49 @@ dialog::backdrop{background:rgba(16,22,40,.55);backdrop-filter:blur(3px)}
     <symbol id="i-neon" viewBox="0 0 40 40"><rect x="5" y="6" width="22" height="13" rx="3" fill="#2A2350"/><path d="M9 15V10l4 5V10M16 10h7M19.5 10v5" stroke="#FF6FA0" stroke-width="1.8" fill="none" stroke-linecap="round"/><rect x="20" y="20" width="15" height="16" rx="3" fill="#2A2350"/><circle cx="27.5" cy="28" r="4" stroke="#F7C75E" stroke-width="1.8" fill="none"/><path d="M5 22h11v14H5z" fill="#5A4C7E"/></symbol>
     <symbol id="i-lion" viewBox="0 0 40 40"><path d="M1 36Q8 30 12 22q2-6 7-8 4-1 6 3 1 3 5 4 6 2 9 15z" fill="#9AA37C"/><path d="M19 14q4-1 6 3" stroke="#6D7556" stroke-width="1.6" fill="none"/><circle cx="21.5" cy="17.5" r="1" fill="#3A3F2C"/><path d="M5 34q8-6 12-4" stroke="#C5CB9F" stroke-width="1.5" fill="none" stroke-dasharray="2 2.5"/></symbol>
     <symbol id="i-hex" viewBox="0 0 40 40"><path d="M5 36V14l5-3 5 3v22z" fill="#9AA3B5"/><path d="M15 36V9l5-3 5 3v27z" fill="#B5BDCD"/><path d="M25 36V16l5-3 5 3v20z" fill="#8892A6"/><path d="M5 14l5-3 5 3M15 9l5-3 5 3M25 16l5-3 5 3" stroke="#fff" stroke-width="1.2" fill="none"/><path d="M2 37q4-2.5 8 0t8 0 8 0 8 0 8 0" stroke="#5BB5C0" stroke-width="2.5" fill="none"/></symbol>
+    <symbol id="i-bird" viewBox="0 0 40 40"><path d="M6 30q8-3 14-1" stroke="#5BB5C0" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M12 24C10 16 18 12 24 14c2-6 4-9 7-9-1 3 0 5-1 8-1 8-6 13-13 13z" fill="#F4F1EA" stroke="#7A8AA0" stroke-width="1.2"/><path d="M31 5l6 1-5 2z" fill="#F4B942"/><path d="M18 26v9M23 25v10" stroke="#7A8AA0" stroke-width="1.6"/></symbol>
+    <symbol id="i-falls" viewBox="0 0 40 40"><path d="M2 36L14 8l6 8 5-10 13 30z" fill="#93C47A"/><path d="M20 16v16" stroke="#9CDDE6" stroke-width="6" stroke-linecap="round"/><path d="M6 36q7-4 14-1t14 0" stroke="#5BB5C0" stroke-width="3" fill="none" stroke-linecap="round"/></symbol>
+    <symbol id="i-gold" viewBox="0 0 40 40"><circle cx="20" cy="17" r="14" fill="#F4B942" opacity=".35"/><path d="M9 35c1-9 5-13 11-13s10 4 11 13z" fill="#E2A92C"/><circle cx="20" cy="15" r="6" fill="#F0BD45"/><circle cx="20" cy="8" r="2.4" fill="#E2A92C"/><rect x="6" y="34" width="28" height="3.5" rx="1.7" fill="#C7B79A"/></symbol>
+    <symbol id="i-bike" viewBox="0 0 40 40"><path d="M2 36q5-3 9 0t9 0 9 0 9 0" stroke="#5BB5C0" stroke-width="2.5" fill="none" stroke-linecap="round"/><g fill="none" stroke="#8A94AA" stroke-width="2"><circle cx="10" cy="24" r="6.5"/><circle cx="30" cy="24" r="6.5"/><path d="M10 24l7-11h9l4 11M17 13l5 11h-12M26 13l-1-4h4M15 11h5" stroke="#E2457A" stroke-linejoin="round" stroke-linecap="round"/></g></symbol>
+    <symbol id="i-hakka" viewBox="0 0 40 40"><rect x="7" y="18" width="26" height="16" fill="#E6D3B3"/><path d="M4 19L20 7l16 12z" fill="#9A5B4A"/><rect x="17" y="24" width="6" height="10" fill="#7A5040"/><rect x="10" y="22" width="4" height="4" fill="#7A9A86"/><rect x="26" y="22" width="4" height="4" fill="#7A9A86"/><path d="M3 37q4-2.5 8 0t8 0 8 0 8 0" stroke="#5BB5C0" stroke-width="2.5" fill="none"/></symbol>
+    <symbol id="i-bun" viewBox="0 0 40 40"><g fill="#FBE6C6" stroke="#D9B47C" stroke-width="1"><circle cx="20" cy="9" r="5"/><circle cx="14" cy="17" r="5"/><circle cx="26" cy="17" r="5"/><circle cx="9" cy="26" r="5"/><circle cx="20" cy="26" r="5"/><circle cx="31" cy="26" r="5"/></g><g fill="#E2457A"><circle cx="20" cy="9" r="1.2"/><circle cx="14" cy="17" r="1.2"/><circle cx="26" cy="17" r="1.2"/><circle cx="9" cy="26" r="1.2"/><circle cx="20" cy="26" r="1.2"/><circle cx="31" cy="26" r="1.2"/></g><rect x="4" y="32" width="32" height="4" rx="2" fill="#C7B79A"/></symbol>
   </defs>
 </svg>
 
 <header class="top">
   <div class="wrap">
-    <a class="brand" href="#wall"><b>Stampy</b><small>打卡</small></a>
     <nav class="nav" aria-label="Sections">
-      <a href="#wall" data-v="wall">Stamp wall</a>
-      <a href="#map" data-v="map">Hong Kong</a>
-      <a href="#quiz" data-v="quiz">Quiz</a>
-      <a href="#me" data-v="me">My traveller</a>
+      <a href="#wall" data-v="wall">Stampy</a>
+      <a href="#book" data-v="book">My stamps</a>
+      <a href="#me" data-v="me">Me</a>
     </nav>
   </div>
 </header>
 
 <main class="wrap">
   <!-- WALL -->
-  <section id="v-wall" class="view">
-    <div class="hero">
-      <div>
-        <span class="hand">a stamp for every place you've been</span>
-        <h1>Collect <em>Hong Kong</em>, one stamp at a time.</h1>
-        <p>Open a city stamp to see what people recommend there. Check off a spot with your own photo and it gets postmarked into your book.</p>
-      </div>
-      <a class="btn ghost" href="#quiz">What are you into? Take the quiz</a>
+  <section id="v-wall" class="view stage">
+    <div class="track" id="track"></div>
+    <div class="stage-foot" aria-live="polite">
+      <h1 id="stName"></h1>
+      <p id="stLine"></p>
     </div>
-    <div class="wall-grid" id="wallGrid"></div>
+  </section>
 
-    <div class="section">
-      <div class="section-head">
-        <h2>My Hong Kong stamps</h2>
-        <span class="eyebrow" id="bookCount"></span>
-      </div>
-      <div class="book" id="book"></div>
-    </div>
-    <div class="section" id="moodSec" hidden>
-      <div class="section-head"><h2>The trip in stickers</h2><span class="eyebrow">from your 打卡 moods</span></div>
-      <div class="moodstrip" id="moodStrip"></div>
-    </div>
+  <!-- MY STAMPS -->
+  <section id="v-book" class="view" hidden>
+    <div class="bighead"><h1>My stamps</h1><span class="eyebrow" id="bookCount"></span></div>
+    <div id="bookGrid"></div>
+    <div class="moodstrip" id="moodStrip" hidden></div>
   </section>
 
   <!-- MAP -->
   <section id="v-map" class="view" hidden style="position:relative">
+    <h1 class="sr">Hong Kong</h1>
     <div class="maphead">
-      <div>
-        <span class="eyebrow">香港 · Hong Kong</span>
-        <h1>What's good around Hong Kong</h1>
-        <p id="mapHint">Hover a place to see what people recommend there.</p>
+      <div class="maptools">
+        <button type="button" class="chip" id="filterBtn" aria-expanded="false" aria-controls="filters">Filter</button>
+        <span class="forme" id="mapProg"></span>
       </div>
       <div class="tod" role="group" aria-label="Time of day">
         <button type="button" data-tod="day">Day</button>
@@ -357,15 +344,15 @@ dialog::backdrop{background:rgba(16,22,40,.55);backdrop-filter:blur(3px)}
         <button type="button" data-tod="night">Night</button>
       </div>
     </div>
-    <div class="filters" id="filters"></div>
+    <div class="filters" id="filters" hidden></div>
     <div class="mapscroll" id="mapscroll"><div class="mapwrap" id="mapwrap" data-tod="day">
       <svg class="mapsvg" id="mapsvg" viewBox="0 100 1000 600" preserveAspectRatio="xMidYMid slice" aria-hidden="true"></svg>
       <div class="pins" id="pins"></div>
       <div class="me-on-map" id="meOnMap"></div>
       <div id="hots"></div>
+      <a class="mapcredit" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">Map data © OpenStreetMap contributors</a>
     </div></div>
     <div class="pop" id="pop" hidden></div>
-    <div class="maptips"><span>Map is illustrated and not to scale.</span><span id="mapProg"></span></div>
   </section>
 
   <!-- QUIZ -->
@@ -374,16 +361,11 @@ dialog::backdrop{background:rgba(16,22,40,.55);backdrop-filter:blur(3px)}
   </section>
 
   <!-- ME -->
-  <section id="v-me" class="view" hidden>
-    <div class="section-head" style="margin-bottom:22px"><div><span class="eyebrow">Your little traveller</span><h2 style="font-size:clamp(28px,4.5vw,44px)">Who's walking the map?</h2></div></div>
-    <div class="me">
-      <div class="me-stage">
-        <div id="meBig"></div>
-        <label for="meName" class="eyebrow" style="display:block;margin-top:6px">Name on the passport</label>
-        <input id="meName" type="text" maxlength="18" autocomplete="off">
-      </div>
-      <div id="meOpts"></div>
-    </div>
+  <section id="v-me" class="view me" hidden>
+    <h1 class="sr">Your traveller</h1>
+    <div id="meBig"></div>
+    <input id="meName" type="text" maxlength="18" autocomplete="off" aria-label="Your traveller's name">
+    <div id="meOpts"></div>
   </section>
 </main>
 
@@ -392,7 +374,7 @@ dialog::backdrop{background:rgba(16,22,40,.55);backdrop-filter:blur(3px)}
     <div>
       <span class="eyebrow" id="dkArea"></span>
       <h2 id="dkTitle"></h2>
-      <div class="sub">打卡 this spot with a photo you took. It stays exactly as you shot it.</div>
+      <div class="sub">Check in with a photo you took. It stays exactly as you shot it.</div>
     </div>
     <div class="drop" id="drop">
       <input id="dkFile" type="file" accept="image/*" aria-label="Choose a photo">
@@ -428,9 +410,9 @@ dialog::backdrop{background:rgba(16,22,40,.55);backdrop-filter:blur(3px)}
 <script>
 /* ================= DATA ================= */
 const TAGS={hike:"Hiking",food:"Food",photo:"Photo spots",night:"After dark",culture:"Culture",nature:"Nature",art:"Art & design",climb:"Climbing",chill:"Slow & easy",shop:"Shopping",local:"Local life"};
-const TYPES={see:["See","看"],eat:["Eat","食"],drink:["Drink","飲"],do:["Do","玩"]};
+const TYPES={see:"See",eat:"Eat",drink:"Drink",do:"Do"};
 const AREAS=[
- {id:"central",name:"Central & Sheung Wan",zh:"中環・上環",x:445,y:478,icon:"i-central",blurb:"Steep lanes, old temples and new galleries stacked on top of each other.",spots:[
+ {id:"central",name:"Central & Sheung Wan",short:"Central",x:428,y:518,px:494,py:526,icon:"i-central",blurb:"Steep lanes, old temples and new galleries stacked on top of each other.",spots:[
   ["see","Tai Kwun","A colonial police station and prison turned into an arts courtyard.",["culture","art","photo"]],
   ["see","Man Mo Temple","Giant incense coils hang from the ceiling on Hollywood Road.",["culture","photo"]],
   ["eat","Kau Kee","Beef brisket noodles on Gough Street. The queue moves fast.",["food","local"]],
@@ -438,58 +420,94 @@ const AREAS=[
   ["drink","Kung Lee sugar cane juice","Fresh-pressed since 1948, a quick stop on Hollywood Road.",["local","food"]],
   ["do","Mid-Levels Escalator","Ride the world's longest outdoor covered escalator uphill.",["chill","local","photo"]],
   ["drink","Lan Kwai Fong","The classic Friday-night street of bars.",["night"]]]},
- {id:"peak",name:"The Peak",zh:"山頂",x:470,y:552,icon:"i-peak",blurb:"The postcard view of the harbour, if the clouds allow.",spots:[
+ {id:"peak",name:"The Peak",short:"The Peak",x:500,y:598,px:484,py:543,icon:"i-peak",blurb:"The postcard view of the harbour, if the clouds allow.",spots:[
   ["do","Peak Tram","A funicular so steep the buildings look tilted. Running since 1888.",["culture","photo"]],
   ["do","Lugard Road loop","A flat 3.5 km path with the best skyline view in town.",["hike","photo","chill"]],
   ["do","Walk down Old Peak Road","Skip the tram queue and hike down to Central through the trees.",["hike","nature"]],
   ["see","Sky Terrace 428","The paid viewing deck. Go at dusk for day and night in one visit.",["photo","night"]]]},
- {id:"wanchai",name:"Wan Chai & Causeway Bay",zh:"灣仔・銅鑼灣",x:600,y:478,icon:"i-tram",blurb:"Trams, markets, malls and some of the city's best roast meat.",spots:[
+ {id:"wanchai",name:"Wan Chai & Causeway Bay",short:"Wan Chai",x:606,y:528,px:530,py:532,icon:"i-tram",blurb:"Trams, markets, malls and some of the city's best roast meat.",spots:[
   ["do","Ding ding tram","Sit upstairs at the front. The cheapest sightseeing ride in town.",["local","chill","photo"]],
   ["see","Blue House","A 1920s tenement painted bright blue, with community shops downstairs.",["culture","photo","art"]],
   ["eat","Kam's Roast Goose","Glossy roast goose with a Michelin star and a queue to match.",["food"]],
   ["do","Happy Valley races","Wednesday night horse racing with a beer garden by the track.",["night","local"]],
   ["do","Causeway Bay side streets","Malls on top, tiny shops and dessert spots in the lanes.",["shop","food"]]]},
- {id:"shek-o",name:"Shek O & Dragon's Back",zh:"石澳",x:680,y:540,icon:"i-ridge",blurb:"The island's wild side: ridge trails, surf beaches and sea cliffs.",spots:[
+ {id:"shek-o",name:"Shek O & Dragon's Back",short:"Shek O",x:660,y:612,px:618,py:594,icon:"i-ridge",blurb:"The island's wild side: ridge trails, surf beaches and sea cliffs.",spots:[
   ["do","Dragon's Back","A ridge hike with sea views on both sides, about 2 to 3 hours.",["hike","nature","photo"]],
   ["do","Big Wave Bay","Finish the hike in the water. Surfboards for rent on the beach.",["nature","chill"]],
   ["eat","Shek O village lunch","Thai and Chinese seafood plates a few steps from the sand.",["food","local"]],
   ["do","Shek O sea cliffs","Granite climbing right above the waves. Go with a local group.",["climb","nature"]]]},
- {id:"tst",name:"Tsim Sha Tsui",zh:"尖沙咀",x:520,y:388,icon:"i-clock",blurb:"Harbour views, museums and the old clock tower by the ferry pier.",spots:[
+ {id:"tst",name:"Tsim Sha Tsui",short:"Tsim Sha Tsui",x:606,y:462,px:516,py:507,icon:"i-clock",blurb:"Harbour views, museums and the old clock tower by the ferry pier.",spots:[
   ["do","Star Ferry","Cross the harbour in about ten minutes. Sit on the open side.",["local","photo","chill"]],
   ["see","Avenue of Stars","Face the skyline at 8pm for the Symphony of Lights.",["photo","night"]],
   ["see","M+","A huge museum of visual culture in West Kowloon.",["art","culture"]],
   ["see","Hong Kong Palace Museum","Treasures on loan from Beijing's Palace Museum.",["culture","art"]],
   ["eat","Chungking Mansions curry","South Asian curry counters tucked inside a famous block.",["food","local"]],
   ["drink","Ozone","One of the world's highest bars, on the 118th floor of the ICC.",["night","photo"]]]},
- {id:"mongkok",name:"Mong Kok & Sham Shui Po",zh:"旺角・深水埗",x:445,y:300,icon:"i-neon",blurb:"Neon, night markets and the best cheap eats in the city.",spots:[
+ {id:"mongkok",name:"Mong Kok & Sham Shui Po",short:"Mong Kok",x:440,y:428,px:507,py:471,icon:"i-neon",blurb:"Neon, night markets and the best cheap eats in the city.",spots:[
   ["see","Temple Street Night Market","Fortune tellers, claypot rice and street stalls after dark.",["night","food","shop","local"]],
   ["eat","Tim Ho Wan, Sham Shui Po","Budget Michelin dim sum. Order the baked BBQ pork buns.",["food","local"]],
   ["eat","Kung Wo Tofu","Silky tofu pudding and fried tofu in an old-school shop.",["food","local"]],
   ["eat","Kam Wah Cafe","Pineapple buns with a thick slab of butter, plus milk tea.",["food","local"]],
   ["do","Sham Shui Po fabric streets","Ribbons, buttons and fabric by the metre on Ki Lung Street.",["shop","art","local"]],
   ["see","Mong Kok neon","Wander Sai Yeung Choi Street at night with a camera.",["night","photo","shop"]]]},
- {id:"lionrock",name:"Lion Rock & Diamond Hill",zh:"獅子山・鑽石山",x:580,y:235,icon:"i-lion",blurb:"The rock that looks like a crouching lion, and the temples below it.",spots:[
+ {id:"lionrock",name:"Lion Rock & Diamond Hill",short:"Lion Rock",x:540,y:430,icon:"i-lion",blurb:"The rock that looks like a crouching lion, and the temples below it.",spots:[
   ["do","Lion Rock hike","A short, steep climb to a view over all of Kowloon.",["hike","photo","nature"]],
   ["see","Chi Lin Nunnery & Nan Lian Garden","Tang-style wooden halls and a calm garden with a golden pavilion.",["culture","chill","photo"]],
   ["see","Wong Tai Sin Temple","Busy, colourful temple where people shake fortune sticks.",["culture","local"]],
   ["see","Choi Hung Estate","The pastel rainbow housing estate with rooftop basketball courts.",["photo","local"]]]},
- {id:"saikung",name:"Sai Kung",zh:"西貢",x:830,y:250,icon:"i-hex",blurb:"Hong Kong's back garden of beaches, islands and volcanic rock.",spots:[
+ {id:"saikung",name:"Sai Kung",short:"Sai Kung",x:735,y:335,icon:"i-hex",blurb:"Hong Kong's back garden of beaches, islands and volcanic rock.",spots:[
   ["eat","Waterfront seafood","Pick your fish from the tanks on the promenade.",["food"]],
   ["see","Hexagonal rock columns","Giant volcanic columns at High Island Reservoir East Dam.",["nature","photo","hike"]],
   ["do","Tai Long Wan hike","A long trail to the city's most beautiful beaches.",["hike","nature"]],
   ["do","Kaito island hopping","Hop on a small boat from the pier to a quiet beach.",["nature","chill"]],
   ["do","Tung Lung Chau climbing","Sea-cliff sport routes on an island off Clearwater Bay.",["climb","nature"]]]},
- {id:"lantau",name:"Lantau",zh:"大嶼山",x:200,y:470,icon:"i-buddha",blurb:"The big island: a bronze Buddha, a stilt-house village and a sunrise peak.",spots:[
+ {id:"lantau",name:"Lantau",short:"Lantau",x:200,y:548,icon:"i-buddha",blurb:"The big island: a bronze Buddha, a stilt-house village and a sunrise peak.",spots:[
   ["see","Tian Tan Buddha","The Big Buddha, 268 steps up from Ngong Ping.",["culture","photo"]],
   ["do","Ngong Ping 360","A long cable car ride over the hills. Glass-floor cabins too.",["photo","chill"]],
   ["see","Tai O stilt houses","A fishing village on stilts. Look out for dried seafood stalls.",["local","photo","culture"]],
   ["do","Lantau Peak sunrise","Start in the dark and watch the sun come up over the sea of clouds.",["hike","nature","photo"]],
   ["eat","Tai O street snacks","Charcoal-grilled egg waffles and fish balls by the water.",["food","local"]]]},
- {id:"lamma",name:"Lamma Island",zh:"南丫島",x:445,y:640,icon:"i-lamma",blurb:"No cars, a slow trail, and seafood at the other end.",spots:[
+ {id:"lamma",name:"Lamma Island",short:"Lamma",x:445,y:642,icon:"i-lamma",blurb:"No cars, a slow trail, and seafood at the other end.",spots:[
   ["do","Family Trail","An easy walk from Yung Shue Wan to Sok Kwu Wan, about 1.5 hours.",["hike","chill","nature"]],
   ["eat","Sok Kwu Wan seafood","Garlic prawns and steamed fish on the pier before the ferry home.",["food"]],
   ["see","Hung Shing Yeh Beach","A small quiet beach halfway along the trail.",["nature","chill"]],
-  ["drink","Yung Shue Wan waterfront","A cold beer at a harbourside bar as the ferry pulls in.",["chill","night"]]]}
+  ["drink","Yung Shue Wan waterfront","A cold beer at a harbourside bar as the ferry pulls in.",["chill","night"]]]},
+ {id:"yuenlong",name:"Yuen Long & Mai Po",short:"Yuen Long",x:330,y:276,icon:"i-bird",blurb:"Wetlands, old walled villages and the wife cakes the town is known for.",spots:[
+  ["see","Mai Po Nature Reserve","Wetland birds by the thousand in winter. Book a guided visit first.",["nature","photo"]],
+  ["see","Hong Kong Wetland Park","Boardwalks and bird hides at the edge of Tin Shui Wai.",["nature","chill"]],
+  ["see","Ping Shan Heritage Trail","Ancestral halls and Hong Kong's only surviving ancient pagoda.",["culture","local"]],
+  ["do","Nam Sang Wai","Reeds, fish ponds and a tree-lined path that's best on two wheels.",["nature","photo","chill"]],
+  ["eat","Hang Heung wife cakes","Flaky winter melon pastries from a long-running Yuen Long bakery.",["food","local"]],
+  ["eat","Lau Fau Shan oysters","A fishing village street of oysters, grilled or dried.",["food","local"]]]},
+ {id:"tsuenwan",name:"Tsuen Wan & Tai Mo Shan",short:"Tai Mo Shan",x:445,y:352,icon:"i-falls",blurb:"The highest peak in Hong Kong, waterfalls, and a walled village inside a new town.",spots:[
+  ["do","Tai Mo Shan","Hong Kong's highest peak at 957 m, often wrapped in cloud.",["hike","nature","photo"]],
+  ["do","Ng Tung Chai waterfalls","A string of waterfalls on the north side of the mountain.",["hike","nature"]],
+  ["see","Yuen Yuen Institute","A colourful Taoist, Buddhist and Confucian temple complex in the hills.",["culture","photo"]],
+  ["see","Sam Tung Uk Museum","An 18th-century walled Hakka village, now a small museum.",["culture","local"]],
+  ["see","Lantau Link viewpoint","A good look at the long suspension bridge out to Lantau.",["photo"]]]},
+ {id:"shatin",name:"Sha Tin",short:"Sha Tin",x:582,y:372,px:539,py:382,icon:"i-gold",blurb:"A hillside of golden statues, a river path and the city's biggest racecourse.",spots:[
+  ["see","Ten Thousand Buddhas Monastery","A steep path lined with hundreds of golden statues.",["culture","photo"]],
+  ["see","Hong Kong Heritage Museum","Cantonese opera, local history and changing shows.",["culture","art"]],
+  ["see","Che Kung Temple","Spin the brass pinwheels for a year of good luck.",["culture","local"]],
+  ["do","Sha Tin Racecourse","Happy Valley's bigger sibling, with meets on most weekends in season.",["local"]],
+  ["do","Shing Mun River path","A flat ride or walk along the river, with bikes to rent.",["chill","nature"]]]},
+ {id:"taipo",name:"Tai Po & Plover Cove",short:"Tai Po",x:548,y:266,px:513,py:290,icon:"i-bike",blurb:"Reservoir bike rides, wishing trees and one of the best local markets.",spots:[
+  ["do","Tai Mei Tuk cycling","Rent a bike and ride along the water at Plover Cove.",["nature","chill"]],
+  ["see","Hong Kong Railway Museum","Old carriages at a 1913 station in Tai Po Market.",["culture"]],
+  ["see","Lam Tsuen Wishing Trees","People hang paper wishes here, especially around Lunar New Year.",["culture","local"]],
+  ["do","Bride's Pool","Shaded waterfalls and stream pools near the reservoir.",["nature","hike"]],
+  ["eat","Tai Po Hui Market","A big cooked food centre upstairs from the wet market.",["food","local"]]]},
+ {id:"northeast",name:"Lai Chi Wo & Tap Mun",short:"Lai Chi Wo",x:690,y:188,icon:"i-hakka",blurb:"Old Hakka villages and far-off islands that take a boat and a bit of planning.",spots:[
+  ["see","Lai Chi Wo","A walled Hakka village, about 400 years old, on a quiet bay. Ferries are limited, so check times.",["culture","nature","hike"]],
+  ["do","Tap Mun","A grassy island of sea wind, cows and seafood lunches.",["nature","chill"]],
+  ["see","Tung Ping Chau","Layered sedimentary rock at the far edge of Mirs Bay.",["nature","photo"]],
+  ["do","Kat O","A small fishing island up near the northeastern boundary.",["local","chill"]]]},
+ {id:"cheungchau",name:"Cheung Chau",short:"Cheung Chau",x:330,y:640,icon:"i-bun",blurb:"A car-free fishing island with a pirate cave and a famous bun festival.",spots:[
+  ["see","Bun Festival","Towers of buns, a float parade and a scramble race each spring.",["culture","local","photo"]],
+  ["do","Cheung Po Tsai Cave","A tight scramble through a cave linked to a famous pirate.",["nature"]],
+  ["do","Mini Great Wall","A short rocky trail along the coast.",["hike","nature","photo"]],
+  ["eat","Giant fish balls","Skewers of oversized fish balls near the pier.",["food","local"]],
+  ["eat","Mango mochi","Soft mochi with fresh mango from the harbourfront shops.",["food"]]]}
 ];
 AREAS.forEach(a=>{a.spots=a.spots.map((s,i)=>({id:a.id+"-"+i,area:a.id,type:s[0],name:s[1],note:s[2],tags:s[3]}))});
 const SPOTS=Object.fromEntries(AREAS.flatMap(a=>a.spots).map(s=>[s.id,s]));
@@ -498,18 +516,18 @@ const TOTAL=Object.keys(SPOTS).length;
 
 /* mood stickers: shuffled on purpose, so they read as a sheet, not a scale */
 const MOODS=[
- {id:"awe",en:"Awestruck",zh:"哇塞",e:"😮",c:"#FFE4A8"},
- {id:"cosy",en:"Cosy",zh:"暖洋洋",e:"☕",c:"#F7D3B8"},
- {id:"footsore",en:"Footsore",zh:"走累了",e:"🦶",c:"#E2E0F5"},
- {id:"buzzing",en:"Buzzing",zh:"好兴奋",e:"⚡",c:"#FFD0E0"},
- {id:"curious",en:"Curious",zh:"好奇",e:"🔍",c:"#D3ECF5"},
- {id:"blue",en:"A bit blue",zh:"有点emo",e:"🌧️",c:"#D6DDEA"},
- {id:"stuffed",en:"Stuffed",zh:"吃撑了",e:"🥟",c:"#FBE6C6"},
- {id:"peaceful",en:"Peaceful",zh:"好惬意",e:"🌊",c:"#CDEFE7"},
- {id:"lost",en:"Happily lost",zh:"迷路啦",e:"🧭",c:"#E6F1CF"},
- {id:"homesick",en:"Homesick",zh:"想家",e:"🏠",c:"#F2DCE6"},
- {id:"nostalgic",en:"Nostalgic",zh:"怀旧",e:"📼",c:"#EADFCF"},
- {id:"overwhelmed",en:"Overwhelmed",zh:"有点懵",e:"🌀",c:"#E0E6F8"}
+ {id:"awe",en:"Awestruck",e:"😮",c:"#FFE4A8"},
+ {id:"cosy",en:"Cosy",e:"☕",c:"#F7D3B8"},
+ {id:"footsore",en:"Footsore",e:"🦶",c:"#E2E0F5"},
+ {id:"buzzing",en:"Buzzing",e:"⚡",c:"#FFD0E0"},
+ {id:"curious",en:"Curious",e:"🔍",c:"#D3ECF5"},
+ {id:"blue",en:"A bit blue",e:"🌧️",c:"#D6DDEA"},
+ {id:"stuffed",en:"Stuffed",e:"🥟",c:"#FBE6C6"},
+ {id:"peaceful",en:"Peaceful",e:"🌊",c:"#CDEFE7"},
+ {id:"lost",en:"Happily lost",e:"🧭",c:"#E6F1CF"},
+ {id:"homesick",en:"Homesick",e:"🏠",c:"#F2DCE6"},
+ {id:"nostalgic",en:"Nostalgic",e:"📼",c:"#EADFCF"},
+ {id:"overwhelmed",en:"Overwhelmed",e:"🌀",c:"#E0E6F8"}
 ];
 const MOOD=Object.fromEntries(MOODS.map(m=>[m.id,m]));
 
@@ -536,7 +554,7 @@ const PERSONA={
 
 /* ================= STATE ================= */
 const KEY="stampy.hk.v1";
-const DEF_AV={skin:"#FBE3CF",hair:"long",hairC:"#E3D29A",eyes:"worried",glasses:"#E0524F",clip:"#E0524F",top:"#D9473F",bottom:"shorts",bottomC:"#F6F1E4",shoes:"#D9473F",bag:"backpack",pose:"out",name:"Traveller"};
+const DEF_AV={skin:"#FBE3CF",hair:"long",hairC:"#E3D29A",eyes:"worried",sparkle:"off",glasses:"#E0524F",clip:"#E0524F",top:"#D9473F",bottom:"shorts",bottomC:"#F6F1E4",shoes:"#D9473F",bag:"backpack",pose:"out",name:"Traveller"};
 let S={checkins:[],quiz:null,filters:[],avatar:{...DEF_AV},tod:null,here:"tst"};
 try{const r=JSON.parse(localStorage.getItem(KEY)||"null");if(r)S={...S,...r,avatar:{...DEF_AV,name:(r.avatar&&r.avatar.name)||DEF_AV.name,...(r.avatar&&r.avatar.v===2?r.avatar:{}),v:2}}}catch(e){}
 S.avatar.v=2;
@@ -548,7 +566,7 @@ const doneFor=id=>S.checkins.filter(c=>c.spot===id);
 
 /* ================= DRAWINGS ================= */
 function postmark(area,date){
-  const d=new Date(date);const top="HONG KONG · 香港";
+  const d=new Date(date);const top="HONG KONG";
   const dd=d.getDate()+" "+d.toLocaleString("en-GB",{month:"short"}).toUpperCase()+" "+String(d.getFullYear()).slice(2);
   return `<svg class="postmark" viewBox="0 0 120 80"><g fill="none" stroke="#2A3561" stroke-width="2"><circle cx="40" cy="40" r="32"/><circle cx="40" cy="40" r="23" stroke-width="1"/>
   <path d="M76 22q8-5 16 0t16 0M76 34q8-5 16 0t16 0M76 46q8-5 16 0t16 0M76 58q8-5 16 0t16 0"/></g>
@@ -587,7 +605,7 @@ function avatarSVG(a0,cls=""){
   }[a.hair]||null;
   const hair=H||{back:"",front:""};
   // eyes
-  const eye=x=>`<circle cx="${x}" cy="49" r="8.2" fill="#fff" ${O}/><circle cx="${x+.4}" cy="49.6" r="6.6" fill="#1A1614"/><circle cx="${x-2}" cy="47" r="2.3" fill="#fff"/><circle cx="${x+2.4}" cy="52" r="1" fill="#fff"/>`;
+  const eye=x=>`<circle cx="${x}" cy="49" r="8.2" fill="#fff" ${O}/><circle cx="${x+.4}" cy="49.6" r="6.6" fill="#1A1614"/>${a.sparkle==="on"?`<circle cx="${x-2}" cy="47" r="2.3" fill="#fff"/><circle cx="${x+2.4}" cy="52" r="1" fill="#fff"/>`:""}`;
   let eyes=a.eyes==="sleepy"?`<path d="M33 50q6 4 12 0M55 50q6 4 12 0" stroke="#1A1614" stroke-width="2" fill="none" stroke-linecap="round"/>`:eye(39)+eye(61);
   if(a.eyes==="worried")eyes+=`<path d="M57 36q1.5-2 3 0t3 0 3 0" stroke="#1A1614" stroke-width="1.3" fill="none" stroke-linecap="round"/><path d="M34 37.5l7-1.5" stroke="#1A1614" stroke-width="1.3" stroke-linecap="round"/>`;
   const glasses=a.glasses==="none"?"":`<g fill="none" stroke="${a.glasses}" stroke-width="1.8"><rect x="28.5" y="40" width="21" height="18" rx="8"/><rect x="50.5" y="40" width="21" height="18" rx="8"/><path d="M49.5 47h1M28.5 47l-5-1M71.5 47l5-1"/></g>`;
@@ -632,41 +650,43 @@ function avatarSVG(a0,cls=""){
 }
 
 /* ================= MAP ================= */
+/* Coastline, Hong Kong boundary and reservoirs are simplified from OpenStreetMap (ODbL). */
+const MAP_LAND="M58 70 62 74 65 82 73 96 70 104 80 113 80 115 77 118 82 126 87 123 82 126 87 133 87 134 88 136 89 135 93 141 94 141 106 185 113 182 113 181 118 178 109 145 111 144 110 143 112 138 113 139 112 144 113 148 121 158 124 158 125 160 130 154 138 159 141 156 142 157 139 159 142 166 142 172 139 180 112 197 112 199 111 200 115 217 113 217 112 221 124 256 135 280 137 279 135 262 131 255 133 250 142 254 140 257 138 257 139 265 140 266 142 265 143 266 145 269 145 273 143 274 144 280 141 283 142 295 144 296 155 280 153 267 157 265 159 268 166 263 162 258 165 255 169 260 174 262 173 261 173 260 175 261 174 259 175 260 174 259 174 258 177 258 177 258 177 256 173 254 175 252 175 249 177 251 176 250 176 246 178 245 181 246 187 245 184 244 183 238 188 239 189 238 191 238 190 240 193 241 193 243 189 242 189 245 201 248 202 244 203 244 204 242 206 242 209 244 212 241 210 239 212 237 217 237 223 232 224 228 222 224 225 216 224 213 224 210 227 208 226 204 224 202 227 198 225 196 227 196 227 194 226 194 227 193 226 191 226 188 229 189 231 188 237 190 242 189 248 190 251 189 256 189 261 191 266 189 274 189 279 186 284 188 290 184 289 181 295 181 320 192 326 199 327 203 333 206 334 205 332 210 335 210 335 207 336 208 338 207 334 214 335 212 328 211 324 212 321 215 324 217 327 216 329 217 327 216 323 217 320 217 328 220 328 223 331 225 324 233 320 233 319 235 319 236 322 235 322 240 323 241 319 246 315 247 311 246 308 238 310 238 304 239 295 235 290 234 288 235 288 238 287 238 288 238 285 240 285 244 282 249 283 249 282 252 272 259 270 263 266 264 267 266 265 269 263 276 261 280 253 285 246 287 245 288 244 287 240 290 235 291 231 295 230 300 222 306 221 314 217 319 211 323 212 326 211 327 212 331 211 333 212 331 209 324 199 327 198 332 196 333 197 329 194 328 190 328 180 331 179 332 179 335 166 347 163 352 163 353 170 356 173 355 175 357 174 358 177 357 181 363 181 365 178 367 180 371 185 374 187 377 188 382 186 389 185 391 183 391 179 395 183 398 180 400 185 405 181 400 183 399 191 405 188 404 191 405 191 406 193 408 191 406 209 419 210 418 206 416 209 409 211 410 210 413 213 414 214 411 216 412 215 415 218 416 220 414 221 414 220 417 223 418 224 415 230 423 230 422 223 410 228 406 228 404 238 399 239 400 247 400 246 402 247 401 257 402 255 402 250 392 261 387 262 390 259 395 261 398 263 397 261 397 260 395 262 390 265 391 266 392 266 394 270 396 275 400 278 405 277 408 277 407 279 407 278 406 278 403 280 400 283 405 281 407 281 409 283 411 287 410 289 415 293 415 303 410 305 412 305 413 306 415 308 413 310 413 316 422 325 425 330 424 339 422 349 416 353 417 361 415 363 412 370 409 371 410 373 410 376 412 384 413 384 410 389 407 392 407 394 408 395 405 399 405 402 407 410 408 421 406 427 401 429 401 432 404 433 406 438 411 437 415 437 419 439 417 443 425 443 429 442 430 441 427 440 428 442 436 448 434 452 449 459 446 461 450 454 452 457 462 466 459 468 463 451 469 450 472 460 478 462 477 465 478 466 483 466 477 471 476 472 481 468 482 472 481 471 477 472 477 474 477 477 481 480 477 481 474 484 471 483 469 480 468 481 470 479 471 478 470 479 471 478 472 476 470 479 467 475 465 476 463 478 465 480 462 485 465 486 466 486 466 487 467 488 467 489 469 491 470 490 472 491 472 492 470 494 473 494 480 494 479 499 479 500 480 500 492 497 498 494 498 493 496 494 497 493 503 494 504 498 504 500 502 509 501 509 503 506 504 510 504 511 509 506 510 506 511 511 510 511 512 511 511 511 512 512 512 513 512 517 511 519 512 528 503 530 503 529 506 530 506 530 503 532 504 538 501 539 502 538 501 543 498 544 491 542 488 542 482 544 478 545 478 544 478 546 477 545 477 547 473 573 498 575 496 572 493 572 491 570 488 569 489 568 488 552 474 553 471 567 484 570 481 580 491 577 493 580 491 581 493 580 494 581 493 591 504 599 504 600 507 595 509 596 511 601 516 600 515 602 513 603 514 600 519 608 523 611 520 611 518 614 517 616 513 620 510 620 509 623 506 624 506 624 504 625 503 625 506 626 506 626 501 631 500 632 501 635 500 638 495 637 490 640 494 636 502 636 506 639 508 640 514 645 514 645 517 639 526 640 530 637 533 637 537 640 539 643 538 644 541 641 542 649 555 653 555 655 550 660 547 659 543 660 542 663 544 669 544 671 549 677 552 680 555 679 557 683 559 684 556 683 552 684 550 685 549 690 553 689 551 692 551 692 548 690 545 689 547 686 548 684 546 685 543 689 545 685 542 684 535 684 532 687 531 685 530 683 530 680 534 677 536 677 540 674 540 674 537 678 532 675 531 674 532 668 530 668 526 671 523 671 522 668 522 668 519 672 515 675 515 676 519 686 520 691 514 696 512 697 508 695 507 699 505 697 501 697 499 688 491 689 490 687 487 685 489 682 488 676 492 678 494 677 496 673 496 674 493 670 492 673 488 672 486 673 485 670 482 670 478 668 475 670 474 669 473 668 472 668 474 666 474 664 474 664 472 660 472 655 475 654 475 654 472 647 471 646 469 647 461 645 457 645 454 643 450 643 449 640 448 638 446 639 437 640 436 640 435 642 433 642 430 639 430 637 432 637 428 638 428 636 428 634 425 632 426 631 422 631 424 625 424 630 425 630 426 626 426 625 427 624 425 621 429 619 426 620 427 620 425 627 422 621 422 622 418 625 419 627 419 628 420 627 421 630 420 627 416 629 414 630 413 631 414 631 411 632 411 632 410 631 410 631 405 635 407 634 404 636 404 636 401 635 401 636 401 639 403 641 403 644 410 644 413 642 416 640 418 640 418 638 418 637 423 638 423 640 421 643 422 647 418 646 424 648 430 651 431 651 426 654 425 653 421 655 419 653 416 651 416 649 412 647 411 648 409 646 403 650 396 649 395 650 393 644 392 654 384 652 379 654 370 657 369 658 372 661 368 665 367 667 369 669 370 668 372 669 372 671 377 675 378 677 375 679 374 679 377 682 378 681 380 683 381 681 384 686 382 686 378 689 381 689 384 691 383 691 381 693 381 694 383 695 382 696 383 697 381 694 380 695 377 694 378 694 375 695 376 696 375 696 372 704 371 705 369 707 370 710 370 712 365 712 366 711 367 710 373 708 371 705 373 706 377 709 377 707 386 708 387 709 386 711 386 711 384 713 385 713 384 714 385 713 388 717 391 726 394 729 391 728 403 732 406 726 406 724 413 729 419 730 419 732 418 733 421 736 422 738 426 733 426 734 427 734 430 739 436 741 436 743 431 746 431 746 433 748 426 749 425 750 426 751 425 752 431 755 435 750 435 752 436 752 442 754 444 755 451 757 452 760 451 760 446 762 444 763 444 760 438 762 435 761 430 764 429 767 433 769 433 770 431 771 433 770 432 771 431 770 431 770 429 767 428 767 427 768 427 768 425 771 427 773 426 776 429 777 426 780 427 780 425 778 424 782 423 781 422 781 421 785 421 784 419 780 418 784 413 787 413 789 410 788 408 787 409 787 407 782 404 783 403 782 399 785 397 788 398 791 395 796 409 800 411 800 408 801 409 802 409 800 406 802 407 802 403 800 404 801 402 796 394 801 395 800 393 803 393 802 390 803 390 802 389 800 387 801 384 801 384 801 382 800 382 802 380 801 379 801 378 797 376 796 374 793 376 791 373 789 373 790 371 787 367 785 367 784 365 783 366 783 364 778 365 775 361 777 360 777 359 779 360 780 359 779 358 781 358 779 357 781 357 780 355 782 354 780 352 781 350 784 347 787 348 785 344 786 342 790 337 791 337 792 335 795 332 801 333 804 332 807 336 807 339 811 342 811 344 813 345 815 345 815 343 817 345 819 344 819 342 821 343 818 339 820 337 818 336 818 334 813 331 810 329 811 324 808 319 812 318 812 313 813 314 815 310 811 310 809 312 807 306 804 309 803 307 804 304 803 303 802 306 793 307 790 310 785 308 783 306 777 309 775 308 774 307 770 295 774 291 774 283 772 281 770 278 763 275 762 276 764 277 762 279 763 279 762 282 764 287 762 289 759 287 758 291 755 292 754 290 751 292 754 294 753 298 757 296 755 301 755 303 756 305 754 308 754 311 755 313 754 314 754 320 753 321 755 323 754 324 756 326 753 326 756 330 750 329 748 331 746 328 745 328 745 326 750 324 748 322 748 318 745 311 745 308 743 306 739 309 738 317 733 317 733 320 737 321 735 322 732 321 728 322 727 321 730 320 731 318 732 314 731 311 732 311 728 308 727 306 726 307 727 306 726 305 728 303 734 304 737 299 737 295 733 293 734 290 731 284 734 277 732 273 735 272 741 276 744 274 745 272 740 262 741 259 738 250 736 251 734 255 732 256 735 261 733 266 730 267 731 272 730 273 729 272 726 274 726 272 724 271 722 274 718 273 721 268 721 262 722 261 725 262 724 261 724 258 722 256 720 261 715 260 713 256 714 253 711 247 709 253 704 252 699 260 694 261 690 266 688 273 686 272 688 278 687 283 685 284 682 284 682 281 678 282 672 279 672 287 673 290 672 291 670 291 669 287 665 285 659 290 653 299 655 301 655 299 659 300 662 300 662 302 659 304 658 306 660 310 661 311 661 315 664 320 670 321 668 322 668 324 667 323 667 326 664 326 655 333 652 334 650 340 652 343 652 348 649 343 644 338 644 335 642 335 640 332 644 330 645 322 646 322 645 322 645 319 642 313 640 314 636 313 632 316 628 315 626 318 623 314 623 312 622 312 614 316 612 318 610 315 615 312 615 310 611 311 607 308 602 309 601 311 603 313 603 317 599 320 597 323 593 321 589 322 586 326 578 350 557 375 539 393 538 392 575 350 570 346 572 340 571 338 572 327 570 323 548 306 543 305 538 306 535 305 525 299 524 298 526 297 525 296 523 295 529 287 535 287 543 290 544 288 548 287 550 285 550 280 553 278 556 277 556 278 558 278 560 280 564 281 567 286 564 281 570 281 571 284 565 291 569 292 573 292 573 295 575 294 574 292 575 291 580 292 582 290 585 291 585 292 588 290 591 289 595 285 598 281 595 278 589 282 587 287 581 291 579 289 573 287 572 285 574 282 574 283 571 280 569 280 568 278 564 277 563 275 565 271 564 269 564 267 566 263 569 261 569 259 571 257 576 262 575 263 576 265 582 264 583 265 586 261 587 261 587 260 588 262 590 260 590 261 590 260 594 259 596 264 594 265 598 265 615 283 613 285 614 291 615 289 619 286 622 286 623 287 627 285 627 283 629 283 632 276 635 274 650 265 649 264 641 268 641 264 643 263 644 265 648 261 651 260 657 262 664 257 673 255 675 253 676 250 682 249 690 245 695 240 692 240 692 239 694 238 695 236 697 236 698 234 699 235 698 236 699 238 702 236 705 232 708 231 709 227 711 227 712 225 714 224 717 219 718 219 722 215 728 212 731 208 730 206 727 204 720 209 718 212 712 212 709 214 709 215 702 214 700 216 696 216 695 218 692 218 690 220 688 223 685 218 683 218 684 217 682 216 681 217 681 219 679 218 678 217 680 215 679 213 676 213 675 213 675 214 674 214 674 213 675 211 674 208 673 210 672 207 670 208 670 212 672 212 672 214 668 211 665 212 667 209 667 207 663 209 659 206 662 207 665 205 662 204 661 205 654 205 654 207 651 206 651 209 648 208 648 209 645 210 647 207 650 208 649 205 651 204 649 203 651 201 648 201 647 203 645 202 647 201 647 199 649 198 646 197 648 197 647 195 652 197 652 198 655 201 656 199 656 194 659 194 658 191 661 190 665 185 663 184 663 186 662 186 660 185 656 189 656 188 653 187 655 187 654 185 659 180 653 180 649 178 649 179 651 180 651 182 649 184 646 185 641 181 635 185 633 184 636 174 640 173 641 170 640 168 636 168 633 172 635 166 634 163 628 166 626 165 626 164 629 161 628 159 630 158 626 157 632 152 632 151 629 152 625 150 626 147 624 151 625 153 621 157 621 156 622 155 622 153 618 153 619 156 617 157 614 155 614 150 611 150 610 152 611 155 610 155 608 149 608 151 606 155 606 158 603 162 602 167 600 173 596 175 591 172 590 177 588 177 585 180 581 177 581 180 579 180 577 184 573 186 574 181 571 184 566 184 565 184 566 186 564 186 563 181 565 180 563 180 565 175 564 174 564 173 565 169 569 172 572 169 573 165 573 163 576 160 579 159 577 158 578 157 580 158 584 157 585 159 587 157 589 158 592 156 593 152 595 151 599 144 607 136 610 139 612 140 622 131 617 126 616 121 617 120 623 127 638 113 650 126 652 125 668 126 648 102 646 105 643 102 640 103 645 100 642 99 642 96 640 94 645 99 645 101 648 97 649 97 649 96 651 94 656 95 657 97 657 98 656 98 657 99 657 97 659 97 660 96 660 97 658 100 662 103 668 104 681 120 683 117 686 101 686 96 683 94 683 93 690 84 694 81 693 80 690 81 692 78 694 78 693 80 694 80 695 81 699 78 701 77 702 79 702 80 703 80 707 83 711 81 713 81 710 77 719 72 728 78 731 85 730 87 732 87 734 87 733 85 735 83 740 80 752 75 755 75 757 70ZM291 543 295 541 300 545 304 546 305 549 309 551 315 551 317 550 318 551 322 551 319 549 321 546 320 544 321 538 320 536 321 533 323 532 321 530 321 524 319 524 316 521 316 517 319 515 317 514 316 512 318 511 323 514 324 513 322 511 323 510 327 514 327 515 324 515 327 515 328 514 325 509 325 506 324 505 324 503 317 509 314 508 315 507 312 507 312 502 318 501 316 500 317 498 312 497 312 494 313 494 315 488 325 488 330 484 333 486 337 492 344 494 350 492 353 492 364 487 363 481 360 475 362 472 364 474 365 473 362 469 363 464 366 461 363 459 364 456 363 455 367 452 366 451 366 449 363 447 364 445 361 443 362 441 359 440 359 439 356 437 351 435 349 437 349 441 347 441 346 445 344 444 341 447 335 452 331 451 327 456 327 459 322 464 318 466 321 462 321 458 323 457 319 457 317 455 313 461 306 463 306 467 302 467 302 469 296 471 294 474 294 473 290 473 289 475 288 474 286 476 288 478 287 479 281 485 273 487 265 492 262 496 260 496 257 499 253 502 248 503 245 497 238 493 237 493 234 495 236 494 237 496 233 497 218 511 213 511 208 516 208 519 205 523 208 522 203 526 205 531 203 527 203 529 200 528 199 529 199 526 197 527 197 525 193 522 193 518 194 518 193 518 192 516 189 514 186 515 184 513 179 513 173 517 172 514 168 513 167 512 163 518 160 516 160 514 158 515 156 514 156 517 153 520 153 527 150 530 143 534 142 538 145 542 144 545 143 547 140 545 140 542 139 541 134 544 122 548 115 560 112 562 114 565 117 566 121 568 119 569 114 566 113 567 114 567 112 567 109 570 111 578 97 583 96 585 99 592 97 591 99 592 99 597 98 598 99 598 97 598 96 601 94 599 94 601 93 597 90 593 86 594 84 596 83 603 81 605 83 607 82 617 87 622 87 625 85 627 85 632 90 637 93 637 94 639 93 641 91 641 91 645 89 648 89 650 93 650 93 647 97 649 99 647 101 648 101 646 99 645 99 643 101 641 105 639 108 639 111 637 114 639 114 641 118 640 123 630 130 627 132 628 134 628 132 623 135 622 138 616 144 614 147 616 149 614 149 612 151 611 153 611 153 613 158 613 159 615 157 618 158 620 159 623 161 625 162 624 165 628 167 627 169 629 172 633 177 635 179 631 179 629 182 627 185 629 185 631 187 631 187 633 189 632 191 634 191 632 194 631 201 629 201 622 199 619 196 617 190 620 185 618 185 614 189 613 192 607 194 607 197 610 204 608 208 603 213 603 218 599 229 596 234 596 235 599 237 599 240 597 242 597 243 593 248 592 256 587 267 591 265 589 265 584 266 588 268 589 267 592 268 593 265 595 262 603 269 609 271 612 266 619 270 622 273 622 275 626 278 626 278 623 281 622 283 622 285 619 288 618 291 618 292 623 297 623 298 618 305 616 304 613 307 609 314 607 315 605 315 603 318 601 315 599 312 600 309 598 306 598 305 593 302 595 302 596 298 597 296 595 296 592 293 589 291 589 290 586 288 588 285 587 285 587 283 586 284 583 291 579 293 575 299 574 304 570 307 569 306 566 302 564 300 558 296 556 293 556 294 555 294 552 295 551 289 549ZM831 70 832 73 833 71 839 72 848 76 848 79 851 82 846 85 848 89 851 91 855 89 856 92 861 100 861 102 858 102 858 106 859 106 856 111 864 115 865 118 863 120 864 121 879 120 891 122 891 125 893 126 891 128 895 132 893 139 895 138 897 141 900 142 899 144 903 150 905 151 908 149 914 151 918 157 917 159 915 159 916 162 918 164 922 165 923 169 926 168 927 169 926 172 924 172 924 175 926 182 926 186 920 189 920 195 918 199 912 201 915 205 913 207 916 211 917 211 919 214 917 216 919 220 918 222 917 223 917 225 916 229 922 231 924 231 927 234 927 236 922 239 921 241 925 244 922 251 923 256 920 261 921 263 925 265 934 265 940 269 940 274 938 277 940 278 938 283 941 285 942 288 945 287 945 289 947 290 951 288 952 290 957 290 958 288 965 288 966 285 969 285 969 280 974 276 975 276 975 275 978 274 978 272 981 272 981 271 983 268 982 267 980 267 979 265 978 262 980 259 991 249 999 243 1006 242 1011 245 1013 249 1020 252 1024 246 1026 246 1028 242 1030 242 1030 151 1021 141 1022 138 1018 135 1022 139 1021 141 1018 138 1018 136 1016 138 1014 137 1015 135 1017 136 1016 135 1014 135 1013 137 1011 136 1008 132 1008 130 1009 129 1008 126 1009 125 1009 124 1006 121 1001 119 999 120 1000 123 998 124 993 120 990 122 990 123 985 123 990 123 990 127 989 127 985 125 985 124 983 124 985 125 983 125 983 124 981 123 978 124 977 125 978 127 977 135 975 137 975 137 975 138 974 137 973 137 974 138 973 139 972 137 973 139 971 140 969 146 946 141 943 142 942 140 945 126 944 125 946 127 946 124 944 106 947 99 956 88 962 86 963 89 965 89 965 90 966 89 966 91 968 92 976 92 980 89 982 91 986 92 988 90 990 91 989 92 990 92 991 91 989 89 992 87 997 88 999 90 998 87 1002 86 1000 85 1003 86 1000 88 1004 88 1004 94 1007 83 1010 81 1010 83 1011 78 1013 75 1013 74 1018 71 1017 70ZM624 627 625 625 624 626 624 622 624 616 618 604 621 602 626 604 626 603 620 599 622 593 618 589 619 586 618 584 614 582 613 580 614 578 617 578 620 574 623 575 624 573 623 571 624 570 624 568 625 568 625 566 626 564 624 560 625 557 628 557 616 546 614 548 611 540 612 545 609 547 607 545 610 541 607 537 606 532 598 524 592 526 587 526 585 525 586 523 585 523 585 521 584 522 581 519 559 511 554 512 553 510 554 512 553 512 552 510 552 512 547 513 543 515 542 515 537 520 536 519 539 523 534 525 530 527 531 524 529 523 530 524 528 524 529 526 527 527 527 525 525 526 522 526 521 525 521 526 519 527 519 523 516 524 514 527 504 524 503 522 495 519 493 520 482 516 473 516 467 518 463 517 467 518 467 520 464 519 458 525 455 525 446 529 445 531 443 534 443 538 451 545 457 555 464 565 464 570 465 570 469 575 479 576 480 579 479 576 483 575 494 578 498 577 502 580 506 580 505 583 508 585 507 587 506 589 504 590 506 590 507 592 510 593 508 597 515 601 518 600 520 590 525 581 534 579 536 580 537 583 535 585 535 587 537 591 541 593 545 590 549 594 549 595 550 595 550 601 548 603 550 607 549 608 548 610 544 609 548 613 554 614 555 619 549 623 549 629 553 629 555 625 559 626 562 624 561 622 566 619 566 617 570 621 572 626 569 628 568 631 568 638 567 643 567 649 571 652 581 650 583 649 584 647 583 643 578 636 579 634 576 631 577 630 579 629 580 626 582 626 581 622 580 622 580 620 577 620 572 617 571 613 572 609 576 606 577 603 579 603 581 602 582 597 584 597 585 600 588 602 590 602 592 599 590 591 587 589 584 589 583 580 581 580 584 577 585 578 585 579 586 582 586 585 589 584 593 585 596 588 597 585 598 586 598 592 596 593 599 599 601 607 600 611 599 612 600 614 602 615 603 612 606 613 606 617 602 617 607 618 609 626 606 628 608 632 613 634 621 632 622 634 624 635 626 632 627 634 630 633 631 634 632 632 629 630 629 628 624 628ZM211 510 210 508 211 504 214 498 212 491 214 486 223 483 235 488 237 488 242 475 241 469 240 470 239 474 226 470 225 472 222 482 217 483 216 482 218 478 219 478 218 476 219 476 218 476 219 474 221 474 221 475 220 470 219 469 217 471 210 472 208 468 192 463 189 457 186 456 184 453 137 469 130 472 131 478 133 479 159 470 162 480 154 483 147 489 149 492 156 492 158 499 153 508 153 510 154 511 159 511 169 509 182 509 203 516 205 516ZM472 660 477 663 479 667 484 668 485 670 486 670 486 667 484 665 482 658 478 657 479 653 477 649 474 650 474 646 475 645 479 647 480 645 479 644 483 643 484 639 487 638 487 636 490 635 494 638 497 638 497 635 500 633 501 631 498 629 491 630 490 627 488 627 484 628 480 633 474 631 467 633 463 635 461 641 457 636 457 637 457 636 457 630 460 630 467 625 470 620 470 617 469 614 466 613 462 618 457 616 455 612 455 610 457 610 455 609 456 607 449 602 448 598 451 595 452 591 449 588 447 588 445 586 444 589 435 592 429 595 430 597 435 600 435 602 433 604 434 606 433 607 436 606 437 608 433 608 428 613 427 613 428 614 428 616 426 614 426 613 426 616 425 617 426 620 427 621 426 621 427 628 432 627 432 623 429 622 428 621 435 621 435 624 439 623 439 615 440 615 447 617 450 623 449 625 450 628 449 629 449 632 447 633 451 638 450 639 448 656 445 660 441 661 440 667 442 670 445 672 450 672 452 670 455 674 458 674 461 669 464 667 466 672 470 675 471 671 468 663 466 662 467 657 469 655 470 656 470 658ZM398 430 401 430 400 434 402 434 401 440 403 440 403 442 403 440 409 441 411 443 407 447 412 448 408 459 411 466 414 466 415 467 414 466 415 465 416 464 427 462 430 464 432 464 432 466 431 466 433 466 434 466 433 466 432 464 437 465 435 464 435 462 439 462 438 464 440 464 445 459 438 434 435 429 434 418 432 413 422 412 417 415 409 415 408 414 407 414 396 418 394 420 396 423 395 428ZM695 394 692 399 691 396 689 399 690 401 689 401 689 402 690 403 687 403 686 404 687 405 686 406 687 408 689 408 688 406 690 407 690 409 689 410 690 410 691 415 694 418 690 417 690 419 692 421 689 425 688 425 689 427 687 429 691 436 693 438 695 438 697 441 699 441 701 438 702 437 705 441 713 443 715 440 713 436 717 434 716 431 719 430 717 426 719 423 710 417 710 421 707 416 709 416 709 413 708 411 710 412 709 404 707 404 705 401 706 399 704 398 706 393 703 392 700 397 701 395 700 395 699 394 701 391 701 389 699 389 696 390 693 388 692 388 696 391ZM6 337 7 338 17 341 26 346 27 348 27 352 35 357 41 359 45 359 51 361 54 361 54 353 53 348 48 345 47 339 41 330 39 329 35 332 30 331 28 330 29 326 26 325 23 326 22 333 20 335 16 335 15 332 14 331 11 333 8 333ZM626 706 632 702 633 701 631 700 637 693 637 694 639 694 639 697 650 696 649 695 649 692 647 690 648 690 646 687 647 682 646 678 643 675 640 674 639 671 636 672 635 676 630 676 626 679 625 679 624 682 621 684 618 691 619 695 622 692 623 693 622 697 620 696 620 698 628 699 629 701 624 706ZM681 151 687 157 690 156 691 153 694 153 694 151 698 153 703 150 705 150 704 148 701 150 698 148 695 149 690 147 688 149 675 148 674 145 675 143 676 143 671 142 668 145 668 148 672 150 671 155 670 156 669 155 670 152 665 153 665 154 673 160 676 165 672 166 672 163 670 165 667 166 667 168 664 172 665 174 668 172 670 172 675 171 675 172 677 171 678 170 681 170 682 167 684 169 683 170 686 171 685 172 684 171 683 172 682 174 689 175 690 168 686 169 680 163 679 159 675 158 675 154 676 155 677 152ZM324 623 323 625 321 624 320 625 322 628 326 627 328 630 329 633 327 636 321 637 319 643 317 641 314 642 316 645 315 647 320 647 319 649 326 646 326 644 328 644 328 643 330 640 333 641 334 639 335 639 339 643 339 640 342 639 343 637 345 636 343 634 343 632 341 631 337 634 334 632 330 627 329 624 331 622 338 619 334 618 338 614 336 611 333 613 326 613 324 616 326 619ZM676 585 678 585 677 583 679 581 678 577 681 576 681 574 679 572 677 569 677 568 678 568 677 566 680 566 677 564 677 562 678 561 677 561 672 563 668 567 666 568 664 566 662 568 658 573 658 578 657 579 660 582 667 585 666 589 667 591 670 589 668 585 670 585 670 583 672 584 672 583 673 584 674 583ZM695 183 694 184 696 186 695 190 696 193 695 196 693 197 693 199 691 199 691 201 693 201 691 202 691 203 688 201 688 203 691 205 688 206 687 205 686 202 685 203 685 201 683 201 683 204 680 201 678 203 676 201 677 205 679 205 680 207 680 208 679 208 679 210 677 210 678 211 681 210 679 212 680 213 682 214 687 212 689 209 689 207 691 206 697 209 699 205 704 204 708 198 711 197 708 193 705 193 705 192 706 191 702 186ZM344 581 344 583 348 586 350 585 353 579 349 572 350 567 350 563 346 561 342 562 328 561 328 563 326 564 327 567 334 567 337 574 339 573 342 574 341 576ZM713 464 718 466 719 466 719 464 720 466 720 463 723 463 723 458 723 454 719 452 717 445 712 443 705 445 703 449 706 454 706 457 709 458 707 460 709 465 711 465ZM753 247 756 249 758 260 763 258 761 259 759 266 761 269 764 269 766 266 766 260 770 258 770 253 766 249 767 245 767 242 761 239 758 241 757 244ZM499 596 499 599 501 602 503 603 502 601 502 598 499 596 501 593 504 592 501 592 502 588 499 584 499 580 497 579 492 581 486 579 480 581 479 582 484 585 485 588 490 589 493 594ZM854 145 853 145 847 148 845 152 847 153 847 160 850 163 852 163 858 166 866 166 868 163 868 161 864 160 861 161 854 156 853 149ZM163 695 160 698 159 700 165 705 167 704 168 701 175 702 177 700 181 701 180 696 177 696 178 691 183 690 183 689 180 687 179 687 175 686 173 687 172 690 174 692 172 695 170 695 169 697 166 695ZM611 674 612 673 612 670 618 671 619 673 625 668 627 663 625 658 610 660 610 663 609 668 610 670 611 671ZM282 650 281 652 280 650 280 648 281 647 281 645 279 644 279 642 275 641 269 647 268 652 272 656 275 656 278 660 284 656 284 652ZM666 414 668 409 671 412 673 414 674 421 678 422 677 427 678 428 680 426 678 414 680 412 680 409 677 408 678 407 675 404 676 402 674 400 674 399 676 398 676 396 675 396 672 397 670 405 667 407 666 407 668 409 665 413ZM96 212 98 210 97 203 91 198 87 198 87 197 84 195 85 194 84 195 82 192 81 193 80 196 82 201 90 209ZM345 520 351 515 348 514 341 515 337 518 339 524 341 525 340 527 341 529 345 531 351 529 353 525 351 524 352 521 350 521 347 521 346 524 345 524 343 521ZM378 438 377 437 376 437 375 433 373 434 372 433 372 430 376 428 374 427 376 425 376 424 372 425 370 424 365 424 365 426 366 428 366 431 362 434 367 435 365 436 365 439 367 440 368 442 371 443 371 441ZM708 187 710 185 709 176 711 172 711 170 709 170 709 167 707 168 708 175 703 180 702 179 699 172 695 170 693 174 694 179 698 181 703 185 707 185ZM776 487 772 483 772 482 774 481 772 477 768 474 770 473 763 474 763 480 765 482 764 483 766 485 768 486 768 487 769 487 768 492 771 493 771 491 770 490 771 490 771 488 773 487ZM111 559 112 557 109 557 103 559 97 565 99 569 105 567 104 566 105 565 110 568 112 567 113 565 111 562 113 560ZM178 672 178 674 180 672 181 675 182 675 183 671 185 672 185 674 188 672 186 672 187 670 183 669 181 666 177 667 174 663 169 661 168 665 169 668 168 673 172 672 173 670 175 669 178 670ZM745 482 746 482 748 479 750 480 751 478 753 478 753 471 755 470 755 469 757 469 758 466 755 465 752 469 749 467 747 469 745 472 745 475 743 477 744 481 746 485 747 483ZM771 451 772 449 770 447 769 447 767 449 766 448 763 448 762 453 763 456 762 459 762 460 763 459 765 459 770 462 769 460 772 459 770 459 769 455 771 454ZM91 221 80 211 76 217 86 226ZM684 471 686 466 682 464 682 462 675 458 674 464 676 468 678 471ZM39 70 42 74 41 74 42 74 42 75 43 76 42 77 43 76 41 78 44 76 49 84 51 83 51 79 52 76 57 73 56 72 49 74 45 70ZM355 563 358 563 363 559 365 555 363 552 357 553 353 556 352 560ZM711 394 710 400 713 403 715 400 715 398 717 399 717 404 718 409 720 410 720 404 722 402 721 398 715 394 714 395 712 393 712 395ZM759 226 760 224 762 225 763 219 767 214 765 214 764 215 761 213 757 215 757 218 755 219ZM669 660 666 658 665 659 665 662 662 662 661 663 660 664 662 665 662 670 668 670 669 667 668 665 669 660 670 661 671 659 670 658ZM138 403 139 402 139 400 140 399 139 396 141 390 138 388 136 389 134 387 132 386 131 390 135 391 137 394 138 397 136 398 135 403ZM684 396 686 395 688 398 689 398 691 394 690 390 687 390 687 389 684 389ZM531 598 534 598 534 596 537 597 539 595 539 593 530 592 529 595ZM749 544 747 543 747 546 743 548 744 550 743 553 743 554 745 555 747 553 747 549 749 548 748 546 750 546ZM75 157 77 155 80 153 82 151 76 151 73 149 72 151 73 151 73 153 74 157ZM393 527 395 527 394 524 395 521 391 522 388 525 388 528ZM748 569 748 566 751 568 752 567 750 564 752 564 751 563 752 563 751 561 751 559 750 558 750 563 746 562 746 567ZM-20 119 -19 120 -13 119 -12 115 -17 114ZM774 454 775 455 774 457 776 458 776 459 777 461 777 462 778 462 780 463 782 462 785 463 784 462 782 461 781 459 778 459 779 458 777 457 777 456 775 455 776 454ZM690 167 695 164 696 162 695 161 693 161 690 163ZM151 438 149 436 145 436 143 433 141 434 142 434 143 436 145 437 147 440 146 441 148 443 149 439ZM270 661 276 662 278 661 274 657 270 661 267 659 266 657 267 660ZM248 462 251 458 248 457 247 455 246 455 246 460 246 461ZM1020 70 1012 79 1012 84 1013 80 1023 70 1013 79 1021 70ZM442 525 440 522 438 522 437 523 436 526 437 527ZM533 624 537 622 536 620 531 619ZM266 454 268 452 270 448 269 445 266 450ZM702 539 704 537 702 534 699 536ZM707 378 704 379 703 384 705 383ZM727 454 730 454 728 450 726 450 726 453ZM88 526 83 527 90 529 91 527ZM80 620 77 619 76 620 77 622 79 623ZM5 527 9 527 13 526 7 525ZM466 611 469 610 468 607 465 608ZM656 387 657 390 658 389 659 391 660 391 661 389ZM626 602 630 602 631 601 631 600 627 600 625 601ZM686 397 683 395 682 396 685 400 686 399ZM689 667 692 662 691 659 690 660 690 663 688 666ZM992 268 992 267 991 264 989 268 990 269ZM25 676 26 673 25 671 23 672 23 673 23 676ZM582 276 582 272 580 273 579 273 579 275ZM630 156 630 155 628 156 630 157 632 157 634 154 632 154ZM665 193 669 192 668 191 665 191 664 190 663 191ZM162 683 158 683 160 685 162 683 163 684 164 682 165 683 163 681ZM143 427 142 429 143 430 146 428 145 427ZM192 671 191 673 193 675 195 674ZM368 520 370 519 370 518 366 517 367 519 366 520ZM688 667 686 668 686 670 687 670 689 668ZM724 247 723 249 724 253 725 249ZM190 706 189 707 190 709 192 707 192 705ZM724 164 724 161 722 160 721 161ZM644 149 644 150 645 148 641 144ZM669 392 670 391 667 389 666 390ZM575 282 579 282 574 280 575 283ZM651 175 653 173 651 172 650 171ZM664 396 663 396 663 398 664 399 666 395ZM277 411 279 410 278 409 275 410ZM745 568 745 566 742 566 742 567ZM618 700 620 700 619 698 617 699 617 700ZM333 517 335 518 336 516 334 516ZM580 308 582 306 582 303ZM323 456 322 452 320 451ZM629 608 629 606 625 607ZM166 680 166 681 168 682 168 680ZM773 441 775 439 774 438 773 439ZM795 358 796 357 796 355 794 356ZM808 293 807 291 806 293 807 294ZM676 402 677 403 679 402 676 401ZM373 447 375 446 372 445ZM631 636 631 634 629 636ZM379 433 380 434 380 432 379 432ZM648 327 649 325 648 324 647 325ZM714 407 714 408 716 408 716 407ZM711 502 710 500 708 501ZM803 414 803 411 802 411ZM785 420 787 421 784 419Z";
+const MAP_HK="M489 146 487 151 489 152 490 154 485 158 485 161 480 162 472 158 467 161 461 161 459 164 455 164 451 166 448 171 444 172 442 176 438 178 435 177 432 173 427 170 418 172 412 168 407 169 403 174 393 178 388 193 375 197 369 201 367 205 365 213 360 216 356 216 340 212 324 210 313 217 306 219 301 217 291 207 285 206 223 259 120 321 120 455 92 540 81 548 52 620 72 666 156 725 190 733 212 716 599 716 624 730 662 716 947 716 947 410 885 264 886 157 858 132 726 124 652 128 601 148 596 158 587 158 586 156 588 152 584 148 580 147 576 141 570 143 567 140 554 141 553 139 551 140 547 140 546 142 542 141 540 143 538 143 536 141 535 143 528 142 528 144 523 141 522 136 514 136 510 133 507 136 505 136 502 133 498 137 496 142 490 143Z";
+const MAP_WATER="M319 409 313 416 313 417 320 410 319 401ZM765 398 771 390 774 390 774 388 776 388 776 386 777 382 774 383 770 388 768 387 768 389 764 393 764 391 762 392 761 388 763 384 762 379 765 377 761 378 759 373 760 376 758 376 760 378 760 383 758 380 757 382 756 381 756 383 747 386 744 385 745 384 741 377 745 376 741 376 740 374 738 376 739 377 740 380 738 380 735 378 735 374 732 373 730 369 731 375 724 370 731 380 729 385 733 389 733 391 734 391 734 394 738 402 741 402 746 409 748 402 753 405 754 411 755 410 758 412 758 411 760 412 762 416 764 417 764 413 766 414 770 414 770 417 775 417 775 414 779 410 779 406 776 404 771 405 768 400 767 401ZM313 398 316 400 320 396 326 399 328 397 329 398 331 397 332 393 331 391 336 390 330 388 329 390 328 388 334 383 335 385 335 383 344 375 345 373 346 372 347 374 346 372 349 371 348 370 351 367 347 370 345 370 341 374 339 373 337 378 336 376 335 376 335 378 333 378 332 380 330 379 331 381 329 377 329 379 327 379 326 381 324 380 321 382 320 381 320 383 318 382 316 384 317 385 315 384 315 385 317 386 316 387 318 388 316 388 318 390 319 392 317 390 315 390 315 391 317 393 314 391 316 393 314 394 318 394 316 395 316 396 314 396 315 398 314 396ZM604 252 606 255 603 252 604 255 600 258 598 265 615 283 623 276 626 278 622 279 624 280 624 281 629 281 631 275 637 270 635 267 634 268 631 268 630 269 630 268 636 259 638 260 642 259 643 256 645 255 645 257 649 258 656 254 659 256 659 253 661 253 660 251 666 248 667 246 666 245 668 244 668 241 671 241 668 237 669 236 667 235 667 237 666 235 665 235 664 242 661 242 661 238 659 237 665 234 664 231 662 231 658 232 656 230 655 233 650 235 647 235 645 233 644 235 641 236 638 238 638 243 635 244 634 242 634 240 618 236 614 232 610 231 608 223 606 221 608 236 610 237 610 241 609 242 609 245 604 250 604 251 605 253ZM150 602 156 595 156 592 158 591 160 586 162 590 164 591 163 593 166 597 164 599 164 603 162 605 163 607 158 607 150 603 149 602Z";
+const MAP_TREES=[[467,439],[142,581],[536,154],[472,279],[750,348],[563,375],[232,537],[250,345],[755,308],[395,378],[439,179],[275,522],[291,590],[218,531],[563,606],[219,330],[575,195],[622,338],[584,467],[715,341],[135,548],[493,251],[689,403],[458,628],[239,366],[623,402],[338,571],[626,374],[627,493],[676,234],[488,222],[703,222],[305,317],[613,551],[499,136],[341,337],[576,235],[542,407],[567,400],[545,356],[302,390],[489,301],[232,472],[678,304],[154,537],[398,356],[536,211],[557,413],[476,556],[354,386],[524,365],[223,379],[725,351],[626,351],[600,407],[368,387],[635,476],[540,342],[291,349],[398,176],[598,553],[204,389],[212,402],[389,283],[315,528],[201,550],[447,392],[603,186],[535,191],[584,359],[760,423],[766,476],[593,481],[304,362],[621,178],[547,161],[556,480],[396,393],[250,316],[442,267],[789,330],[445,330],[677,290],[283,326],[416,341],[219,553],[550,443],[644,260],[258,556],[415,313]];
 function buildMapSVG(){
-  const L={
-   main:"M0 0H1000V110C965 140 930 175 948 225C968 295 905 338 860 330C820 322 800 362 760 352C722 346 700 330 662 340C625 350 602 378 580 372C562 398 540 418 505 420C472 421 448 402 436 372C404 362 382 380 344 362C302 342 262 352 222 332C172 310 124 330 82 302C44 282 22 300 0 290Z",
-   hki:"M388 472C398 446 448 440 500 446C560 440 620 444 662 456C702 462 732 482 722 520C736 560 702 592 662 582C622 600 582 576 542 592C502 602 452 592 420 572C388 552 374 502 388 472Z",
-   lantau:"M58 472C68 422 140 402 200 412C262 406 322 420 342 452C352 482 322 512 282 522C242 546 182 552 130 542C80 537 48 512 58 472Z",
-   lamma:"M425 618C430 600 457 602 462 624C472 650 462 678 445 677C428 672 418 645 425 618Z"};
-  const hills=[[300,215],[380,185],[660,205],[730,150],[860,175],[240,465],[530,520],[610,528],[150,120],[470,140],[920,80]];
-  const trees=[];for(let i=0;i<46;i++){const r=Math.sin(i*12.9898)*43758.5453;const f=r-Math.floor(r);const g=Math.sin(i*78.233)*12345.678;const f2=g-Math.floor(g);
-    const p=[[60+f*880,40+f2*200],[100+f*220,430+f2*80],[420+f*280,480+f2*80]][i%3];trees.push(p)}
-  let sky="";
-  // north shore HK island and Kowloon skylines
-  const sk=(x0,x1,base,seed)=>{let s="",x=x0,i=seed;while(x<x1){const w=9+(i*7)%7,h=14+((i*37)%30);s+=`<rect x="${x}" y="${base-h}" width="${w}" height="${h}" rx="1.5" fill="${i%3?"var(--m-bld)":"var(--m-bld2)"}"/>`;
-      for(let y=base-h+4;y<base-4;y+=6)s+=`<rect x="${x+2}" y="${y}" width="${w-4}" height="2" fill="var(--m-win)"/>`;x+=w+2;i++}return s};
-  sky+=sk(430,640,478,3)+sk(452,560,416,11);
+  /* [x, y, size] at real peaks: Tai Mo Shan, Tai Lam, Kai Kung Leng, Castle Peak, Robin's Nest, Pat Sin Leng, Ma On Shan, Sharp Peak, Kowloon Peak, Lantau Peak, Sunset Peak, Mount Parker */
+  const hills=[[453,338,34],[356,352,24],[396,268,22],[239,368,22],[539,158,18],[585,226,26],[618,340,24],[774,326,18],[592,446,14],[187,566,24],[232,556,20],[579,566,12]];
+  const sk=(x0,x1,base,seed)=>{let s="",x=x0,i=seed;while(x<x1){const w=6+(i*7)%5,h=8+((i*37)%18);s+=`<rect x="${x}" y="${base-h}" width="${w}" height="${h}" rx="1" fill="${i%3?"var(--m-bld)":"var(--m-bld2)"}"/>`;
+      for(let y=base-h+3;y<base-3;y+=4)s+=`<rect x="${x+1.5}" y="${y}" width="${w-3}" height="1.5" fill="var(--m-win)"/>`;x+=w+1;i++}return s};
+  const sky=sk(500,532,498,3)+sk(498,532,476,7)+sk(502,542,452,11)+sk(556,580,470,41)+sk(488,590,538,5)+sk(528,556,396,13)+sk(432,458,428,17)+sk(250,272,392,19)+sk(318,345,306,23)+sk(505,528,302,29)+sk(205,226,524,31);
+  const place=(x,y,t,water)=>`<text x="${x}" y="${y}" text-anchor="middle" font-family="Baloo 2,sans-serif" font-size="${water?12:13}" font-weight="700" letter-spacing="${water?1.5:1}" fill="var(--m-label)" opacity=".55"${water?' font-style="italic"':""}>${t}</text>`;
   return `
-  <rect y="0" width="1000" height="700" fill="var(--m-sea)"/>
+  <defs><path id="mland" d="${MAP_LAND}"/><clipPath id="mclip"><use href="#mland"/></clipPath></defs>
+  <rect y="0" width="1000" height="800" fill="var(--m-sea)"/>
   <g stroke="var(--m-wave)" stroke-width="3" fill="none" stroke-linecap="round">
-   ${[[90,600],[250,620],[600,640],[820,600],[880,480],[380,660],[700,420],[160,380],[560,670],[930,650]].map(([x,y])=>`<path d="M${x} ${y}q8-6 16 0t16 0"/>`).join("")}
+   ${[[70,610],[120,330],[300,690],[560,680],[820,620],[900,500],[880,300],[760,660],[840,420],[60,450]].map(([x,y])=>`<path d="M${x} ${y}q8-6 16 0t16 0"/>`).join("")}
   </g>
-  <g fill="var(--m-shadow)" transform="translate(0 8)"><path d="${L.main}"/><path d="${L.hki}"/><path d="${L.lantau}"/><path d="${L.lamma}"/><ellipse cx="295" cy="588" rx="18" ry="9"/><ellipse cx="772" cy="565" rx="16" ry="11"/></g>
-  <g fill="var(--m-land)"><path d="${L.main}"/><path d="${L.hki}"/><path d="${L.lantau}"/><path d="${L.lamma}"/><ellipse cx="295" cy="588" rx="18" ry="9"/><ellipse cx="772" cy="565" rx="16" ry="11"/>
-   <rect x="100" y="378" width="120" height="24" rx="10"/></g>
-  <path d="M112 390h96" stroke="var(--m-route)" stroke-width="2" stroke-dasharray="8 6"/>
-  <g>${hills.map(([x,y],i)=>`<path d="M${x-44} ${y+22}Q${x-12} ${y-38} ${x} ${y-36}Q${x+14} ${y-38} ${x+44} ${y+22}Z" fill="${i%2?"var(--m-hill)":"var(--m-hill2)"}"/>`).join("")}</g>
-  <g fill="var(--m-tree)">${trees.map(([x,y])=>`<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="6"/>`).join("")}</g>
+  <use href="#mland" fill="var(--m-shadow)" transform="translate(0 4)"/>
+  <use href="#mland" fill="var(--m-land)"/>
+  <path clip-path="url(#mclip)" fill-rule="evenodd" fill="var(--m-far)" d="M-40 60H1040V740H-40Z${MAP_HK}"/>
+  <path clip-path="url(#mclip)" fill="none" stroke="var(--m-label)" stroke-opacity=".4" stroke-width="1.5" stroke-dasharray="5 4" d="${MAP_HK}"/>
+  <path d="${MAP_WATER}" fill="var(--m-sea)"/>
+  <g>${hills.map(([x,y,r],i)=>`<path d="M${x-r} ${y+r*.5}Q${x-r*.3} ${y-r*.85} ${x} ${y-r*.8}Q${x+r*.3} ${y-r*.85} ${x+r} ${y+r*.5}Z" fill="${i%2?"var(--m-hill)":"var(--m-hill2)"}"/>`).join("")}</g>
+  <g fill="var(--m-tree)">${MAP_TREES.map(([x,y])=>`<circle cx="${x}" cy="${y}" r="4"/>`).join("")}</g>
+  <g stroke="var(--m-route)" stroke-width="3" stroke-linecap="round"><path d="M139 476L204 456"/><path d="M143 490L208 470"/></g>
   <g stroke="var(--m-route)" stroke-width="2.5" fill="none" stroke-dasharray="2 7" stroke-linecap="round">
-   <path d="M492 448L512 422"/><path d="M462 452C420 470 396 560 436 612"/><path d="M455 452C400 446 352 462 330 488"/>
-   <path d="M640 520q20-16 34-2t26 4"/>
+   <path d="M498 519L512 511"/><path d="M492 522Q400 535 289 552"/><path d="M490 525Q390 560 329 629"/><path d="M490 524Q415 545 437 607"/>
   </g>
   ${sky}
-  <g class="neon-glow"><circle cx="470" cy="300" r="40" fill="#FF6FA0" opacity=".22"/><circle cx="505" cy="400" r="34" fill="#F7C75E" opacity=".2"/><circle cx="530" cy="460" r="56" fill="#F7C75E" opacity=".16"/></g>
-  <g class="cloud" fill="#fff" opacity=".85"><path d="M120 200a18 18 0 0 1 34-6 14 14 0 0 1 22 12h-62a12 12 0 0 1 6-6z"/><path d="M720 610a18 18 0 0 1 34-6 14 14 0 0 1 22 12h-62a12 12 0 0 1 6-6z"/></g>
-  <g><path d="M598 422h22l-4 6h-14z" fill="#2F8F5B"/><rect x="603" y="416" width="12" height="6" rx="1" fill="#fff"/>
-     <path d="M330 610h18l-3 5h-12z" fill="#E2457A"/><path d="M339 610v-10l7 8z" fill="#fff"/></g>
-  <rect width="1000" height="700" fill="var(--m-tint)" pointer-events="none"/>`;
+  ${place(420,128,"SHENZHEN")}${place(432,240,"NEW TERRITORIES")}${place(230,235,"Deep Bay",1)}${place(850,210,"Mirs Bay",1)}${place(850,660,"South China Sea",1)}
+  <g class="neon-glow"><circle cx="507" cy="471" r="30" fill="#FF6FA0" opacity=".22"/><circle cx="516" cy="505" r="26" fill="#F7C75E" opacity=".2"/><circle cx="530" cy="530" r="44" fill="#F7C75E" opacity=".16"/></g>
+  <g class="cloud" fill="#fff" opacity=".85"><path d="M850 540a18 18 0 0 1 34-6 14 14 0 0 1 22 12h-62a12 12 0 0 1 6-6z"/><path d="M90 400a18 18 0 0 1 34-6 14 14 0 0 1 22 12h-62a12 12 0 0 1 6-6z"/></g>
+  <g><path d="M541 514h14l-3 4h-9z" fill="#2F8F5B"/><rect x="544" y="510" width="8" height="4" rx="1" fill="#fff"/>
+     <path d="M720 640h18l-3 5h-12z" fill="#E2457A"/><path d="M729 640v-10l7 8z" fill="#fff"/></g>
+  <g>${AREAS.filter(a=>a.px).map(a=>`<path d="M${a.x} ${a.y}L${a.px} ${a.py}" stroke="var(--m-label)" stroke-width="1.5" stroke-dasharray="1 4" stroke-linecap="round"/><circle cx="${a.px}" cy="${a.py}" r="4" fill="var(--m-labelbg)" stroke="var(--m-label)" stroke-width="1.5"/>`).join("")}</g>
+  <rect y="0" width="1000" height="800" fill="var(--m-tint)" pointer-events="none"/>`;
 }
 let hoverT=null,openId=null,pinned=false;
 function matchCount(a){return a.spots.filter(sp=>spotMatch(sp)).length}
@@ -674,6 +694,7 @@ function spotMatch(sp){return !S.filters.length||sp.tags.some(t=>S.filters.inclu
 function renderFilters(){
   const f=$("#filters");
   let h="";
+  $("#filterBtn").textContent=S.filters.length?`Filter (${S.filters.length})`:"Filter";
   if(S.quiz){h+=`<span class="forme">For a <b>${esc(PERSONA[S.quiz.tags[0]][0])}</b>:</span>`}
   h+=Object.entries(TAGS).map(([k,v])=>`<button type="button" class="chip" data-tag="${k}" aria-pressed="${S.filters.includes(k)}">${v}</button>`).join("");
   if(S.filters.length)h+=`<button type="button" class="chip link" data-tag="__clear">Show everything</button>`;
@@ -684,7 +705,7 @@ function renderHots(){
   $("#hots").innerHTML=AREAS.map(a=>{const m=matchCount(a);const d=new Set(S.checkins.filter(c=>AREA[c.area]===a).map(c=>c.spot)).size;
     return `<button type="button" class="hot${S.filters.length&&!m?" dim":""}${openId===a.id?" on":""}" data-area="${a.id}" style="left:${a.x/10}%;top:${(a.y-100)/6}%" aria-label="${esc(a.name)}: ${m} recommendations">
     <span class="badge" style="position:relative"><svg><use href="#${a.icon}"/></svg>${d?`<span class="count done">${d}✓</span>`:(S.filters.length&&m?`<span class="count">${m}</span>`:"")}</span>
-    <span class="lbl">${esc(a.name)}</span></button>`}).join("");
+    <span class="lbl">${esc(a.short||a.name)}</span></button>`}).join("");
 }
 function renderPins(){
   const by={};S.checkins.forEach(c=>{(by[c.area]=by[c.area]||[]).push(c)});
@@ -692,22 +713,21 @@ function renderPins(){
     h+=`<button type="button" class="pol" data-ck="${c.id}" style="left:calc(${a.x/10}% + ${18+i*16}px);top:calc(${(a.y-100)/6}% - ${54-i*4}px);transform:rotate(${-8+i*9}deg)" aria-label="Photo at ${esc(SPOTS[c.spot].name)}"><img src="${c.img}" alt=""></button>`})});
   $("#pins").innerHTML=h;
 }
-function placeMe(id){const a=AREA[id]||AREA.tst;const m=$("#meOnMap");m.style.left=`calc(${a.x/10}% - 46px)`;m.style.top=`calc(${(a.y-100)/6}% + 34px)`;}
+function placeMe(id){const a=AREA[id]||AREA.tst;const m=$("#meOnMap");m.style.left=`calc(${a.x/10}% + 46px)`;m.style.top=`calc(${(a.y-100)/6}% + 34px)`;}
 function renderPop(id){
   const a=AREA[id],p=$("#pop");
   const done=new Set(S.checkins.filter(c=>c.area===id).map(c=>c.spot));
   let h=`<button type="button" class="x" data-close aria-label="Close">×</button>
-  <div class="pop-h"><svg><use href="#${a.icon}"/></svg><div><h3>${esc(a.name)}</h3><div class="zh">${a.zh}</div></div></div>
+  <div class="pop-h"><svg><use href="#${a.icon}"/></svg><div><h3>${esc(a.name)}</h3></div></div>
   <p class="blurb">${esc(a.blurb)}</p><div class="prog">${done.size} of ${a.spots.length} stamped</div>`;
-  for(const [k,[en,zh]] of Object.entries(TYPES)){
+  for(const [k,en] of Object.entries(TYPES)){
     const list=a.spots.filter(s=>s.type===k);if(!list.length)continue;
     list.sort((x,y)=>spotMatch(y)-spotMatch(x));
-    h+=`<div class="grp"><h4><span class="zh">${zh}</span>${en}</h4>`;
+    h+=`<div class="grp"><h4>${en}</h4>`;
     h+=list.map(sp=>{const c=doneFor(sp.id).slice(-1)[0];
       return `<div class="spot${spotMatch(sp)?"":" dim"}"><div class="n">${esc(sp.name)}</div><div class="d">${esc(sp.note)}</div>
-      <div class="tags">${sp.tags.map(t=>`<span class="${S.filters.includes(t)?"hit":""}">${TAGS[t]}</span>`).join("")}</div>
       <div class="act">${c?`<button type="button" class="dkd" data-ck="${c.id}" aria-label="Open your photo"><img src="${c.img}" alt="">${c.mood?`<i>${MOOD[c.mood].e}</i>`:""}</button>`
-        :`<button type="button" class="dk" data-spot="${sp.id}"><span class="zh">打卡</span>check in</button>`}</div></div>`}).join("");
+        :`<button type="button" class="dk" data-spot="${sp.id}">Check in</button>`}</div></div>`}).join("");
     h+=`</div>`;
   }
   p.innerHTML=h;p.hidden=false;
@@ -731,7 +751,6 @@ function renderMap(){
   $("#meOnMap").innerHTML=avatarSVG(S.avatar);placeMe(S.here);
   const n=new Set(S.checkins.map(c=>c.spot)).size;
   $("#mapProg").textContent=`${n} of ${TOTAL} spots stamped`;
-  if(matchMedia("(hover: none)").matches)$("#mapHint").textContent="Tap a place to see what people recommend there.";
   if(openId)renderPop(openId);
   const sc=$("#mapscroll");if(sc.scrollWidth>sc.clientWidth&&!sc.dataset.c){sc.dataset.c=1;sc.scrollLeft=(sc.scrollWidth-sc.clientWidth)/2}
 }
@@ -748,43 +767,171 @@ $("#pop").addEventListener("click",e=>{
 $("#pins").addEventListener("click",e=>{const k=e.target.closest("[data-ck]");if(k)openLB(k.dataset.ck)});
 $("#filters").addEventListener("click",e=>{const b=e.target.closest("[data-tag]");if(!b)return;const t=b.dataset.tag;
   if(t==="__clear")S.filters=[];else S.filters=S.filters.includes(t)?S.filters.filter(x=>x!==t):[...S.filters,t];save();renderMap()});
+$("#filterBtn").addEventListener("click",()=>{const f=$("#filters");f.hidden=!f.hidden;$("#filterBtn").setAttribute("aria-expanded",String(!f.hidden));if(openId)renderPop(openId)});
 document.querySelectorAll(".tod button").forEach(b=>b.addEventListener("click",()=>setTod(b.dataset.tod)));
 addEventListener("resize",()=>{if(openId&&!$("#v-map").hidden)renderPop(openId)});
 
 /* ================= WALL ================= */
-const LOCKED=[["Taipei","台北"],["Kyoto","京都"],["Seoul","서울"],["Lisbon","Lisboa"],["Hanoi","Hà Nội"],["Mexico City","CDMX"]];
-function renderWall(){
+/* Each background is a colour the place is known for. fg is the text on it, ink is the drawing on the stamp. */
+const CITIES=[
+ {id:"hk",en:"Hong Kong",bg:"#C4202E",open:true},                /* regional flag and the red taxis */
+ {id:"taipei",en:"Taipei",bg:"#0E7472"},                         /* the blue-green glass of Taipei 101 */
+ {id:"hanoi",en:"Hanoi",bg:"#8F5E0D"},                           /* the ochre walls of the Old Quarter */
+ {id:"kyoto",en:"Kyoto",bg:"#587428"},                           /* Uji matcha */
+ {id:"seoul",en:"Seoul",bg:"#1B3A7A"},                           /* the deep blue of hanbok and the Korean flag */
+ {id:"lisbon",en:"Lisbon",bg:"#F4BE1C",fg:"#1F2A44",ink:"#1F2A44"}, /* the yellow Tram 28 */
+ {id:"cdmx",en:"Mexico City",bg:"#CE1270"}                       /* rosa mexicano */
+];
+const CITY_ART={
+ taipei:`<rect x="97" y="22" width="6" height="38"/>${[...Array(8)].map((_,i)=>`<path d="M84 ${76+i*18}H116L124 ${60+i*18}H76Z"/>`).join("")}<rect x="72" y="204" width="56" height="12"/>`,
+ kyoto:`<path d="M36 62Q100 84 164 62L158 82Q100 98 42 82Z"/><rect x="62" y="92" width="12" height="120"/><rect x="126" y="92" width="12" height="120"/><rect x="52" y="112" width="96" height="9"/><rect x="94" y="96" width="12" height="18"/><rect x="30" y="210" width="140" height="4"/>`,
+ seoul:`<path d="M0 216Q40 150 100 128Q160 150 200 216Z"/><rect x="97" y="40" width="6" height="92"/><rect x="84" y="84" width="32" height="20" rx="6"/><rect x="90" y="76" width="20" height="8" rx="3"/>`,
+ lisbon:`<path d="M0 60L200 72" stroke="currentColor" stroke-width="2"/><path d="M100 108L132 68" stroke="currentColor" stroke-width="3"/><rect x="52" y="106" width="96" height="10" rx="4"/><rect x="40" y="116" width="120" height="68" rx="10"/><g fill="#FFFBF2"><rect x="52" y="128" width="22" height="24" rx="3"/><rect x="80" y="128" width="18" height="24" rx="3"/><rect x="104" y="128" width="18" height="24" rx="3"/><rect x="128" y="128" width="20" height="24" rx="3"/></g><circle cx="72" cy="192" r="11"/><circle cx="128" cy="192" r="11"/><rect x="20" y="202" width="160" height="4"/>`,
+ hanoi:`${[-60,-30,30,60,0].map(a=>`<path d="M100 200C72 168 76 130 100 100C124 130 128 168 100 200Z" transform="rotate(${a} 100 200)" opacity=".78"/>`).join("")}<path d="M34 214q11-7 22 0t22 0 22 0 22 0 22 0 22 0" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>`,
+ cdmx:`<circle cx="100" cy="34" r="6"/><path d="M96 40h8l3 22h-14z"/><path d="M96 44L70 28L84 52Z"/><path d="M104 44L130 28L116 52Z"/><rect x="86" y="62" width="28" height="8"/><rect x="92" y="70" width="16" height="112"/><rect x="76" y="182" width="48" height="14"/><rect x="64" y="196" width="72" height="18"/>`
+};
+function cityArt(c){
+  if(c.open)return hkStampArt();
+  return `<svg viewBox="0 0 200 250" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%;display:block;color:${c.ink||c.bg}" aria-hidden="true">
+  <rect width="200" height="250" fill="${c.bg}" opacity=".14"/><circle cx="150" cy="66" r="26" fill="${c.bg}" opacity=".45"/><g fill="${c.ink||c.bg}">${CITY_ART[c.id]}</g></svg>`;
+}
+function stampOverlay(c){
+  const ink=c.open?"#1F2A44":(c.ink||c.bg);
+  return `${c.open?`<span class="stamp-val" style="left:10px;top:10px;font-size:34px;color:${ink}">$5</span>`:""}
+  <span class="stamp-val" style="left:10px;bottom:10px;font-size:15px;letter-spacing:.14em;color:${c.open?"#FFFBF2":ink}">${c.en.toUpperCase()}</span>`;
+}
+
+/* ---------- carousel: pos is a float, 0 is the first stamp, and it never wraps. Only the drawing wraps. ---------- */
+const N=CITIES.length;
+const CAR={pos:0,target:0,cur:-1,raf:0,drag:null,v:0,step:400,slides:null,tilted:null,justDragged:false};
+const reduced=()=>matchMedia("(prefers-reduced-motion: reduce)").matches;
+const offsetFrom=o=>((o+N/2)%N+N)%N-N/2; /* shortest way round the loop, between -N/2 and N/2 */
+
+/* Where to land when a drag ends. A flick coasts on, but never more than one extra stamp,
+   so a hard swipe can't fly past Hong Kong, the only open city. Velocity is stamps per ms. */
+function snapTarget(pos,velocity){
+  const coast=Math.max(-1,Math.min(1,velocity*180));
+  return Math.round(pos+coast);
+}
+
+function paintStage(){
+  CAR.slides.forEach((el,i)=>{
+    const o=offsetFrom(i-CAR.pos),a=Math.abs(o);
+    el.style.visibility=a>2.4?"hidden":"visible";
+    el.style.zIndex=String(10-Math.round(a));
+    el.style.transform=`translate(-50%,-50%) translateX(${(o*CAR.step).toFixed(1)}px) rotate(${(o*1.5).toFixed(2)}deg) scale(${(1-.16*Math.min(a,1)).toFixed(3)})`;
+  });
+  setCurrent();
+}
+function stageLine(c){
+  if(!c.open)return "Next trip?";
+  const n=new Set(S.checkins.map(x=>x.spot)).size;
+  return n?`${n} of ${TOTAL} spots stamped`:"Tap the stamp to start";
+}
+function setCurrent(force){
+  const i=((Math.round(CAR.pos)%N)+N)%N;
+  if(i===CAR.cur&&!force)return;
+  const changed=i!==CAR.cur;CAR.cur=i;
+  const c=CITIES[i],name=$("#stName");
+  $("#v-wall").style.backgroundColor=c.bg;
+  document.body.style.setProperty("--stage-fg",c.fg||"#F6F0DF");
+  name.textContent=c.en;name.style.setProperty("--len",c.en.length);
+  $("#stLine").textContent=stageLine(c);
+  CAR.slides.forEach((el,k)=>{el.classList.toggle("is-center",k===i);el.tabIndex=k===i?0:-1});
+  if(changed&&!reduced())name.animate([{opacity:0,transform:"translateY(.14em)"},{opacity:1,transform:"none"}],{duration:320,easing:"ease-out"});
+}
+function tickStage(){
+  CAR.raf=0;if(CAR.drag)return;
+  const d=CAR.target-CAR.pos;
+  if(Math.abs(d)<.002||reduced())CAR.pos=CAR.target;
+  else{CAR.pos+=d*.16;CAR.raf=requestAnimationFrame(tickStage)}
+  paintStage();
+}
+function goTo(t){CAR.target=t;if(!CAR.raf)CAR.raf=requestAnimationFrame(tickStage)}
+function layoutStage(){
+  const w=CAR.slides[0].offsetWidth;if(!w)return;
+  CAR.step=w*(innerWidth<720?.98:1.12);paintStage();
+}
+function buildStage(){
+  if(CAR.slides)return;
+  $("#track").innerHTML=CITIES.map((c,i)=>`<button type="button" class="slide" data-i="${i}" tabindex="-1" aria-label="${c.open?"Open "+c.en:c.en+", not open yet"}"><div class="tilt"><div class="stamp"><div class="stamp-face">${cityArt(c)}${stampOverlay(c)}<i class="shine"></i></div></div></div></button>`).join("");
+  CAR.slides=[...document.querySelectorAll("#track .slide")];
+}
+function openCity(i){
+  const c=CITIES[i],t=CAR.slides[i].querySelector(".tilt");
+  if(!c.open){if(!reduced())t.animate([{rotate:"0deg"},{rotate:"-2.5deg"},{rotate:"2.5deg"},{rotate:"0deg"}],{duration:320});return}
+  if(reduced()){location.hash="map";return}
+  t.classList.add("zoomout");setTimeout(()=>{location.hash="map";t.classList.remove("zoomout")},520);
+}
+function clearTilt(){const t=CAR.tilted;if(!t)return;t.classList.remove("lit");t.style.removeProperty("--rx");t.style.removeProperty("--ry");CAR.tilted=null}
+function tiltAt(e){
+  const t=e.target.closest&&e.target.closest(".slide.is-center .tilt");
+  if(t!==CAR.tilted)clearTilt();
+  if(!t)return;
+  const r=t.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;
+  t.style.setProperty("--ry",((x-.5)*14).toFixed(2)+"deg");t.style.setProperty("--rx",((.5-y)*14).toFixed(2)+"deg");
+  t.style.setProperty("--mx",(x*100).toFixed(1)+"%");t.style.setProperty("--my",(y*100).toFixed(1)+"%");
+  t.classList.add("lit");CAR.tilted=t;
+}
+const stage=$("#v-wall");
+stage.addEventListener("pointerdown",e=>{if(e.button)return;CAR.v=0;CAR.drag={id:e.pointerId,x:e.clientX,pos:CAR.pos,moved:false,lastPos:CAR.pos,lastT:e.timeStamp}});
+stage.addEventListener("pointermove",e=>{
+  const d=CAR.drag;
+  if(!d){if(e.pointerType==="mouse")tiltAt(e);return}
+  const dx=e.clientX-d.x;
+  if(!d.moved){if(Math.abs(dx)<6)return;d.moved=true;stage.setPointerCapture(d.id);stage.classList.add("dragging");clearTilt()}
+  CAR.pos=d.pos-dx/CAR.step;
+  const dt=e.timeStamp-d.lastT;
+  if(dt>0){CAR.v=CAR.v*.6+.4*(CAR.pos-d.lastPos)/dt;d.lastPos=CAR.pos;d.lastT=e.timeStamp}
+  paintStage();
+});
+function endDrag(){
+  const d=CAR.drag;if(!d)return;CAR.drag=null;stage.classList.remove("dragging");
+  if(d.moved){CAR.justDragged=true;setTimeout(()=>{CAR.justDragged=false},0);goTo(snapTarget(CAR.pos,CAR.v))}
+  else goTo(CAR.target);
+}
+stage.addEventListener("pointerup",endDrag);
+stage.addEventListener("pointercancel",endDrag);
+stage.addEventListener("pointerleave",clearTilt);
+$("#track").addEventListener("click",e=>{
+  const s=e.target.closest(".slide");if(!s||CAR.justDragged)return;
+  const i=+s.dataset.i;
+  if(i===CAR.cur)openCity(i);else goTo(CAR.target+offsetFrom(i-CAR.target));
+});
+let wheelSum=0,wheelWait=0;
+stage.addEventListener("wheel",e=>{
+  if(e.timeStamp<wheelWait)return;
+  wheelSum+=Math.abs(e.deltaX)>Math.abs(e.deltaY)?e.deltaX:e.deltaY;
+  if(Math.abs(wheelSum)>40){goTo(Math.round(CAR.target)+Math.sign(wheelSum));wheelSum=0;wheelWait=e.timeStamp+320}
+},{passive:true});
+addEventListener("keydown",e=>{
+  if($("#v-wall").hidden||!(e.key==="ArrowLeft"||e.key==="ArrowRight"))return;
+  e.preventDefault();goTo(Math.round(CAR.target)+(e.key==="ArrowRight"?1:-1));
+});
+addEventListener("resize",()=>{if(!$("#v-wall").hidden)layoutStage()});
+
+function renderWall(){buildStage();layoutStage();setCurrent(true);renderBook()}
+function renderBook(){
   const n=new Set(S.checkins.map(c=>c.spot)).size;
-  $("#wallGrid").innerHTML=`<button type="button" class="city hk" id="hkStamp" aria-label="Open Hong Kong">
-    <div class="stamp"><div class="stamp-face">${hkStampArt()}
-      <span class="stamp-val" style="left:10px;top:10px;font-size:34px;color:#1F2A44">$5</span>
-      <span class="stamp-val zh" style="right:12px;top:12px;font-size:26px;color:#1F2A44;writing-mode:vertical-rl">香港</span>
-      <span class="stamp-val" style="left:10px;bottom:10px;font-size:15px;letter-spacing:.14em;color:#FFFBF2">HONG KONG</span>
-      
-    </div></div>
-    <div class="cap">Hong Kong <span>${n} / ${TOTAL} stamped</span></div></button>`+
-   LOCKED.map(([en,l])=>`<div class="city locked" aria-label="${en}, not yet open"><div class="stamp"><div><div class="hand" style="color:var(--ink-soft)">${l}</div><div style="font-size:13px;margin-top:6px">next trip?</div></div></div><div class="cap">${en} <span>soon</span></div></div>`).join("");
-  $("#hkStamp").addEventListener("click",e=>{const s=e.currentTarget;
-    if(matchMedia("(prefers-reduced-motion: reduce)").matches){location.hash="map";return}
-    s.classList.add("zoomout");setTimeout(()=>{location.hash="map";s.classList.remove("zoomout")},520)});
   const list=[...S.checkins].reverse();
   $("#bookCount").textContent=`${n} of ${TOTAL} spots`;
-  $("#book").innerHTML=list.length?list.map(c=>{const sp=SPOTS[c.spot];return `<button type="button" class="mini" data-ck="${c.id}">
+  $("#bookGrid").className=list.length?"book":"";
+  $("#bookGrid").innerHTML=list.length?list.map(c=>{const sp=SPOTS[c.spot];return `<button type="button" class="mini" data-ck="${c.id}">
      <div class="stamp"><div class="stamp-face"><img src="${c.img}" alt="" class="${c.cover==="toon"?"toon":""}">${postmark(AREA[c.area].name.split(" ")[0],c.t)}</div>${c.mood?`<span class="sticker" title="${MOOD[c.mood].en}">${MOOD[c.mood].e}</span>`:""}</div>
      <div class="name">${esc(sp.name)}</div><div class="meta">${fmtDate(c.t)}${c.note?" · “"+esc(c.note)+"”":""}</div></button>`}).join("")
-   : `<div class="slot"><div><b>Your first stamp lands here.</b><br>Open the Hong Kong map, pick a spot and press 打卡.</div></div><div class="slot"></div><div class="slot"></div>`;
+   : `<div class="empty"><p>Your first stamp lands here.</p><a class="btn" href="#map">Open Hong Kong</a></div>`;
   const counts={};S.checkins.forEach(c=>{if(c.mood)counts[c.mood]=(counts[c.mood]||0)+1});
-  $("#moodSec").hidden=!Object.keys(counts).length;
+  $("#moodStrip").hidden=!Object.keys(counts).length;
   $("#moodStrip").innerHTML=Object.entries(counts).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<span class="m"><i style="background:${MOOD[k].c}">${MOOD[k].e}</i>${MOOD[k].en} ×${v}</span>`).join("");
 }
-$("#book").addEventListener("click",e=>{const k=e.target.closest("[data-ck]");if(k)openLB(k.dataset.ck)});
+$("#bookGrid").addEventListener("click",e=>{const k=e.target.closest("[data-ck]");if(k)openLB(k.dataset.ck)});
 
-/* ================= 打卡 ================= */
+/* ================= CHECK-IN ================= */
 let dk={spot:null,img:null,mood:null,cover:"real"};
-$("#sheet").innerHTML=MOODS.map(m=>`<button type="button" class="mood" data-mood="${m.id}" aria-pressed="false"><i style="background:${m.c}">${m.e}</i>${m.en}<small>${m.zh}</small></button>`).join("");
+$("#sheet").innerHTML=MOODS.map(m=>`<button type="button" class="mood" data-mood="${m.id}" aria-pressed="false"><i style="background:${m.c}">${m.e}</i>${m.en}</button>`).join("");
 function openDaka(id){
   const sp=SPOTS[id];dk={spot:id,img:null,mood:null,cover:"real"};
-  $("#dkArea").textContent=AREA[sp.area].name+" · "+TYPES[sp.type][0];$("#dkTitle").textContent=sp.name;
+  $("#dkArea").textContent=AREA[sp.area].name+" · "+TYPES[sp.type];$("#dkTitle").textContent=sp.name;
   $("#dkPrev").innerHTML=`<b>Drop a photo here</b><br><span>or tap to choose one</span>`;$("#dkFile").value="";$("#dkNote").value="";
   document.querySelectorAll(".mood").forEach(b=>b.setAttribute("aria-pressed","false"));
   document.querySelectorAll("[data-cover]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.cover==="real"));
@@ -836,7 +983,7 @@ function renderQuiz(){
   const body=$("#quizBody");
   if(qStep<QUESTIONS.length){const Q=QUESTIONS[qStep];
     body.innerHTML=`<div class="qcard"><div class="perf">${QUESTIONS.map((_,i)=>`<i class="${i<=qStep?"on":""}"></i>`).join("")}</div>
-     <span class="eyebrow">Question ${qStep+1} of ${QUESTIONS.length}</span><h2>${Q.q}</h2>
+     <h2>${Q.q}</h2>
      <div class="opts">${Q.o.map((o,i)=>`<button type="button" class="opt" data-o="${i}"><b>${o[0]}</b><span>${o[1]}</span>${o[2]?`<small>${o[2]}</small>`:""}</button>`).join("")}</div>
      ${qStep?`<p style="margin:18px 0 0"><button type="button" class="chip link" data-back>Back</button></p>`:""}</div>`;
     return}
@@ -866,6 +1013,7 @@ const OPTS=[
  ["hair","Hair",[["long","Long"],["bob","Bob"],["bangs","Bangs"],["pigtails","Pigtails"],["short","Short"]]],
  ["hairC","Hair colour",["#E3D29A","#2B2320","#6B4430","#C98B4E","#B9A6E0"]],
  ["eyes","Eyes",[["round","Round"],["worried","A bit worried"],["sleepy","Sleepy"]]],
+ ["sparkle","Eye sparkle",[["off","Off"],["on","Sparkly"]]],
  ["glasses","Glasses",[["none","None"],"#E0524F","#2B2420","#4C7FD0"]],
  ["clip","Hair clip",[["none","None"],"#E0524F","#4C7FD0","#F2C14E"]],
  ["top","T-shirt",["#D9473F","#4C7FD0","#F2C14E","#5DAA6E","#FFFDF8"]],
@@ -875,24 +1023,30 @@ const OPTS=[
  ["bag","Carrying",[["backpack","Backpack"],["crossbody","Crossbody"],["camera","Camera"],["none","Nothing"]]],
  ["pose","Pose",[["out","Arms out"],["wave","Waving"],["down","Arms down"]]]
 ];
+let meTab=0;
 function renderMe(){
   $("#meBig").innerHTML=avatarSVG(S.avatar);$("#meName").value=S.avatar.name;
-  $("#meOpts").innerHTML=OPTS.map(([k,l,vals])=>`<div class="optrow"><h3>${l}</h3><div class="sw">${vals.map(v=>Array.isArray(v)
+  const [k,l,vals]=OPTS[meTab];
+  $("#meOpts").innerHTML=`<div class="me-tabs">${OPTS.map(([,t],i)=>`<button type="button" class="chip" data-tab="${i}" aria-pressed="${i===meTab}">${t}</button>`).join("")}</div>
+   <div class="sw">${vals.map(v=>Array.isArray(v)
      ?`<button type="button" class="txt" data-k="${k}" data-v="${v[0]}" aria-pressed="${S.avatar[k]===v[0]}">${v[1]}</button>`
-     :`<button type="button" data-k="${k}" data-v="${v}" style="background:${v}" aria-label="${l} ${v}" aria-pressed="${S.avatar[k]===v}"></button>`).join("")}</div></div>`).join("")+
-   `<div class="optrow"><h3>Travel buddies</h3><p style="margin:0;color:var(--ink-soft);font-size:14px">Friends will appear on the map next to you in a later version.</p>
-    <div class="friends">${[1,2,3].map(()=>avatarSVG({...DEF_AV,top:"#C9CCD6",hair:"short",bag:"none",glasses:"none",clip:"none",pose:"down"})).join("")}</div></div>`;
+     :`<button type="button" data-k="${k}" data-v="${v}" style="background:${v}" aria-label="${l} ${v}" aria-pressed="${S.avatar[k]===v}"></button>`).join("")}</div>
+   <p class="me-quiz"><a class="chip link" href="#quiz">${S.quiz?"You're a "+esc(PERSONA[S.quiz.tags[0]][0]):"What are you into? Take the quiz"}</a></p>`;
 }
-$("#meOpts").addEventListener("click",e=>{const b=e.target.closest("[data-k]");if(!b)return;S.avatar[b.dataset.k]=b.dataset.v;save();renderMe()});
+$("#meOpts").addEventListener("click",e=>{
+  const t=e.target.closest("[data-tab]");if(t){meTab=+t.dataset.tab;renderMe();return}
+  const b=e.target.closest("[data-k]");if(!b)return;S.avatar[b.dataset.k]=b.dataset.v;save();renderMe()});
 $("#meName").addEventListener("input",e=>{S.avatar.name=e.target.value||"Traveller";save()});
 
 /* ================= ROUTER ================= */
-const VIEWS=["wall","map","quiz","me"];
+const VIEWS=["wall","book","map","quiz","me"];
 function route(){
   const v=VIEWS.includes(location.hash.slice(1))?location.hash.slice(1):"wall";
+  document.body.dataset.view=v;
   VIEWS.forEach(x=>$("#v-"+x).hidden=x!==v);
   document.querySelectorAll(".nav a").forEach(a=>{if(a.dataset.v===v)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current")});
   if(v==="wall")renderWall();
+  if(v==="book")renderBook();
   if(v==="map")renderMap();
   if(v==="quiz"){if(S.quiz&&qStep===0&&!qAns.length)showResult();else renderQuiz()}
   if(v==="me")renderMe();

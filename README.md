@@ -1,18 +1,21 @@
-# Stampy 打卡
+# Stampy
 
-A playful, illustrated travel 打卡 site. Pick a city stamp, explore an illustrated map of what people recommend (see / eat / drink / do), take a short quiz to filter it to what you're into, and check spots off with your own photo. Each check-in gets postmarked into your stamp book with a mood sticker.
+A playful, illustrated travel check-in site. Pick a city stamp, explore an illustrated map of what people recommend (see / eat / drink / do), take a short quiz to filter it to what you're into, and check spots off with your own photo. Each check-in gets postmarked into your stamp book with a mood sticker.
 
 First city: **Hong Kong**.
 
 ## What's in v1
 
-- **Stamp wall** (`#wall`): one stamp per city. Hong Kong is open; others are "next trip?" outlines. Your collected stamps and mood stickers live below.
-- **Hong Kong map** (`#map`): an illustrated map with 10 areas and about 50 recommendations. Hover (or tap) an area to see them. Day / golden hour / night switch.
+- **Stamp wall** (`#wall`): a full-screen row of city stamps you drag through. Hong Kong is open; the others say "Next trip?".
+- **My stamps** (`#book`): your collected stamps and mood stickers.
+- **Hong Kong map** (`#map`): an illustrated map of the whole territory, traced from real coastlines, with 16 areas and about 80 recommendations. Hover (or tap) an area to see them. Day / golden hour / night switch, and a Filter button for interests.
 - **Quiz** (`#quiz`): 5 quick questions give you a travel type (for example "Ridge Chaser") and filter the map.
-- **打卡**: upload a photo, optionally pick a mood sticker and a short note. Photos stay as you took them (polaroids on the map, a neutral lightbox). Only the stamp cover can be "cartoon-ified".
+- **Check-ins**: upload a photo, optionally pick a mood sticker and a short note. Photos stay as you took them (polaroids on the map, a neutral lightbox). Only the stamp cover can be "cartoon-ified".
 - **My traveller** (`#me`): a simple avatar that walks around the map.
 
 Everything is one file, `index.html`, with no build step. Check-ins are saved in your browser's local storage, so they stay on your device only.
+
+Map coastline data is simplified from OpenStreetMap, © OpenStreetMap contributors (ODbL).
 
 ## Run it on your computer
 
@@ -40,6 +43,7 @@ You only need a browser.
 
 ## Where things live in `index.html`
 
+- `CITIES` and `CITY_ART`: the stamps on the landing page, their background colours and drawings.
 - `AREAS`: the map areas and their recommendations (type, name, note, tags).
 - `MOODS`: the mood sticker set.
 - `QUESTIONS` and `PERSONA`: the quiz and the travel types.
