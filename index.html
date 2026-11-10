@@ -141,13 +141,21 @@ main{padding-block:28px 64px}
 .neon-glow{opacity:0;filter:blur(14px)}
 .mapwrap[data-tod="night"] .neon-glow{opacity:1}
 .mapwrap[data-tod="night"] .cloud{opacity:0}
-.hot{position:absolute;transform:translate(-50%,-50%);border:0;background:none;padding:0;display:flex;flex-direction:column;align-items:center;gap:4px;z-index:3}
+.hot{position:absolute;transform:translate(-50%,-50%);border:0;background:none;padding:10px;display:flex;flex-direction:column;align-items:center;gap:4px;z-index:3}
+.hot .dot{width:16px;height:16px;border-radius:50%;background:var(--c);box-shadow:0 0 0 3px var(--m-labelbg),0 3px 0 3px rgba(20,30,60,.16);transition:transform .2s}
+.hot .dot.done{box-shadow:0 0 0 3px var(--tram),0 3px 0 3px rgba(20,30,60,.16)}
+#hots .hot .badge,#hots .hot .lbl{display:none}
+.hot:hover,.hot:focus-visible,.hot.on{z-index:5}
+#hots .hot:hover .dot,#hots .hot:focus-visible .dot,#hots .hot.on .dot{display:none}
+#hots .hot:hover .badge,#hots .hot:focus-visible .badge,#hots .hot.on .badge{display:grid;animation:popin .22s cubic-bezier(.3,1.6,.5,1)}
+#hots .hot:hover .lbl,#hots .hot:focus-visible .lbl,#hots .hot.on .lbl{display:block}
+@keyframes popin{from{transform:scale(.3)}}
 .hot .badge{width:58px;height:58px;border-radius:50%;background:var(--m-labelbg);display:grid;place-items:center;box-shadow:0 5px 0 rgba(20,30,60,.18);transition:transform .25s cubic-bezier(.3,1.6,.5,1)}
 .hot .badge svg{width:42px;height:42px}
 .hot .lbl{font-family:var(--f-display);font-weight:700;font-size:13px;color:var(--m-label);background:var(--m-labelbg);padding:1px 9px;border-radius:999px;white-space:nowrap;box-shadow:0 2px 0 rgba(20,30,60,.12)}
 .hot .count{position:absolute;top:-4px;right:-6px;background:var(--neon);color:#fff;font-size:11px;font-weight:800;min-width:22px;height:22px;border-radius:999px;display:grid;place-items:center;padding:0 5px;box-shadow:0 0 0 2px var(--m-labelbg)}
 .hot .done{background:var(--tram)}
-.hot:hover .badge,.hot.on .badge{transform:scale(1.14) rotate(-4deg)}
+.hot.on .badge{transform:rotate(-4deg)}
 .hot.dim{opacity:.45}
 .hot.dim:hover{opacity:1}
 .mapcredit{position:absolute;right:10px;bottom:6px;z-index:3;font-size:10px;font-weight:600;color:var(--m-label);opacity:.6}
@@ -155,7 +163,7 @@ main{padding-block:28px 64px}
 .pol{position:absolute;pointer-events:auto;background:#fff;padding:4px 4px 12px;width:52px;box-shadow:0 4px 10px rgba(0,0,0,.25);border:0;transform-origin:50% 0}
 .pol img{width:44px;height:44px;object-fit:cover;display:block}
 .pol::before{content:"";position:absolute;top:-6px;left:50%;width:10px;height:10px;margin-left:-5px;border-radius:50%;background:var(--neon);box-shadow:inset -2px -2px 0 rgba(0,0,0,.2)}
-.me-on-map{position:absolute;width:50px;height:65px;z-index:4;pointer-events:none;transform:translate(-50%,-100%);transition:left .8s cubic-bezier(.5,0,.3,1),top .8s cubic-bezier(.5,0,.3,1)}
+.me-on-map{position:absolute;width:52px;height:77px;filter:drop-shadow(0 3px 0 rgba(20,30,60,.15));z-index:4;pointer-events:none;transform:translate(-50%,-100%);transition:left .8s cubic-bezier(.5,0,.3,1),top .8s cubic-bezier(.5,0,.3,1)}
 .me-on-map svg{width:100%;height:100%;animation:bob 1.4s ease-in-out infinite}
 @keyframes bob{50%{transform:translateY(-3px)}}
 
@@ -203,7 +211,9 @@ main{padding-block:28px 64px}
 
 /* ---------- me ---------- */
 .me{max-width:520px;margin:0 auto;text-align:center}
-#meBig svg{width:200px;height:260px}
+#meBig svg{width:200px;height:296px}
+.me-feel{margin:6px 0 0;font-size:14px;color:var(--ink-soft)}
+.me-feel b{color:var(--ink)}
 #meName{width:min(280px,100%);text-align:center;font-family:var(--f-hand);font-size:30px;border:0;background:none;padding:2px}
 .me-tabs{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:26px 0 18px}
 .me-row{margin-bottom:16px}
@@ -367,6 +377,7 @@ dialog::backdrop{background:rgba(16,22,40,.55);backdrop-filter:blur(3px)}
     <h1 class="sr">Your traveller</h1>
     <div id="meBig"></div>
     <input id="meName" type="text" maxlength="18" autocomplete="off" aria-label="Your traveller's name">
+    <p id="meFeel" class="me-feel"></p>
     <div id="meOpts"></div>
   </section>
 </main>
@@ -556,7 +567,7 @@ const PERSONA={
 
 /* ================= STATE ================= */
 const KEY="stampy.hk.v1";
-const DEF_AV={skin:"#FBE3CF",hair:"long",hairC:"#E3D29A",eyes:"worried",sparkle:"off",glasses:"#E0524F",clip:"#E0524F",top:"#D9473F",bottom:"shorts",bottomC:"#F6F1E4",shoes:"#D9473F",bag:"backpack",pose:"out",name:"Traveller"};
+const DEF_AV={skin:"#FBE3CF",hair:"long",hairC:"#E3D29A",eyes:"worried",sparkle:"off",react:"on",glasses:"#E0524F",clip:"#E0524F",top:"#D9473F",bottom:"shorts",bottomC:"#F6F1E4",shoes:"#D9473F",bag:"backpack",pose:"out",name:"Traveller"};
 let S={checkins:[],quiz:null,filters:[],avatar:{...DEF_AV},tod:null,here:"tst"};
 try{const r=JSON.parse(localStorage.getItem(KEY)||"null");if(r)S={...S,...r,avatar:{...DEF_AV,name:(r.avatar&&r.avatar.name)||DEF_AV.name,...(r.avatar&&r.avatar.v===2?r.avatar:{}),v:2}}}catch(e){}
 S.avatar.v=2;
@@ -592,9 +603,40 @@ function hkStampArt(){
   <g transform="translate(62 176)"><path d="M0 12h70l-8 12H8z" fill="#2F8F5B"/><rect x="10" y="2" width="50" height="10" rx="2" fill="#FFFBF2"/><path d="M14 6h42" stroke="#2F8F5B" stroke-width="2" stroke-dasharray="4 3"/><rect x="30" y="-6" width="10" height="8" fill="#2F8F5B"/></g>
   </svg>`;
 }
-function avatarSVG(a0,cls=""){
+/* How the traveller looks after each mood sticker. Props float above the head (y < 18). */
+const MOOD_FACE={
+  awe:{eyes:"wide",mouth:"open",brow:"none",prop:"stars"},
+  cosy:{eyes:"happy",mouth:"smile",brow:"none",prop:"steam"},
+  footsore:{eyes:"sleepy",mouth:"flat",brow:"none",prop:"sweat",pose:"down"},
+  buzzing:{eyes:"sparkly",mouth:"open",brow:"none",prop:"bolts",pose:"wave"},
+  curious:{eyes:"side",mouth:"dot",brow:"raised",prop:"qmark"},
+  blue:{eyes:"open",mouth:"flat",brow:"worried",prop:"cloud",pose:"down"},
+  stuffed:{eyes:"happy",mouth:"wavy",brow:"none",prop:"bubbles"},
+  peaceful:{eyes:"happy",mouth:"smile",brow:"none",prop:"flower"},
+  lost:{eyes:"side",mouth:"dot",brow:"worried",prop:"dots"},
+  homesick:{eyes:"open",mouth:"flat",brow:"worried",prop:"house",pose:"down"},
+  nostalgic:{eyes:"sleepy",mouth:"smile",brow:"none",prop:"heart"},
+  overwhelmed:{eyes:"spiral",mouth:"wavy",brow:"none",prop:"swirl"}
+};
+const MOOD_PROP={
+  stars:`<path d="M24 2l1.6 3.6 3.6 1.6-3.6 1.6L24 12.4l-1.6-3.6-3.6-1.6 3.6-1.6zM76 -6l1.2 2.8 2.8 1.2-2.8 1.2L76 2l-1.2-2.8-2.8-1.2 2.8-1.2zM84 10l.9 2 2 .9-2 .9-.9 2-.9-2-2-.9 2-.9z" fill="#F2C14E"/>`,
+  steam:`<path d="M44 6q-3-4 0-8t0-8M50 4q-3-4 0-8t0-8M56 6q-3-4 0-8t0-8" stroke="#B9B2A8" stroke-width="2" fill="none" stroke-linecap="round"/>`,
+  sweat:`<path d="M78 20q4 6 1.6 8.6-3.4 2.4-5-1.2Q74 24 78 20z" fill="#8CC9E8"/>`,
+  bolts:`<path d="M22 -2l-5 9h5l-3 8 8-11h-5l3-6zM80 -6l-4 7h4l-2.4 6.4 6.4-8.8h-4l2.4-4.6z" fill="#F2C14E"/>`,
+  qmark:`<text x="70" y="10" font-family="Baloo 2,system-ui,sans-serif" font-weight="800" font-size="20" fill="#4C7FD0">?</text>`,
+  cloud:`<g><path d="M34 2a7 7 0 0 1 13-3 6 6 0 0 1 11 2 5 5 0 0 1 2 10H36a5 5 0 0 1-2-9z" fill="#B7C3D6"/><path d="M40 14l-1.4 4M48 14l-1.4 4M56 14l-1.4 4" stroke="#7FA6D6" stroke-width="1.8" stroke-linecap="round"/></g>`,
+  bubbles:`<circle cx="70" cy="8" r="3" fill="none" stroke="#B9B2A8" stroke-width="1.4"/><circle cx="76" cy="0" r="4.2" fill="none" stroke="#B9B2A8" stroke-width="1.4"/><circle cx="84" cy="-8" r="2.2" fill="none" stroke="#B9B2A8" stroke-width="1.4"/>`,
+  flower:`<g transform="translate(76 4)"><circle r="3" cy="-4.5" fill="#F4A9C0"/><circle r="3" cx="4.3" cy="-1.4" fill="#F4A9C0"/><circle r="3" cx="2.6" cy="3.6" fill="#F4A9C0"/><circle r="3" cx="-2.6" cy="3.6" fill="#F4A9C0"/><circle r="3" cx="-4.3" cy="-1.4" fill="#F4A9C0"/><circle r="2.2" fill="#F2C14E"/></g>`,
+  dots:`<circle cx="66" cy="8" r="2" fill="#8A8F9C"/><circle cx="73" cy="6" r="2" fill="#8A8F9C"/><circle cx="80" cy="4" r="2" fill="#8A8F9C"/>`,
+  house:`<g transform="translate(78 0)"><circle r="12" fill="#fff" opacity=".9"/><circle cx="-12" cy="12" r="2.4" fill="#fff" opacity=".9"/><path d="M-6 1L0-5 6 1V7H-6Z" fill="#E0524F"/><rect x="-1.6" y="2" width="3.2" height="5" fill="#fff"/></g>`,
+  heart:`<path d="M76 10c-6-4-8-8-5-11 2-2 4-1 5 1 1-2 3-3 5-1 3 3 1 7-5 11z" fill="#F08C8C"/>`,
+  swirl:`<path d="M50 4m-1 0a1 1 0 1 1 2 0a3 3 0 1 1-6 0a5 5 0 1 1 10 0a7 7 0 1 1-14 0" stroke="#9C8BD9" stroke-width="1.8" fill="none"/>`
+};
+function currentMood(){if(S.avatar.react==="off")return null;const c=[...S.checkins].reverse().find(c=>c.mood);return c||null}
+function avatarSVG(a0,cls="",mood=null){
   const a={...DEF_AV,...a0};
-  const O='stroke="#2B2420" stroke-width="1.15" stroke-linejoin="round" stroke-linecap="round"';
+  if(mood&&!MOOD_FACE[mood])mood=null;
+  const O="";
   const s=a.skin,h=a.hairC,t=a.top,b=a.bottomC,sh=a.shoes,blush="#F08C8C";
   const mirror=x=>`<g transform="translate(100 0) scale(-1 1)">${x}</g>`;
   // hair
@@ -606,17 +648,41 @@ function avatarSVG(a0,cls=""){
     short:{back:"",front:`<path d="M24 46C18 2 82 2 76 46C72 30 64 26 56 28C50 24 40 28 34 30C29 34 26 39 24 46Z" fill="${h}" ${O}/>`}
   }[a.hair]||null;
   const hair=H||{back:"",front:""};
-  // eyes
-  const eye=x=>`<circle cx="${x}" cy="49" r="8.2" fill="#fff" ${O}/><circle cx="${x+.4}" cy="49.6" r="6.6" fill="#1A1614"/>${a.sparkle==="on"?`<circle cx="${x-2}" cy="47" r="2.3" fill="#fff"/><circle cx="${x+2.4}" cy="52" r="1" fill="#fff"/>`:""}`;
-  let eyes=a.eyes==="sleepy"?`<path d="M33 50q6 4 12 0M55 50q6 4 12 0" stroke="#1A1614" stroke-width="2" fill="none" stroke-linecap="round"/>`:eye(39)+eye(61);
-  if(a.eyes==="worried")eyes+=`<path d="M57 36q1.5-2 3 0t3 0 3 0" stroke="#1A1614" stroke-width="1.3" fill="none" stroke-linecap="round"/><path d="M34 37.5l7-1.5" stroke="#1A1614" stroke-width="1.3" stroke-linecap="round"/>`;
+  // face: the user's chosen look, unless a mood is taking over
+  const X=mood?MOOD_FACE[mood]:null;
+  const ek=X?X.eyes:(a.eyes==="sleepy"?"sleepy":a.sparkle==="on"?"sparkly":"open");
+  const brow=X?X.brow:(a.eyes==="worried"?"worried":"none");
+  const mk=X?X.mouth:"dot";
+  const INK="#1A1614";
+  const dotEye=(x,r,dx=0,hi=false)=>`<circle cx="${x+dx}" cy="49.5" r="${r}" fill="${INK}"/>${hi?`<circle cx="${x+dx-1.8}" cy="47.4" r="${r*.32}" fill="#fff"/><circle cx="${x+dx+1.9}" cy="51.6" r="${r*.14}" fill="#fff"/>`:""}`;
+  const EYES={
+    open:dotEye(39,5.6)+dotEye(61,5.6),
+    sparkly:dotEye(39,6.2,0,true)+dotEye(61,6.2,0,true),
+    wide:dotEye(39,6.8,0,true)+dotEye(61,6.8,0,true),
+    side:dotEye(39,5.4,2.4)+dotEye(61,5.4,2.4),
+    sleepy:`<path d="M33 50q6 4 12 0M55 50q6 4 12 0" stroke="${INK}" stroke-width="2.2" fill="none" stroke-linecap="round"/>`,
+    happy:`<path d="M33 52q6-6 12 0M55 52q6-6 12 0" stroke="${INK}" stroke-width="2.2" fill="none" stroke-linecap="round"/>`,
+    spiral:`<path d="M39 49.5m-1 0a1 1 0 1 1 2 0a2.5 2.5 0 1 1-5 0a4 4 0 1 1 8 0a5.5 5.5 0 1 1-11 0M61 49.5m-1 0a1 1 0 1 1 2 0a2.5 2.5 0 1 1-5 0a4 4 0 1 1 8 0a5.5 5.5 0 1 1-11 0" stroke="${INK}" stroke-width="1.4" fill="none"/>`
+  };
+  const BROWS={none:"",
+    worried:`<path d="M34 39l7-2.2M59 36.8l7 2.2" stroke="${INK}" stroke-width="1.5" stroke-linecap="round"/>`,
+    raised:`<path d="M34 39l7-1M58 35q4-3 8 0" stroke="${INK}" stroke-width="1.5" fill="none" stroke-linecap="round"/>`};
+  const MOUTHS={dot:`<ellipse cx="50" cy="62" rx="1.5" ry="1.9" fill="${INK}"/>`,
+    open:`<ellipse cx="50" cy="62.5" rx="2.6" ry="3.3" fill="${INK}"/><ellipse cx="50" cy="64" rx="1.5" ry="1.2" fill="#E77A7A"/>`,
+    smile:`<path d="M46 61q4 3.5 8 0" stroke="${INK}" stroke-width="1.6" fill="none" stroke-linecap="round"/>`,
+    wavy:`<path d="M45 62q1.7-1.6 3.3 0t3.4 0 3.3 0" stroke="${INK}" stroke-width="1.5" fill="none" stroke-linecap="round"/>`,
+    flat:`<path d="M47 62.5h6" stroke="${INK}" stroke-width="1.6" stroke-linecap="round"/>`};
+  const eyes=EYES[ek]+BROWS[brow];
+  const mouth=MOUTHS[mk];
+  const prop=X?MOOD_PROP[X.prop]||"":"";
+  if(X&&X.pose)a.pose=X.pose;
   const glasses=a.glasses==="none"?"":`<g fill="none" stroke="${a.glasses}" stroke-width="1.8"><rect x="28.5" y="40" width="21" height="18" rx="8"/><rect x="50.5" y="40" width="21" height="18" rx="8"/><path d="M49.5 47h1M28.5 47l-5-1M71.5 47l5-1"/></g>`;
   const clip=a.clip==="none"?"":`<g transform="rotate(-18 36 30)"><rect x="32" y="24" width="7" height="12" rx="2.5" fill="${a.clip}" ${O}/><rect x="34" y="27" width="3" height="3" rx="1" fill="#FFF3C4"/></g>`;
   // arms per pose
   const sleeve=`<path d="M36 70L27 74L30 82L37 79Z" fill="${t}" ${O}/>`;
-  const armOut=`${sleeve}<path d="M29 75L15 77Q9 78 10 81.5Q11 84.5 15.5 83.5L31 81Z" fill="${s}" ${O}/><path d="M12 79l-3-2M11 82l-4 0" ${O}/>`;
+  const armOut=`${sleeve}<path d="M29 75L15 77Q9 78 10 81.5Q11 84.5 15.5 83.5L31 81Z" fill="${s}" ${O}/>`;
   const armDown=`<path d="M35 72Q27 82 28 92Q30 97 34 94L38 80Z" fill="${s}" ${O}/><path d="M36 70L29 76L34 82L38 78Z" fill="${t}" ${O}/>`;
-  const armWave=`<path d="M64 72L79 61Q83 55 86.5 58.5Q88.5 61.5 84.5 64.5L70 80Z" fill="${s}" ${O}/><path d="M85 57l1-4M88 59l3-2" ${O}/><path d="M64 70L73 66L74 74L67 79Z" fill="${t}" ${O}/>`;
+  const armWave=`<path d="M64 72L79 61Q83 55 86.5 58.5Q88.5 61.5 84.5 64.5L70 80Z" fill="${s}" ${O}/><path d="M64 70L73 66L74 74L67 79Z" fill="${t}" ${O}/>`;
   let arms;
   if(a.pose==="down")arms=armDown+mirror(armDown);
   else if(a.pose==="wave")arms=armOut+armWave;
@@ -634,20 +700,21 @@ function avatarSVG(a0,cls=""){
   if(a.bag==="backpack"){bagBack=`<rect x="27" y="70" width="46" height="26" rx="6" fill="#3C3B48" ${O}/>`;bagFront=`<path d="M38 70v20M62 70v20" stroke="#3C3B48" stroke-width="3.2"/>`}
   if(a.bag==="crossbody")bagFront=`<path d="M38 70L63 91" stroke="#5A3E2B" stroke-width="2.2"/><rect x="58" y="86" width="14" height="10" rx="3" fill="#C9874E" ${O}/>`;
   if(a.bag==="camera")bagFront=`<path d="M38 70l6 8M62 70l-6 8" stroke="#2B2420" stroke-width="1.4"/><rect x="40" y="77" width="20" height="13" rx="3" fill="#2E2E36" ${O}/><circle cx="50" cy="83.5" r="4" fill="#9CC8E0" stroke="#fff" stroke-width="1.3"/>`;
-  return `<svg class="${cls}" viewBox="0 0 100 130" aria-hidden="true"><g filter="url(#pencil)">
+  return `<svg class="${cls}" viewBox="0 -18 100 148" aria-hidden="true"><g>
   <ellipse cx="50" cy="126" rx="24" ry="3.5" fill="rgba(0,0,0,.12)"/>
   ${hair.back}${bagBack}
   ${bottom}
-  <path d="M35 70Q50 66 65 70L67 94H33Z" fill="${t}" ${O}/><path d="M45 68.5q5 3 10 0" fill="none" stroke="#2B2420" stroke-width="1.3"/>
+  <path d="M35 70Q50 66 65 70L67 94H33Z" fill="${t}" ${O}/><path d="M44 68.2q6 4 12 0" fill="none" stroke="rgba(0,0,0,.18)" stroke-width="1.6" stroke-linecap="round"/>
   ${a.top==="#FFFDF8"?"":`<path d="M46 80q4-3 8 0" stroke="#fff" stroke-width="1.4" fill="none" opacity=".7"/>`}
   ${arms}${bagFront}
   <circle cx="22" cy="50" r="7.5" fill="${s}" ${O}/><circle cx="22" cy="51" r="4.5" fill="${blush}" opacity=".45"/>
   <circle cx="78" cy="50" r="7.5" fill="${s}" ${O}/><circle cx="78" cy="51" r="4.5" fill="${blush}" opacity=".45"/>
+  <path d="M50 21C66 21 76 32 76 48C76 62 66 71 50 71C34 71 24 62 24 48Z" fill="rgba(0,0,0,.08)"/>
   <path d="M50 18C66 18 76 30 76 46C76 60 66 69 50 69C34 69 24 60 24 46C24 30 34 18 50 18Z" fill="${s}" ${O}/>
   <ellipse cx="33" cy="59" rx="6" ry="3.4" fill="${blush}" opacity=".45"/><ellipse cx="67" cy="59" rx="6" ry="3.4" fill="${blush}" opacity=".45"/>
   ${hair.front}${eyes}
-  <ellipse cx="50" cy="62" rx="1.5" ry="1.9" fill="#1A1614"/>
-  ${glasses}${clip}
+  ${mouth}
+  ${glasses}${clip}${prop}
   </g></svg>`;
 }
 
@@ -703,10 +770,11 @@ function renderFilters(){
   else if(!S.quiz)h+=`<a class="chip link" href="#quiz">Not sure? Take the 1-minute quiz</a>`;
   f.innerHTML=h;
 }
+const DOT_COLS=["#E2457A","#2F8F5B","#F4B942","#4C7FD0","#9C6FD0","#F08C4E"];
 function renderHots(){
   $("#hots").innerHTML=AREAS.map(a=>{const m=matchCount(a);const d=new Set(S.checkins.filter(c=>AREA[c.area]===a).map(c=>c.spot)).size;
-    return `<button type="button" class="hot${S.filters.length&&!m?" dim":""}${openId===a.id?" on":""}" data-area="${a.id}" style="left:${a.x/10}%;top:${(a.y-100)/6}%" aria-label="${esc(a.name)}: ${m} recommendations">
-    <span class="badge" style="position:relative"><svg><use href="#${a.icon}"/></svg>${d?`<span class="count done">${d}✓</span>`:(S.filters.length&&m?`<span class="count">${m}</span>`:"")}</span>
+    return `<button type="button" class="hot${S.filters.length&&!m?" dim":""}${openId===a.id?" on":""}" data-area="${a.id}" style="left:${a.x/10}%;top:${(a.y-100)/6}%;--c:${DOT_COLS[AREAS.indexOf(a)%DOT_COLS.length]}" aria-label="${esc(a.name)}: ${m} recommendations">
+    <span class="dot${d?" done":""}"></span><span class="badge" style="position:relative"><svg><use href="#${a.icon}"/></svg>${d?`<span class="count done">${d}✓</span>`:(S.filters.length&&m?`<span class="count">${m}</span>`:"")}</span>
     <span class="lbl">${esc(a.short||a.name)}</span></button>`}).join("");
 }
 function renderPins(){
@@ -750,16 +818,12 @@ function renderMap(){
   const dark=matchMedia("(prefers-color-scheme: dark)").matches&&document.documentElement.dataset.theme!=="light"||document.documentElement.dataset.theme==="dark";
   setTod(S.tod||(dark?"night":"day"));
   renderFilters();renderHots();renderPins();
-  $("#meOnMap").innerHTML=avatarSVG(S.avatar);placeMe(S.here);
+  $("#meOnMap").innerHTML=avatarSVG(S.avatar,"",(currentMood()||{}).mood);placeMe(S.here);
   const n=new Set(S.checkins.map(c=>c.spot)).size;
   $("#mapProg").textContent=`${n} of ${TOTAL} spots stamped`;
   if(openId)renderPop(openId);
   const sc=$("#mapscroll");if(sc.scrollWidth>sc.clientWidth&&!sc.dataset.c){sc.dataset.c=1;sc.scrollLeft=(sc.scrollWidth-sc.clientWidth)/2}
 }
-$("#hots").addEventListener("mouseover",e=>{const b=e.target.closest(".hot");if(!b||matchMedia("(hover: none)").matches)return;if(!pinned||openId!==b.dataset.area){if(!pinned)openArea(b.dataset.area)}});
-$("#hots").addEventListener("mouseout",e=>{if(pinned)return;hoverT=setTimeout(()=>{if(!pinned&&!$("#pop").matches(":hover"))closePop()},350)});
-$("#pop").addEventListener("mouseleave",()=>{if(!pinned)hoverT=setTimeout(closePop,300)});
-$("#pop").addEventListener("mouseenter",()=>clearTimeout(hoverT));
 $("#hots").addEventListener("click",e=>{const b=e.target.closest(".hot");if(b)openArea(b.dataset.area,true)});
 $("#pop").addEventListener("click",e=>{
   if(e.target.closest("[data-close]"))return closePop();
@@ -1023,9 +1087,10 @@ const OPTS=[
  ["bottomC","Bottoms colour",["#F6F1E4","#5B77A8","#2E2E36","#C9874E"]],
  ["shoes","Shoes",["#D9473F","#4C7FD0","#F2C14E","#FFFDF8"]],
  ["bag","Carrying",[["backpack","Backpack"],["crossbody","Crossbody"],["camera","Camera"],["none","Nothing"]]],
- ["pose","Pose",[["out","Arms out"],["wave","Waving"],["down","Arms down"]]]
+ ["pose","Pose",[["out","Arms out"],["wave","Waving"],["down","Arms down"]]],
+ ["react","Shows my moods",[["on","On"],["off","Off"]]]
 ];
-const OPT_GROUPS=[["Face",["skin","eyes","sparkle","glasses"]],["Hair",["hair","hairC","clip"]],["Outfit",["top","bottom","bottomC","shoes"]],["Bag and pose",["bag","pose"]]];
+const OPT_GROUPS=[["Face",["skin","eyes","sparkle","glasses"]],["Hair",["hair","hairC","clip"]],["Outfit",["top","bottom","bottomC","shoes"]],["Bag and pose",["bag","pose","react"]]];
 let meTab=0;
 function optRow([k,l,vals]){
   return `<div class="me-row" role="group" aria-label="${l}"><span class="eyebrow">${l}</span><div class="sw">${vals.map(v=>Array.isArray(v)
@@ -1033,7 +1098,9 @@ function optRow([k,l,vals]){
      :`<button type="button" data-k="${k}" data-v="${v}" style="background:${v}" aria-label="${l} ${v}" aria-pressed="${S.avatar[k]===v}"></button>`).join("")}</div></div>`;
 }
 function renderMe(){
-  $("#meBig").innerHTML=avatarSVG(S.avatar);$("#meName").value=S.avatar.name;
+  const cm=currentMood();
+  $("#meBig").innerHTML=avatarSVG(S.avatar,"",cm&&cm.mood);$("#meName").value=S.avatar.name;
+  $("#meFeel").innerHTML=cm?`Feeling <b>${esc(MOOD[cm.mood].en)}</b> ${MOOD[cm.mood].e} since ${esc(SPOTS[cm.spot].name)}`:(S.avatar.react==="off"?"Mood reactions are off":"Check in somewhere with a mood sticker and your traveller will show it");
   const rows=OPT_GROUPS[meTab][1].map(k=>OPTS.find(o=>o[0]===k));
   $("#meOpts").innerHTML=`<div class="me-tabs">${OPT_GROUPS.map(([t],i)=>`<button type="button" class="chip" data-tab="${i}" aria-pressed="${i===meTab}">${t}</button>`).join("")}</div>
    ${rows.map(optRow).join("")}
