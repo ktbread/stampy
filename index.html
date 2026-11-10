@@ -6,35 +6,35 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&family=Caveat:wght@500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700&display=swap">
 <style>
 /* Layout: a pinboard of stamps; each city stamp opens an illustrated, pastel top-down map. Photos stay real, the world is drawn. */
 :root{
-  --wall:#E6EDF2;       /* pinboard, pale harbour grey-blue */
-  --card:#FFFFFF;
+  --wall:#F6F0DF;       /* album paper: the landing page's cream */
+  --card:#FFFBF2;
   --ink:#1F2A44;        /* night-ferry navy */
-  --ink-soft:#56607A;
-  --line:rgba(31,42,68,.14);
+  --ink-soft:#5E5A60;
+  --line:rgba(60,40,30,.16);
   --tram:#2F8F5B;       /* ding ding tram green */
-  --neon:#E2457A;       /* Mong Kok neon pink */
+  --neon:#C4202E;       /* postal red, same as the landing page */
   --sun:#F4B942;
   --sea:#7CC6CF;
-  --chip:#EEF3F7;
+  --chip:#ECE3CB;
   --stamp-paper:#FFFBF2;  /* stamps are physical objects: same in both themes */
   --stamp-ink:#1F2A44;
   --cream:#F6F0DF;
   --f-big:"Bowlby One",Impact,sans-serif;
-  --f-display:"Baloo 2",ui-rounded,system-ui,sans-serif;
+  --f-display:"Nunito",ui-rounded,system-ui,sans-serif;
   --f-body:"Nunito",system-ui,-apple-system,sans-serif;
-  --f-hand:"Caveat",cursive;
+  --f-hand:"Nunito",system-ui,sans-serif;
   --r:18px;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --wall:#131A2A;--card:#1C2438;--ink:#EEF1F8;--ink-soft:#A7B0C8;--line:rgba(238,241,248,.14);
-  --tram:#4FBF84;--neon:#FF6FA0;--sun:#F7C75E;--sea:#2D5D73;--chip:#26304A;color-scheme:dark}}
+  --wall:#1E1815;--card:#2A221D;--ink:#F6F0DF;--ink-soft:#BDB2A2;--line:rgba(246,240,223,.14);
+  --tram:#4FBF84;--neon:#F0545C;--sun:#F7C75E;--sea:#2D5D73;--chip:#3A2F28;color-scheme:dark}}
 :root[data-theme="dark"]{
-  --wall:#131A2A;--card:#1C2438;--ink:#EEF1F8;--ink-soft:#A7B0C8;--line:rgba(238,241,248,.14);
-  --tram:#4FBF84;--neon:#FF6FA0;--sun:#F7C75E;--sea:#2D5D73;--chip:#26304A;color-scheme:dark}
+  --wall:#1E1815;--card:#2A221D;--ink:#F6F0DF;--ink-soft:#BDB2A2;--line:rgba(246,240,223,.14);
+  --tram:#4FBF84;--neon:#F0545C;--sun:#F7C75E;--sea:#2D5D73;--chip:#3A2F28;color-scheme:dark}
 
 *{box-sizing:border-box}
 [hidden]{display:none!important}
@@ -43,7 +43,7 @@ body{margin:0;background:var(--wall);color:var(--ink);font-family:var(--f-body);
 body[data-view="wall"]{overflow:hidden}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--wall)}
-h1,h2,h3{font-family:var(--f-display);line-height:1.1;text-wrap:balance;margin:0}
+h1,h2,h3{font-family:var(--f-display);font-weight:900;line-height:1.1;text-wrap:balance;margin:0}
 button,input{font:inherit;color:inherit}
 button{cursor:pointer}
 :focus-visible{outline:3px solid var(--neon);outline-offset:3px;border-radius:8px}
@@ -61,7 +61,7 @@ body[data-view="wall"] .top{position:fixed;left:0;right:0;background:none;backdr
 .bighead{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin:8px 0 28px}
 .bighead h1{font-family:var(--f-big);font-weight:400;text-transform:uppercase;font-size:clamp(44px,9vw,120px);line-height:.95}
 main{padding-block:28px 64px}
-.eyebrow{font-weight:800;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}
+.eyebrow{font-weight:700;font-size:14px;color:var(--ink-soft)}
 .btn{display:inline-flex;align-items:center;gap:8px;border:0;border-radius:999px;padding:10px 18px;font-weight:800;background:var(--ink);color:var(--wall);text-decoration:none}
 .btn.ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 2px var(--line)}
 .btn.pink{background:var(--neon);color:#fff}
@@ -91,11 +91,11 @@ main{padding-block:28px 64px}
 .tilt.lit .shine{opacity:1}
 .stage-foot{position:relative;z-index:2;text-align:center;padding:0 16px max(20px,env(safe-area-inset-bottom,0px));pointer-events:none}
 .stage-foot h1{font-family:var(--f-big);font-weight:400;text-transform:uppercase;white-space:nowrap;line-height:.95;font-size:min(calc(112vw / var(--len,9)),15svh)}
-.stage-foot p{margin:8px 0 0;font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+.stage-foot p{margin:8px 0 0;font-size:15px;font-weight:700}
 .zoomout{animation:zoom .55s cubic-bezier(.6,0,.4,1) forwards;z-index:40;position:relative}
 @keyframes zoom{to{transform:scale(3.2) rotate(4deg);opacity:0}}
 
-.hand{font-family:var(--f-hand);font-size:26px;color:var(--tram);transform:rotate(-4deg);display:inline-block}
+.hand{font-family:var(--f-hand);font-weight:700;font-style:italic;font-size:18px;color:var(--neon);display:inline-block}
 
 .empty{text-align:center;padding:10vh 0;color:var(--ink-soft)}
 .empty p{margin:0 0 18px;font-size:18px}
@@ -180,7 +180,7 @@ main{padding-block:28px 64px}
 .pop .prog{font-size:12px;font-weight:800;color:var(--tram)}
 .pop .x{position:absolute;right:10px;top:10px;border:0;background:var(--chip);width:30px;height:30px;border-radius:50%;font-weight:800}
 .grp{margin-top:12px}
-.grp h4{margin:0 0 6px;font-family:var(--f-display);font-size:14px;display:flex;align-items:center;gap:6px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.08em}
+.grp h4{margin:0 0 6px;font-family:var(--f-display);font-size:14px;display:flex;align-items:center;gap:6px;color:var(--ink-soft)}
 .spot{display:grid;grid-template-columns:1fr auto;gap:4px 10px;padding:8px 0;border-top:1px dashed var(--line);align-items:center}
 .spot .n{font-weight:800;font-size:15px;line-height:1.25}
 .spot .d{font-size:13px;color:var(--ink-soft);grid-column:1;line-height:1.35}
@@ -193,31 +193,36 @@ main{padding-block:28px 64px}
 
 /* ---------- quiz ---------- */
 .quiz{max-width:760px;margin:0 auto}
-.qcard{background:var(--card);border-radius:28px;padding:clamp(20px,4vw,40px);box-shadow:0 14px 30px -18px rgba(20,30,60,.4)}
+.qcard{padding-block:clamp(8px,3vw,28px)}
 .perf{display:flex;gap:6px;margin-bottom:18px}
 .perf i{flex:1;height:8px;border-radius:999px;background:var(--chip)}
 .perf i.on{background:var(--neon)}
-.qcard h2{font-size:clamp(26px,4vw,36px);margin:4px 0 20px}
-.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px}
-.opt{border:0;background:var(--stamp-paper);color:var(--stamp-ink);border-radius:18px;padding:16px;text-align:left;box-shadow:inset 0 0 0 2px rgba(31,42,68,.12),0 4px 0 rgba(31,42,68,.12);transition:transform .2s}
-.opt:hover{transform:translateY(-3px) rotate(-1deg)}
-.opt b{display:block;font-size:30px;margin-bottom:6px}
-.opt span{font-weight:800;line-height:1.25;display:block}
-.opt small{display:block;color:#56607A;margin-top:4px;font-size:13px}
+.perf{max-width:320px}
+.qcard h2{font-family:var(--f-big);font-weight:400;font-size:clamp(28px,4.4vw,46px);line-height:1.05;margin:4px 0 28px;max-width:18ch}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:22px}
+.opt{border:0;background:none;padding:0;text-align:left;color:var(--stamp-ink);transition:transform .25s cubic-bezier(.3,1.4,.5,1)}
+.opt .stamp{--hole:6px;padding:9px;aspect-ratio:4/5}
+.opt .stamp-face{background:var(--oc);display:flex;flex-direction:column;justify-content:flex-end;padding:12px;color:#fff;border:0}
+.opt:nth-child(odd){transform:rotate(-1.5deg)}
+.opt:nth-child(even){transform:rotate(1.2deg)}
+.opt:hover,.opt:focus-visible{transform:rotate(0) translateY(-5px)}
+.opt .val{position:absolute;top:10px;left:12px;font-family:var(--f-big);font-size:20px;line-height:1;opacity:.9}
+.opt span{font-family:var(--f-big);font-size:19px;line-height:1.05;display:block}
+.opt small{display:block;margin-top:6px;font-size:13px;font-weight:700;opacity:.9}
 .result{text-align:center}
 .postcard{background:var(--stamp-paper);color:var(--stamp-ink);border-radius:6px;padding:28px;display:grid;grid-template-columns:1.3fr 1fr;gap:24px;text-align:left;box-shadow:0 18px 30px -16px rgba(20,30,60,.5);transform:rotate(-1deg);margin:8px 0 24px}
 .postcard .l{border-right:2px dashed rgba(31,42,68,.2);padding-right:22px}
-.postcard h2{font-size:clamp(30px,5vw,44px);color:#E2457A}
-.postcard p{margin:8px 0 0;color:#56607A}
+.postcard h2{font-size:clamp(30px,5vw,44px);color:#C4202E}
+.postcard p{margin:8px 0 0;color:#5E5A60}
 .postcard .r{display:flex;flex-direction:column;gap:10px;justify-content:center}
-.postcard .r div{font-family:var(--f-hand);font-size:24px;border-bottom:1.5px solid rgba(31,42,68,.2)}
+.postcard .r div{font-family:var(--f-hand);font-weight:700;font-size:17px;padding-bottom:4px;border-bottom:1.5px solid rgba(31,42,68,.2)}
 
 /* ---------- me ---------- */
 .me{max-width:520px;margin:0 auto;text-align:center}
 #meBig svg{width:200px;height:296px}
 .me-feel{margin:6px 0 0;font-size:14px;color:var(--ink-soft)}
 .me-feel b{color:var(--ink)}
-#meName{width:min(280px,100%);text-align:center;font-family:var(--f-hand);font-size:30px;border:0;background:none;padding:2px}
+#meName{width:min(280px,100%);text-align:center;font-family:var(--f-big);font-size:24px;border:0;background:none;padding:2px}
 .me-tabs{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:26px 0 18px}
 .me-row{margin-bottom:16px}
 .me-row .eyebrow{display:block;margin-bottom:8px}
@@ -249,7 +254,7 @@ dialog::backdrop{background:rgba(16,22,40,.55);backdrop-filter:blur(3px)}
 .mood:nth-child(even) i{transform:rotate(6deg)}
 .mood[aria-pressed="true"]{background:var(--card)}
 .mood[aria-pressed="true"] i{transform:scale(1.15) rotate(0);box-shadow:0 0 0 3px var(--neon)}
-.dlg input[type=text]{width:100%;border:0;border-bottom:2px dashed var(--line);background:none;font-family:var(--f-hand);font-size:24px;padding:4px 2px}
+.dlg input[type=text]{width:100%;border:0;border-bottom:2px dashed var(--line);background:none;font-family:var(--f-hand);font-size:18px;padding:4px 2px}
 .row{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
 .thud{position:fixed;inset:0;display:grid;place-items:center;z-index:60;pointer-events:none}
 .thud .stamp{width:220px;aspect-ratio:4/5;animation:thud .6s cubic-bezier(.2,1.6,.4,1)}
@@ -627,7 +632,7 @@ const MOOD_PROP={
   steam:`<path d="M44 6q-3-4 0-8t0-8M50 4q-3-4 0-8t0-8M56 6q-3-4 0-8t0-8" stroke="#B9B2A8" stroke-width="2" fill="none" stroke-linecap="round"/>`,
   sweat:`<path d="M78 20q4 6 1.6 8.6-3.4 2.4-5-1.2Q74 24 78 20z" fill="#8CC9E8"/>`,
   bolts:`<path d="M22 -2l-5 9h5l-3 8 8-11h-5l3-6zM80 -6l-4 7h4l-2.4 6.4 6.4-8.8h-4l2.4-4.6z" fill="#F2C14E"/>`,
-  qmark:`<text x="70" y="10" font-family="Baloo 2,system-ui,sans-serif" font-weight="800" font-size="20" fill="#4C7FD0">?</text>`,
+  qmark:`<text x="70" y="10" font-family="Nunito,system-ui,sans-serif" font-weight="900" font-size="20" fill="#4C7FD0">?</text>`,
   cloud:`<g><path d="M34 2a7 7 0 0 1 13-3 6 6 0 0 1 11 2 5 5 0 0 1 2 10H36a5 5 0 0 1-2-9z" fill="#B7C3D6"/><path d="M40 14l-1.4 4M48 14l-1.4 4M56 14l-1.4 4" stroke="#7FA6D6" stroke-width="1.8" stroke-linecap="round"/></g>`,
   bubbles:`<circle cx="70" cy="8" r="3" fill="none" stroke="#B9B2A8" stroke-width="1.4"/><circle cx="76" cy="0" r="4.2" fill="none" stroke="#B9B2A8" stroke-width="1.4"/><circle cx="84" cy="-8" r="2.2" fill="none" stroke="#B9B2A8" stroke-width="1.4"/>`,
   flower:`<g transform="translate(76 4)"><circle r="3" cy="-4.5" fill="#F4A9C0"/><circle r="3" cx="4.3" cy="-1.4" fill="#F4A9C0"/><circle r="3" cx="2.6" cy="3.6" fill="#F4A9C0"/><circle r="3" cx="-2.6" cy="3.6" fill="#F4A9C0"/><circle r="3" cx="-4.3" cy="-1.4" fill="#F4A9C0"/><circle r="2.2" fill="#F2C14E"/></g>`,
@@ -734,7 +739,7 @@ function buildMapSVG(){
   const sk=(x0,x1,base,seed)=>{let s="",x=x0,i=seed;while(x<x1){const w=6+(i*7)%5,h=8+((i*37)%18);s+=`<rect x="${x}" y="${base-h}" width="${w}" height="${h}" rx="1" fill="${i%3?"var(--m-bld)":"var(--m-bld2)"}"/>`;
       for(let y=base-h+3;y<base-3;y+=4)s+=`<rect x="${x+1.5}" y="${y}" width="${w-3}" height="1.5" fill="var(--m-win)"/>`;x+=w+1;i++}return s};
   const sky=sk(500,532,498,3)+sk(498,532,476,7)+sk(502,542,452,11)+sk(556,580,470,41)+sk(488,590,538,5)+sk(528,556,396,13)+sk(432,458,428,17)+sk(250,272,392,19)+sk(318,345,306,23)+sk(505,528,302,29)+sk(205,226,524,31);
-  const place=(x,y,t,water)=>`<text x="${x}" y="${y}" text-anchor="middle" font-family="Baloo 2,sans-serif" font-size="${water?12:13}" font-weight="700" letter-spacing="${water?1.5:1}" fill="var(--m-label)" opacity=".55"${water?' font-style="italic"':""}>${t}</text>`;
+  const place=(x,y,t,water)=>`<text x="${x}" y="${y}" text-anchor="middle" font-family="Nunito,sans-serif" font-size="${water?12:13}" font-weight="700" letter-spacing="${water?1.5:1}" fill="var(--m-label)" opacity=".55"${water?' font-style="italic"':""}>${t}</text>`;
   return `
   <defs><path id="mland" d="${MAP_LAND}"/><clipPath id="mclip"><use href="#mland"/></clipPath></defs>
   <rect y="0" width="1000" height="800" fill="var(--m-sea)"/>
@@ -1061,12 +1066,14 @@ addEventListener("keydown",e=>{if(e.key==="Escape"){if(!$("#lb").hidden)closeLB(
 
 /* ================= QUIZ ================= */
 let qStep=0,qAns=[];
+/* print inks for the quiz stamps: postal red, tram green, harbour blue, taxi amber */
+const OPT_INKS=["#C4202E","#2F8F5B","#2F6FB3","#D98A1C"];
 function renderQuiz(){
   const body=$("#quizBody");
   if(qStep<QUESTIONS.length){const Q=QUESTIONS[qStep];
     body.innerHTML=`<div class="qcard"><div class="perf">${QUESTIONS.map((_,i)=>`<i class="${i<=qStep?"on":""}"></i>`).join("")}</div>
      <h2>${Q.q}</h2>
-     <div class="opts">${Q.o.map((o,i)=>`<button type="button" class="opt" data-o="${i}"><b>${o[0]}</b><span>${o[1]}</span>${o[2]?`<small>${o[2]}</small>`:""}</button>`).join("")}</div>
+     <div class="opts">${Q.o.map((o,i)=>`<button type="button" class="opt" data-o="${i}" style="--oc:${OPT_INKS[(qStep+i)%OPT_INKS.length]}"><div class="stamp"><div class="stamp-face"><span class="val">$${[1,2,3,5][i]}</span><span>${o[1]}</span>${o[2]?`<small>${o[2]}</small>`:""}</div></div></button>`).join("")}</div>
      ${qStep?`<p style="margin:18px 0 0"><button type="button" class="chip link" data-back>Back</button></p>`:""}</div>`;
     return}
   const score={};qAns.forEach(tags=>tags.forEach((t,i)=>score[t]=(score[t]||0)+(i?1:1.2)));
@@ -1079,7 +1086,7 @@ function showResult(){
   $("#quizBody").innerHTML=`<div class="result"><span class="eyebrow">Your travel type</span>
    <div class="postcard"><div class="l"><span class="hand">you're a…</span><h2>${name}</h2><p>${line}</p>
      <p style="margin-top:14px;font-weight:800;color:#1F2A44">Into: ${tags.map(t=>TAGS[t]).join(" · ")}</p></div>
-     <div class="r"><span class="eyebrow" style="color:#56607A">Start with</span>${recs.map(r=>`<div>${esc(r.name)}</div>`).join("")}</div></div>
+     <div class="r"><span class="eyebrow" style="color:#5E5A60">Start with</span>${recs.map(r=>`<div>${esc(r.name)}</div>`).join("")}</div></div>
    <div class="row" style="justify-content:center"><button type="button" class="btn ghost" data-retake>Retake</button><button type="button" class="btn pink" data-go>Show my Hong Kong</button></div></div>`;
 }
 $("#quizBody").addEventListener("click",e=>{
