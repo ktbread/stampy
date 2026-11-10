@@ -157,7 +157,7 @@ main{padding-block:28px 64px}
 .hot .done{background:var(--tram)}
 .hot.on .badge{transform:rotate(-4deg)}
 .hot.dim{opacity:.45}
-.hot.dim:hover{opacity:1}
+#hots .hot.dim{pointer-events:none}
 .legend{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
 .legend button{display:flex;align-items:center;gap:6px;border:0;border-radius:999px;padding:5px 11px 5px 7px;font-size:12px;font-weight:800;background:var(--card);color:var(--ink);box-shadow:0 2px 0 rgba(20,30,60,.12)}
 .legend i{width:12px;height:12px;border-radius:50%}
@@ -790,7 +790,7 @@ function renderLegend(){
 }
 function renderHots(){
   $("#hots").innerHTML=AREAS.map(a=>{const m=matchCount(a);const d=new Set(S.checkins.filter(c=>AREA[c.area]===a).map(c=>c.spot)).size;
-    return `<button type="button" class="hot${S.filters.length&&!m||kindOn&&KIND_OF[a.id]!==kindOn?" dim":""}${openId===a.id?" on":""}" data-area="${a.id}" style="left:${a.x/10}%;top:${(a.y-100)/6}%;--c:${(KINDS[KIND_OF[a.id]]||{c:"#8A8F9C"}).c}" aria-label="${esc(a.name)}: ${m} recommendations">
+    return `<button type="button" class="hot${S.filters.length&&!m||kindOn&&KIND_OF[a.id]!==kindOn?" dim":""}${openId===a.id?" on":""}" data-area="${a.id}" style="left:${a.x/10}%;top:${(a.y-100)/6}%;--c:${(KINDS[KIND_OF[a.id]]||{c:"#8A8F9C"}).c}" aria-label="${esc(a.name)}: ${m} recommendations"${S.filters.length&&!m||kindOn&&KIND_OF[a.id]!==kindOn?" disabled":""}>
     <span class="dot${d?" done":""}"></span><span class="badge" style="position:relative"><svg><use href="#${a.icon}"/></svg>${d?`<span class="count done">${d}✓</span>`:(S.filters.length&&m?`<span class="count">${m}</span>`:"")}</span>
     <span class="lbl">${esc(a.short||a.name)}</span></button>`}).join("");
 }
