@@ -158,6 +158,11 @@ main{padding-block:28px 64px}
 .hot.on .badge{transform:rotate(-4deg)}
 .hot.dim{opacity:.45}
 .hot.dim:hover{opacity:1}
+.legend{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.legend button{display:flex;align-items:center;gap:6px;border:0;border-radius:999px;padding:5px 11px 5px 7px;font-size:12px;font-weight:800;background:var(--card);color:var(--ink);box-shadow:0 2px 0 rgba(20,30,60,.12)}
+.legend i{width:12px;height:12px;border-radius:50%}
+.legend button.off{opacity:.5}
+.legend button[aria-pressed="true"]{box-shadow:0 0 0 2px var(--ink)}
 .mapcredit{position:absolute;right:10px;bottom:6px;z-index:3;font-size:10px;font-weight:600;color:var(--m-label);opacity:.6}
 .pins{position:absolute;inset:0;pointer-events:none;z-index:2}
 .pol{position:absolute;pointer-events:auto;background:#fff;padding:4px 4px 12px;width:52px;box-shadow:0 4px 10px rgba(0,0,0,.25);border:0;transform-origin:50% 0}
@@ -357,6 +362,7 @@ dialog::backdrop{background:rgba(16,22,40,.55);backdrop-filter:blur(3px)}
       </div>
     </div>
     <div class="filters" id="filters" hidden></div>
+    <div class="legend" id="legend" role="group" aria-label="Kinds of places"></div>
     <div class="mapscroll" id="mapscroll"><div class="mapwrap" id="mapwrap" data-tod="day">
       <svg class="mapsvg" id="mapsvg" viewBox="0 100 1000 600" preserveAspectRatio="xMidYMid slice" aria-hidden="true"></svg>
       <div class="pins" id="pins"></div>
@@ -770,10 +776,21 @@ function renderFilters(){
   else if(!S.quiz)h+=`<a class="chip link" href="#quiz">Not sure? Take the 1-minute quiz</a>`;
   f.innerHTML=h;
 }
-const DOT_COLS=["#E2457A","#2F8F5B","#F4B942","#4C7FD0","#9C6FD0","#F08C4E"];
+/* Each area belongs to one kind of place; its dot takes that colour. */
+const KINDS={
+  city:{name:"City & neon",c:"#E2457A",areas:["central","wanchai","tst","mongkok"]},
+  trail:{name:"Peaks & trails",c:"#2F8F5B",areas:["peak","lionrock","tsuenwan","shek-o"]},
+  island:{name:"Islands & beaches",c:"#3E86D6",areas:["lantau","lamma","cheungchau","saikung"]},
+  village:{name:"Temples & villages",c:"#E89A2C",areas:["shatin","yuenlong","taipo","northeast"]}
+};
+const KIND_OF=Object.fromEntries(Object.entries(KINDS).flatMap(([k,v])=>v.areas.map(a=>[a,k])));
+let kindOn=null;
+function renderLegend(){
+  $("#legend").innerHTML=Object.entries(KINDS).map(([k,v])=>`<button type="button" data-kind="${k}" aria-pressed="${kindOn===k}" class="${kindOn&&kindOn!==k?"off":""}"><i style="background:${v.c}"></i>${v.name}</button>`).join("");
+}
 function renderHots(){
   $("#hots").innerHTML=AREAS.map(a=>{const m=matchCount(a);const d=new Set(S.checkins.filter(c=>AREA[c.area]===a).map(c=>c.spot)).size;
-    return `<button type="button" class="hot${S.filters.length&&!m?" dim":""}${openId===a.id?" on":""}" data-area="${a.id}" style="left:${a.x/10}%;top:${(a.y-100)/6}%;--c:${DOT_COLS[AREAS.indexOf(a)%DOT_COLS.length]}" aria-label="${esc(a.name)}: ${m} recommendations">
+    return `<button type="button" class="hot${S.filters.length&&!m||kindOn&&KIND_OF[a.id]!==kindOn?" dim":""}${openId===a.id?" on":""}" data-area="${a.id}" style="left:${a.x/10}%;top:${(a.y-100)/6}%;--c:${(KINDS[KIND_OF[a.id]]||{c:"#8A8F9C"}).c}" aria-label="${esc(a.name)}: ${m} recommendations">
     <span class="dot${d?" done":""}"></span><span class="badge" style="position:relative"><svg><use href="#${a.icon}"/></svg>${d?`<span class="count done">${d}✓</span>`:(S.filters.length&&m?`<span class="count">${m}</span>`:"")}</span>
     <span class="lbl">${esc(a.short||a.name)}</span></button>`}).join("");
 }
@@ -817,7 +834,7 @@ function renderMap(){
   if(!$("#mapsvg").innerHTML)$("#mapsvg").innerHTML=buildMapSVG();
   const dark=matchMedia("(prefers-color-scheme: dark)").matches&&document.documentElement.dataset.theme!=="light"||document.documentElement.dataset.theme==="dark";
   setTod(S.tod||(dark?"night":"day"));
-  renderFilters();renderHots();renderPins();
+  renderFilters();renderLegend();renderHots();renderPins();
   $("#meOnMap").innerHTML=avatarSVG(S.avatar,"",(currentMood()||{}).mood);placeMe(S.here);
   const n=new Set(S.checkins.map(c=>c.spot)).size;
   $("#mapProg").textContent=`${n} of ${TOTAL} spots stamped`;
@@ -830,6 +847,7 @@ $("#pop").addEventListener("click",e=>{
   const d=e.target.closest("[data-spot]");if(d)return openDaka(d.dataset.spot);
   const k=e.target.closest("[data-ck]");if(k)return openLB(k.dataset.ck);
 });
+$("#legend").addEventListener("click",e=>{const b=e.target.closest("[data-kind]");if(!b)return;kindOn=kindOn===b.dataset.kind?null:b.dataset.kind;renderLegend();renderHots()});
 $("#pins").addEventListener("click",e=>{const k=e.target.closest("[data-ck]");if(k)openLB(k.dataset.ck)});
 $("#filters").addEventListener("click",e=>{const b=e.target.closest("[data-tag]");if(!b)return;const t=b.dataset.tag;
   if(t==="__clear")S.filters=[];else S.filters=S.filters.includes(t)?S.filters.filter(x=>x!==t):[...S.filters,t];save();renderMap()});
