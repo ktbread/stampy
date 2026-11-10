@@ -78,8 +78,6 @@ main{padding-block:28px 64px}
 .stage{--sw:min(72vw,44svh);position:fixed;inset:0;z-index:1;overflow:hidden;display:flex;flex-direction:column;padding-top:64px;
   background:#C4202E;color:var(--stage-fg,var(--cream));transition:background-color .6s ease,color .6s ease;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
 .stage.dragging{cursor:grabbing}
-.stage::before{content:"";position:absolute;inset:0;pointer-events:none;
-  background:linear-gradient(transparent calc(61% - 1px),rgba(0,0,0,.08) 61%,rgba(255,255,255,.07) calc(61% + 1px),transparent calc(61% + 3px))}
 .stage::after{content:"";position:absolute;inset:0;z-index:4;pointer-events:none;mix-blend-mode:soft-light;opacity:.6;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 .track{position:relative;flex:1;min-height:0;z-index:1;animation:stampIn .7s cubic-bezier(.2,.8,.3,1) both}
