@@ -206,6 +206,8 @@ main{padding-block:28px 64px}
 #meBig svg{width:200px;height:260px}
 #meName{width:min(280px,100%);text-align:center;font-family:var(--f-hand);font-size:30px;border:0;background:none;padding:2px}
 .me-tabs{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:26px 0 18px}
+.me-row{margin-bottom:16px}
+.me-row .eyebrow{display:block;margin-bottom:8px}
 .me-quiz{margin:26px 0 0}
 .sw{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
 .sw button{border:0;width:42px;height:42px;border-radius:50%;box-shadow:inset 0 0 0 3px rgba(0,0,0,.08)}
@@ -597,11 +599,11 @@ function avatarSVG(a0,cls=""){
   const mirror=x=>`<g transform="translate(100 0) scale(-1 1)">${x}</g>`;
   // hair
   const H={
-    long:{back:`<path d="M22 42C22 16 78 16 78 42L80 88Q78 92 72 90Q69 93 64 91Q50 94 36 91Q31 93 28 90Q22 92 20 88Z" fill="${h}" ${O}/>`,front:`<path d="M24 48C20 14 80 12 77 46C72 32 62 26 53 24C47 31 37 37 24 48Z" fill="${h}" ${O}/><path d="M53 25q-3 8-10 13" stroke="#2B2420" stroke-width="1" fill="none" opacity=".5"/>`},
-    bob:{back:`<path d="M22 42C22 16 78 16 78 42L79 64Q76 68 70 66Q50 70 30 66Q24 68 21 64Z" fill="${h}" ${O}/>`,front:`<path d="M24 48C20 14 80 12 77 46C72 32 62 26 53 24C47 31 37 37 24 48Z" fill="${h}" ${O}/>`},
-    bangs:{back:`<path d="M21 40C21 14 79 14 79 40V70Q50 75 21 70Z" fill="${h}" ${O}/>`,front:`<path d="M24 47C20 10 80 10 76 47L75 39Q50 36 25 39Z" fill="${h}" ${O}/>`},
-    pigtails:{back:`<ellipse cx="17" cy="44" rx="7" ry="13" transform="rotate(20 17 44)" fill="${h}" ${O}/><ellipse cx="83" cy="44" rx="7" ry="13" transform="rotate(-20 83 44)" fill="${h}" ${O}/>`,front:`<path d="M24 47C20 10 80 10 76 47L75 39Q50 36 25 39Z" fill="${h}" ${O}/>`},
-    short:{back:"",front:`<path d="M24 46C19 12 81 12 76 46C72 30 64 26 56 28C50 24 40 28 34 30C29 34 26 39 24 46Z" fill="${h}" ${O}/>`}
+    long:{back:`<path d="M22 42C22 16 78 16 78 42L80 88Q78 92 72 90Q69 93 64 91Q50 94 36 91Q31 93 28 90Q22 92 20 88Z" fill="${h}" ${O}/>`,front:`<path d="M24 48C19 3 81 1 77 46C72 32 62 26 53 24C47 31 37 37 24 48Z" fill="${h}" ${O}/><path d="M53 25q-3 8-10 13" stroke="#2B2420" stroke-width="1" fill="none" opacity=".5"/>`},
+    bob:{back:`<path d="M22 42C22 16 78 16 78 42L79 64Q76 68 70 66Q50 70 30 66Q24 68 21 64Z" fill="${h}" ${O}/>`,front:`<path d="M24 48C19 3 81 1 77 46C72 32 62 26 53 24C47 31 37 37 24 48Z" fill="${h}" ${O}/>`},
+    bangs:{back:`<path d="M21 40C21 14 79 14 79 40V70Q50 75 21 70Z" fill="${h}" ${O}/>`,front:`<path d="M24 47C19 2 81 2 76 47L75 39Q50 36 25 39Z" fill="${h}" ${O}/>`},
+    pigtails:{back:`<ellipse cx="17" cy="44" rx="7" ry="13" transform="rotate(20 17 44)" fill="${h}" ${O}/><ellipse cx="83" cy="44" rx="7" ry="13" transform="rotate(-20 83 44)" fill="${h}" ${O}/>`,front:`<path d="M24 47C19 2 81 2 76 47L75 39Q50 36 25 39Z" fill="${h}" ${O}/>`},
+    short:{back:"",front:`<path d="M24 46C18 2 82 2 76 46C72 30 64 26 56 28C50 24 40 28 34 30C29 34 26 39 24 46Z" fill="${h}" ${O}/>`}
   }[a.hair]||null;
   const hair=H||{back:"",front:""};
   // eyes
@@ -713,7 +715,7 @@ function renderPins(){
     h+=`<button type="button" class="pol" data-ck="${c.id}" style="left:calc(${a.x/10}% + ${18+i*16}px);top:calc(${(a.y-100)/6}% - ${54-i*4}px);transform:rotate(${-8+i*9}deg)" aria-label="Photo at ${esc(SPOTS[c.spot].name)}"><img src="${c.img}" alt=""></button>`})});
   $("#pins").innerHTML=h;
 }
-function placeMe(id){const a=AREA[id]||AREA.tst;const m=$("#meOnMap");m.style.left=`calc(${a.x/10}% + 46px)`;m.style.top=`calc(${(a.y-100)/6}% + 34px)`;}
+function placeMe(id){const a=AREA[id]||AREA.tst;const m=$("#meOnMap");m.style.left=`calc(${a.x/10}% + 58px)`;m.style.top=`calc(${(a.y-100)/6}% + 22px)`;}
 function renderPop(id){
   const a=AREA[id],p=$("#pop");
   const done=new Set(S.checkins.filter(c=>c.area===id).map(c=>c.spot));
@@ -1023,14 +1025,18 @@ const OPTS=[
  ["bag","Carrying",[["backpack","Backpack"],["crossbody","Crossbody"],["camera","Camera"],["none","Nothing"]]],
  ["pose","Pose",[["out","Arms out"],["wave","Waving"],["down","Arms down"]]]
 ];
+const OPT_GROUPS=[["Face",["skin","eyes","sparkle","glasses"]],["Hair",["hair","hairC","clip"]],["Outfit",["top","bottom","bottomC","shoes"]],["Bag and pose",["bag","pose"]]];
 let meTab=0;
+function optRow([k,l,vals]){
+  return `<div class="me-row" role="group" aria-label="${l}"><span class="eyebrow">${l}</span><div class="sw">${vals.map(v=>Array.isArray(v)
+     ?`<button type="button" class="txt" data-k="${k}" data-v="${v[0]}" aria-pressed="${S.avatar[k]===v[0]}">${v[1]}</button>`
+     :`<button type="button" data-k="${k}" data-v="${v}" style="background:${v}" aria-label="${l} ${v}" aria-pressed="${S.avatar[k]===v}"></button>`).join("")}</div></div>`;
+}
 function renderMe(){
   $("#meBig").innerHTML=avatarSVG(S.avatar);$("#meName").value=S.avatar.name;
-  const [k,l,vals]=OPTS[meTab];
-  $("#meOpts").innerHTML=`<div class="me-tabs">${OPTS.map(([,t],i)=>`<button type="button" class="chip" data-tab="${i}" aria-pressed="${i===meTab}">${t}</button>`).join("")}</div>
-   <div class="sw">${vals.map(v=>Array.isArray(v)
-     ?`<button type="button" class="txt" data-k="${k}" data-v="${v[0]}" aria-pressed="${S.avatar[k]===v[0]}">${v[1]}</button>`
-     :`<button type="button" data-k="${k}" data-v="${v}" style="background:${v}" aria-label="${l} ${v}" aria-pressed="${S.avatar[k]===v}"></button>`).join("")}</div>
+  const rows=OPT_GROUPS[meTab][1].map(k=>OPTS.find(o=>o[0]===k));
+  $("#meOpts").innerHTML=`<div class="me-tabs">${OPT_GROUPS.map(([t],i)=>`<button type="button" class="chip" data-tab="${i}" aria-pressed="${i===meTab}">${t}</button>`).join("")}</div>
+   ${rows.map(optRow).join("")}
    <p class="me-quiz"><a class="chip link" href="#quiz">${S.quiz?"You're a "+esc(PERSONA[S.quiz.tags[0]][0]):"What are you into? Take the quiz"}</a></p>`;
 }
 $("#meOpts").addEventListener("click",e=>{
