@@ -784,9 +784,9 @@ function avatarSVG(a0,cls="",mood=null,mini=false){
   /* eyes have whites: a white almond, a dark iris that runs from top to bottom of the white, and catch-lights only with the sparkle add-on */
   const iris=(cx,R,dx)=>{const x=cx+dx,cy=EY,iy=cy,ir=R*.6;
     const ry=Math.max(R,4.9);
-    return `<ellipse cx="${cx}" cy="${cy}" rx="${R+1.5}" ry="${ry}" fill="#fff" stroke="${INK}" stroke-opacity=".28" stroke-width="${mini?0:.6}"/>`
-     +`<ellipse cx="${x}" cy="${cy}" rx="4.7" ry="${Math.min(4.7,ry-.2)}" fill="${ic}"/>`
-     +(eSpark?STAR(x-1.3,cy-1.8,1.9):"")+lowLash(cx,R+1.5,ry)};
+    const id=`wi${uid}_${Math.round(cx)}`,white=`<ellipse cx="${cx}" cy="${cy}" rx="${R+1.5}" ry="${ry}"`;
+    return `<clipPath id="${id}">${white}/></clipPath>${white} fill="#fff" stroke="${INK}" stroke-opacity=".28" stroke-width="${mini?0:.6}"/>`
+     +`<g clip-path="url(#${id})"><ellipse cx="${x}" cy="${cy}" rx="4.7" ry="${Math.min(4.7,ry-.2)}" fill="${ic}"/>${eSpark?STAR(x-1.3,cy-1.8,1.9):""}</g>`+lowLash(cx,R+1.5,ry)};
   const lidL=(k,R)=>{const t=EY-R*.95,L=36.5-R,Rr=36.5+R;
     if(k==="gentle")return `M${L-1.4} ${EY-R*.15}Q${38} ${t-2.6} ${Rr+.6} ${EY-R*.8}`;
     if(k==="cat")return `M${Rr+.4} ${EY-R*.45}Q${40} ${t-2.4} ${L-.6} ${EY-R*.95}L${L-3.2} ${EY-R*1.45}`;
@@ -794,10 +794,10 @@ function avatarSVG(a0,cls="",mood=null,mini=false){
   /* deadpan: a flat, heavy lid over the top half of a small iris */
   const deadpan=()=>{const W=6.6,D=9.6,T=EY-2.6;
     const one=(cx,toNose)=>{const px=cx+toNose*1.5+eDx;
-      return `<path d="M${cx-W} ${T}H${cx+W}A${W} ${D} 0 0 1 ${cx-W} ${T}Z" fill="#fff" stroke="${INK}" stroke-opacity=".28" stroke-width="${mini?0:.6}"/>`
-       +`<circle cx="${px}" cy="${T+4.8}" r="4.7" fill="${ic}"/>`
-       +(eSpark?STAR(px-1.3,T+3.2,1.9):"")+lowLash(cx,W,D,T)
-       +`<path d="M${cx-W-.6} ${T}H${cx+W+.6}" stroke="${INK}" stroke-width="1.7" stroke-linecap="round"/>`};
+      const id=`wd${uid}_${Math.round(cx)}`,dW=`M${cx-W} ${T}H${cx+W}A${W} ${D} 0 0 1 ${cx-W} ${T}Z`;
+      return `<clipPath id="${id}"><path d="${dW}"/></clipPath><path d="${dW}" fill="#fff" stroke="${INK}" stroke-opacity=".28" stroke-width="${mini?0:.6}"/>`
+       +`<g clip-path="url(#${id})"><circle cx="${px}" cy="${T+4.8}" r="4.7" fill="${ic}"/>${eSpark?STAR(px-1.3,T+3.2,1.9):""}</g>`+lowLash(cx,W,D,T)
+       +`<path d="M${cx-W-.6} ${T}H${cx+W+.6}" stroke="${INK}" stroke-width="1.5" stroke-linecap="round"/>`};
     return one(36.5,1)+one(63.5,-1)};
   /* Doll eyes: a round white, a big dark pupil sitting high and toward the nose, a thin lash line with flicks
      on top and little lash ticks underneath. Every mood is drawn in the same hand. */
@@ -808,9 +808,9 @@ function avatarSVG(a0,cls="",mood=null,mini=false){
   const lowLash=(cx,rx,ry,cy=EY)=>mini?"":`<path d="${[-3.6,-1.2,1.2,3.6].map(d=>{const x=cx+d*rx/6.4,y=cy+ry*Math.sqrt(Math.max(0,1-(x-cx)**2/rx**2));return `M${x.toFixed(2)} ${(y-.2).toFixed(2)}l${(d*.22).toFixed(2)} 1.6`}).join("")}" stroke="${INK}" stroke-width=".55" stroke-linecap="round" opacity=".35"/>`;
   const doll=(k=1,lid=false)=>{const one=(cx,n)=>{const px=cx+n*.9+eDx,o=-n,rx=6.4*k,ry=6*k,pr=4.7*k;
       const lidY=EY-1.2*k;
-      return `<ellipse cx="${cx}" cy="${EY}" rx="${rx}" ry="${ry}" fill="#fff" stroke="${INK}" stroke-opacity=".28" stroke-width="${mini?0:.6}"/>`
-       +`<circle cx="${px}" cy="${EY-1*k}" r="${pr}" fill="${ic}"/>`
-       +(eSpark?STAR(px-1.3*k,EY-2.6*k,1.9*k):"")
+      const id=`wo${uid}_${Math.round(cx)}`,white=`<ellipse cx="${cx}" cy="${EY}" rx="${rx}" ry="${ry}"`;
+      return `<clipPath id="${id}">${white}/></clipPath>${white} fill="#fff" stroke="${INK}" stroke-opacity=".28" stroke-width="${mini?0:.6}"/>`
+       +`<g clip-path="url(#${id})"><circle cx="${px}" cy="${EY-1*k}" r="${pr}" fill="${ic}"/>${eSpark?STAR(px-1.3*k,EY-2.6*k,1.9*k):""}</g>`
        +(lid?`<path d="M${cx-rx-1} ${EY-.4}H${cx+rx+1}V${EY-ry-2}H${cx-rx-1}Z" fill="${s}"/><path d="M${cx-rx-.4} ${EY-.4}Q${cx} ${EY-1.6} ${cx+rx+.4} ${EY-.4}" stroke="${INK}" stroke-width="1.5" fill="none" stroke-linecap="round"/>`+topLash(cx,o,EY+3.2)
            :`<path d="M${cx-6.6*k} ${lidY}Q${cx} ${EY-8.4*k} ${cx+6.6*k} ${lidY}" stroke="${INK}" stroke-width="1.5" fill="none" stroke-linecap="round"/>`+topLash(cx,o,EY))
        +lowLash(cx,rx,ry)};
@@ -820,14 +820,14 @@ function avatarSVG(a0,cls="",mood=null,mini=false){
       const arc=up?`M${cx-6} ${EY+1.5}Q${cx} ${EY-5} ${cx+6} ${EY+1.5}`:`M${cx-6} ${EY-1}Q${cx} ${EY+5} ${cx+6} ${EY-1}`;
       const lash=mini?"":up?`<path d="M${cx-o*5.6} ${EY-.4}l${-o*2} -1.2M${cx-o*4.4} ${EY-2.2}l${-o*1.6} -1.8" stroke="${INK}" stroke-width="1.1" stroke-linecap="round"/>`
         :`<path d="M${cx-3.6} ${EY+2.2}l-.8 2M${cx-1.2} ${EY+2.9}l-.3 2.1M${cx+1.4} ${EY+2.9}l.3 2.1M${cx+3.8} ${EY+2.1}l.8 2" stroke="${INK}" stroke-width="1" stroke-linecap="round"/>`;
-      return `<path d="${arc}" stroke="${INK}" stroke-width="1.7" fill="none" stroke-linecap="round"/>`+lash};
+      return `<path d="${arc}" stroke="${INK}" stroke-width="1.5" fill="none" stroke-linecap="round"/>`+lash};
     return one(36.5,1)+one(63.5,-1)};
   const glossy=k=>{if(k==="deadpan")return deadpan();if(k==="doll")return doll();const R={big:5.8,small:4.4,deadpan:5}[k]||4.9;
-    const lid=`<path d="${lidL(k,R)}" stroke="${INK}" stroke-width="${mini?2:2.5}" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+    const lid=`<path d="${lidL(k,R)}" stroke="${INK}" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
     const lash=k==="big"&&!mini?`<path d="M${36.5-R-1} ${EY-R*.2}l-2.2-.4" stroke="${INK}" stroke-width="1.4" stroke-linecap="round"/>`:"";
     return iris(36.5,R,eDx)+iris(63.5,R,eDx)+lid+lash+`<g transform="translate(100 0) scale(-1 1)">${lid}${lash}</g>`};
   const sleepyEye=()=>{const R=4.9,lidFill=cx=>`<path d="M${cx-R-1.5} 51.8Q${cx} 49.2 ${cx+R+1.5} 51.8V43H${cx-R-1.5}Z" fill="${s}"/>`;
-    return iris(36.5,R,0)+iris(63.5,R,0)+lidFill(36.5)+lidFill(63.5)+`<path d="M${36.5-R-1.5} 51.8Q36.5 50 ${36.5+R+1.5} 51.8M${63.5-R-1.5} 51.8Q63.5 50 ${63.5+R+1.5} 51.8" stroke="${INK}" stroke-width="2.2" fill="none" stroke-linecap="round"/>`};
+    return iris(36.5,R,0)+iris(63.5,R,0)+lidFill(36.5)+lidFill(63.5)+`<path d="M${36.5-R-1.5} 51.8Q36.5 50 ${36.5+R+1.5} 51.8M${63.5-R-1.5} 51.8Q63.5 50 ${63.5+R+1.5} 51.8" stroke="${INK}" stroke-width="1.5" fill="none" stroke-linecap="round"/>`};
   const dotEye=(x,r,dx=0,hi=false)=>`<circle cx="${x+dx}" cy="49.5" r="${r}" fill="${INK}"/>${hi?`<circle cx="${x+dx-1.8}" cy="47.4" r="${r*.32}" fill="#fff"/><circle cx="${x+dx+1.9}" cy="51.6" r="${r*.14}" fill="#fff"/>`:""}`;
   const LASH=`<path d="M33.6 46.4l-3-1.8M34.4 44.2l-2.4-2.6M66.4 46.4l3-1.8M65.6 44.2l2.4-2.6" stroke="${INK}" stroke-width="1.5" stroke-linecap="round"/>`;
   const EYES={
@@ -835,14 +835,14 @@ function avatarSVG(a0,cls="",mood=null,mini=false){
     sparkly:dotEye(36.5,6.2,0,true)+dotEye(63.5,6.2,0,true),
     wide:dotEye(36.5,6.8,0,true)+dotEye(63.5,6.8,0,true),
     side:dotEye(36.5,5.4,2.4)+dotEye(63.5,5.4,2.4),
-    sleepy:`<path d="M33 50q6 4 12 0M55 50q6 4 12 0" stroke="${INK}" stroke-width="2.2" fill="none" stroke-linecap="round"/>`,
-    down:`<path d="M33 50q6 5 12 0M55 50q6 5 12 0" stroke="${INK}" stroke-width="2.2" fill="none" stroke-linecap="round"/>`,
-    happy:`<path d="M33 52q6-6 12 0M55 52q6-6 12 0" stroke="${INK}" stroke-width="2.2" fill="none" stroke-linecap="round"/>`,
+    sleepy:`<path d="M33 50q6 4 12 0M55 50q6 4 12 0" stroke="${INK}" stroke-width="1.5" fill="none" stroke-linecap="round"/>`,
+    down:`<path d="M33 50q6 5 12 0M55 50q6 5 12 0" stroke="${INK}" stroke-width="1.5" fill="none" stroke-linecap="round"/>`,
+    happy:`<path d="M33 52q6-6 12 0M55 52q6-6 12 0" stroke="${INK}" stroke-width="1.5" fill="none" stroke-linecap="round"/>`,
     small:dotEye(36.5,4.2)+dotEye(63.5,4.2),
     smallS:dotEye(36.5,4.4,0,true)+dotEye(63.5,4.4,0,true),
     lashes:dotEye(36.5,5.6)+dotEye(63.5,5.6)+LASH,
     lashesS:dotEye(36.5,6.2,0,true)+dotEye(63.5,6.2,0,true)+LASH,
-    spiral:`<path d="M36.5 49.5m-1 0a1 1 0 1 1 2 0a2.5 2.5 0 1 1-5 0a4 4 0 1 1 8 0a5.5 5.5 0 1 1-11 0M63.5 49.5m-1 0a1 1 0 1 1 2 0a2.5 2.5 0 1 1-5 0a4 4 0 1 1 8 0a5.5 5.5 0 1 1-11 0" stroke="${INK}" stroke-width="1.4" fill="none"/>`
+    spiral:`<path d="M36.5 49.5m-1 0a1 1 0 1 1 2 0a2.5 2.5 0 1 1-5 0a4 4 0 1 1 8 0a5.5 5.5 0 1 1-11 0M63.5 49.5m-1 0a1 1 0 1 1 2 0a2.5 2.5 0 1 1-5 0a4 4 0 1 1 8 0a5.5 5.5 0 1 1-11 0" stroke="${INK}" stroke-width="1.5" fill="none"/>`
   };
   /* brows: drawn once for the left eye, mirrored for the right */
   const BC=a.browC==="hair"?shade(h,.55):a.browC;
