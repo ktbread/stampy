@@ -663,7 +663,7 @@ const PERSONA={
 
 /* ================= STATE ================= */
 const KEY="stampy.hk.v1";
-const DEF_AV={skin:"#FBE3CF",hair:"wrap",mouth:"pout",line:"on",ears:"hoops",hairC:"#2B2320",eyes:"deadpan",irisC:"#6B4430",brows:"soft",browC:"#6B4430",hat:"none",hatC:"#C4202E",neck:"none",neckC:"#4C7FD0",sparkle:"off",react:"on",glasses:"#E0524F",clip:"#E0524F",top:"#D9473F",bottom:"shorts",bottomC:"#F6F1E4",shoes:"#D9473F",bag:"backpack",pose:"out",name:"Traveller"};
+const DEF_AV={skin:"#FBE3CF",hair:"wrap",mouth:"pout",line:"on",ears:"hoops",hairC:"#2B2320",eyes:"deadpan",irisC:"#2B2320",brows:"soft",browC:"#6B4430",hat:"none",hatC:"#C4202E",neck:"none",neckC:"#4C7FD0",sparkle:"off",react:"on",glasses:"#E0524F",clip:"#E0524F",top:"#D9473F",bottom:"shorts",bottomC:"#F6F1E4",shoes:"#D9473F",bag:"backpack",pose:"out",name:"Traveller"};
 let S={checkins:[],quiz:null,filters:[],avatar:{...DEF_AV},tod:null,here:"tst",wishlist:[],onboarded:false};
 try{const r=JSON.parse(localStorage.getItem(KEY)||"null");if(r)S={...S,...r,avatar:{...DEF_AV,name:(r.avatar&&r.avatar.name)||DEF_AV.name,...(r.avatar&&r.avatar.v===2?r.avatar:{}),v:2}}}catch(e){}
 S.avatar.v=2;
@@ -673,6 +673,8 @@ if(S.avatar.eyes==="lashes")S.avatar.eyes="big";
 if(S.avatar.browC==="hair")S.avatar.browC="#6B4430";
 if(!Array.isArray(S.wishlist))S.wishlist=[];
 if(!S.avatar.v3){Object.assign(S.avatar,{hair:"wrap",hairC:"#2B2320",eyes:"deadpan",mouth:"pout",line:"on",ears:"hoops"});S.avatar.v3=1}
+if(S.avatar.eyes==="big")S.avatar.eyes="round";
+if(!S.avatar.v4){S.avatar.irisC="#2B2320";S.avatar.sparkle="off";S.avatar.v4=1}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));return true}catch(e){return false}}
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -762,8 +764,8 @@ function avatarSVG(a0,cls="",mood=null,mini=false){
   const X=mood?MOOD_FACE[mood]:null;
   const spk=a.sparkle==="on";
   /* the traveller's own eye shape; a mood swaps it only for closed, sleepy, wide or spiral eyes */
-  const own=["round","big","gentle","cat","small","deadpan"].includes(a.eyes)?a.eyes:"round";
-  const ek=X?({open:"own",sparkly:"own",side:"own",wide:"big"}[X.eyes]||X.eyes):(a.eyes==="smiley"?"happy":a.eyes==="sleepy"?"sleepy":"own");
+  const own=["round","gentle","cat","small","deadpan"].includes(a.eyes)?a.eyes:"round";
+  const ek=X?({open:"own",sparkly:"own",side:"own",wide:"round"}[X.eyes]||X.eyes):(a.eyes==="smiley"?"happy":a.eyes==="sleepy"?"sleepy":"own");
   const eSpark=spk||(X&&X.eyes==="sparkly"),eDx=X&&X.eyes==="side"?1.8:0;
   /* a mood can lift or knit the brows; otherwise they are the traveller's own */
   const brow=X&&X.brow!=="none"?X.brow:a.brows;
@@ -773,13 +775,12 @@ function avatarSVG(a0,cls="",mood=null,mini=false){
      Lids are drawn for the left eye and mirrored; the light always comes from the top left. */
   const ic=a.irisC||"#6B4430";
   const EY=52.5;
-  const iris=(cx,R,dx)=>{const x=cx+dx,ry=R*1.16,cy=EY;
-    return `<ellipse cx="${x}" cy="${cy}" rx="${R}" ry="${ry}" fill="${ic}" stroke="${INK}" stroke-width="1"/>`
-     +(mini?"":`<path d="M${x-R} ${cy}a${R} ${ry} 0 0 1 ${2*R} 0z" fill="#000" opacity=".2"/><ellipse cx="${x}" cy="${cy+R*.62}" rx="${R*.55}" ry="${R*.26}" fill="#fff" opacity=".3"/>`)
-     +`<ellipse cx="${x}" cy="${cy+.4}" rx="${R*.44}" ry="${R*.56}" fill="${INK}"/>`
-     +`<circle cx="${x-R*.36}" cy="${cy-R*.46}" r="${R*(eSpark?.42:.34)}" fill="#fff"/><circle cx="${x+R*.42}" cy="${cy+R*.42}" r="${R*.15}" fill="#fff"/>`
-     +(eSpark&&!mini?`<path d="M${x+R*.38} ${cy-R*.95}l.6 1.4 1.4.6-1.4.6-.6 1.4-.6-1.4-1.4-.6 1.4-.6z" fill="#fff"/>`:"")};
-  const lidL=(k,R)=>{const t=EY-R*1.16,L=39-R,Rr=39+R;
+  /* eyes have whites: a white almond, a small dark iris sitting low, and catch-lights only with the sparkle add-on */
+  const iris=(cx,R,dx)=>{const x=cx+dx,cy=EY,iy=cy+R*.18,ir=R*.64;
+    return `<ellipse cx="${cx}" cy="${cy}" rx="${R+1.5}" ry="${R}" fill="#fff" stroke="${INK}" stroke-width="${mini?0:.9}"/>`
+     +`<circle cx="${x}" cy="${iy}" r="${ir}" fill="${ic}"/><circle cx="${x}" cy="${iy}" r="${ir*.52}" fill="${INK}"/>`
+     +(eSpark?`<circle cx="${x-ir*.4}" cy="${iy-ir*.42}" r="${ir*.3}" fill="#fff"/><circle cx="${x+ir*.45}" cy="${iy+ir*.4}" r="${ir*.13}" fill="#fff"/>`:"")};
+  const lidL=(k,R)=>{const t=EY-R*.95,L=39-R,Rr=39+R;
     if(k==="gentle")return `M${L-1.4} ${EY-R*.15}Q${38} ${t-2.6} ${Rr+.6} ${EY-R*.8}`;
     if(k==="cat")return `M${Rr+.4} ${EY-R*.45}Q${40} ${t-2.4} ${L-.6} ${EY-R*.95}L${L-3.2} ${EY-R*1.45}`;
     return `M${L-1.2} ${EY-R*.55}Q39 ${t-2.6} ${Rr+.6} ${EY-R*.7}M${L-1.2} ${EY-R*.55}l-1.9-1.3`};
@@ -828,7 +829,7 @@ function avatarSVG(a0,cls="",mood=null,mini=false){
     smile:`<path d="M46 62.5q4 3.5 8 0" stroke="${INK}" stroke-width="1.6" fill="none" stroke-linecap="round"/>`,
     wavy:`<path d="M45 63.5q1.7-1.6 3.3 0t3.4 0 3.3 0" stroke="${INK}" stroke-width="1.5" fill="none" stroke-linecap="round"/>`,
     flat:`<path d="M47 64h6" stroke="${INK}" stroke-width="1.6" stroke-linecap="round"/>`};
-  const eyes=(ek==="own"?glossy(own):ek==="big"?glossy("big"):ek==="sleepy"?sleepyEye():(EYES[ek]?`<g transform="translate(0 2.5)">${EYES[ek]}</g>`:glossy(own)))+(BROWS[brow]||"");
+  const eyes=(ek==="own"?glossy(own):ek==="round"?glossy("round"):ek==="sleepy"?sleepyEye():(EYES[ek]?`<g transform="translate(0 2.5)">${EYES[ek]}</g>`:glossy(own)))+(BROWS[brow]||"");
   const mouth=MOUTHS[mk];
   const EAR={hoops:`<g fill="none" stroke="#E0B03C" stroke-width="1.6"><circle cx="18" cy="60" r="3.2"/><circle cx="82" cy="60" r="3.2"/></g>`,
     studs:`<g fill="#E0B03C"><circle cx="17.5" cy="57.5" r="1.7"/><circle cx="82.5" cy="57.5" r="1.7"/></g>`};
@@ -1300,9 +1301,9 @@ const OPTS=[
  ["skin","Skin",["#FDEBDD","#FBE3CF","#E9BE98","#B98058","#7A4E33"]],
  ["hair","Hair",[["wrap","Face-hugging bob"],["braids","Braids"],["long","Long"],["bob","Bob"],["bangs","Bangs"],["pigtails","Pigtails"],["short","Short"]]],
  ["hairC","Hair colour",["#E3D29A","#2B2320","#6B4430","#C98B4E","#B9A6E0"]],
- ["eyes","Eyes",[["deadpan","Deadpan"],["round","Round"],["big","Big"],["gentle","Gentle"],["cat","Cat-eye"],["small","Small"],["sleepy","Sleepy"],["smiley","Smiley"]]],
+ ["eyes","Eyes",[["deadpan","Deadpan"],["round","Round"],["gentle","Gentle"],["cat","Cat-eye"],["small","Small"],["sleepy","Sleepy"],["smiley","Smiley"]]],
  ["mouth","Mouth",[["pout","Pout"],["cat","Cat"],["tiny","Tiny smile"],["dot","Little o"],["smile","Smile"]]],
- ["irisC","Eye colour",["#6B4430","#2B2320","#3E7BD6","#2F8F5B","#8B5CC4","#C98B4E"]],
+ ["irisC","Eye colour",["#2B2320","#6B4430","#3E7BD6","#2F8F5B","#8B5CC4","#C98B4E"]],
  ["brows","Eyebrows",[["soft","Soft"],["straight","Straight"],["thick","Thick"],["thin","Thin"],["worried","Worried"],["bold","Determined"],["none","None"]]],
  ["browC","Eyebrow colour",["#1A1614","#6B4430","#C98B4E","#E3D29A"]],
  ["hat","Hat",[["none","None"],["band","Headband"],["beanie","Winter hat"],["cap","Cap"],["beret","Beret"],["bucket","Bucket hat"],["sunhat","Sun hat"],["scarf","Headscarf"],["muffs","Earmuffs"]]],
