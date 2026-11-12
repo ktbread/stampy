@@ -266,18 +266,28 @@ main{padding-block:28px 64px}
 .wl .on i{font-style:normal;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.25);font-size:13px;line-height:1}
 .wl-empty{color:var(--ink-soft);font-size:14px;margin:14px 0 4px}
 .wl-add{display:flex;gap:8px;justify-content:center;margin:14px auto 12px;max-width:360px}
-.wl-add input{flex:1;min-width:0;border:0;border-bottom:2px dashed var(--line);background:none;font:inherit;font-size:16px;padding:6px 2px;color:var(--ink)}
+.wl-add input{flex:1;min-width:0;border:0;background:var(--chip);font:inherit;font-size:16px;padding:10px 14px;border-radius:12px;color:var(--ink)}
+.wl-add{position:relative}
+.wl-dd{position:absolute;z-index:20;left:0;right:0;top:calc(100% + 6px);margin:0;padding:6px;list-style:none;background:var(--card);border-radius:16px;box-shadow:0 14px 30px -10px rgba(30,20,10,.35),0 0 0 1.5px var(--line);text-align:left;max-height:280px;overflow:auto}
+.wl-dd li{padding:9px 12px;border-radius:10px;cursor:pointer;display:flex;justify-content:space-between;gap:10px;font-weight:700;font-size:15px}
+.wl-dd li small{color:var(--ink-soft);font-weight:600;font-size:13px}
+.wl-dd li b{color:var(--neon)}
+.wl-dd li[aria-selected="true"]{background:var(--chip)}
 .wl-add .btn{padding:8px 14px}
 .wl-sug{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
 .wl-sug .chip:before{content:"+ "}
 /* sign-up */
 #hello .dlg{gap:16px}
-#hello .hello-me{display:grid;place-items:center}
+#hello .hello-me{display:grid;place-items:center;margin:4px 0 22px}
 #hello .hello-me svg{width:96px;height:142px}
-#hello h2{font-family:var(--f-big);font-weight:400;font-size:28px;line-height:1.05}
+#hello h2{font-family:var(--f-big);font-weight:400;font-size:28px;line-height:1.2;margin-bottom:10px}
+#hello .sub{line-height:1.6;font-size:15px}
+#hello input[type=text]{padding:12px 16px;border-radius:14px;border:0;background:var(--chip)}
+#hello #helloName{margin-top:16px}
 #hello .stepdots{display:flex;gap:6px}
 #hello .stepdots i{width:22px;height:5px;border-radius:3px;background:var(--line)}
 #hello .stepdots i.on{background:var(--neon)}
+#hello #helloWish .wl-add{margin-top:18px}
 .sw{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
 .sw button{border:0;width:42px;height:42px;border-radius:50%;box-shadow:inset 0 0 0 3px rgba(0,0,0,.08)}
 .sw button[aria-pressed="true"]{box-shadow:0 0 0 3px var(--wall),0 0 0 6px var(--ink)}
@@ -653,12 +663,14 @@ const PERSONA={
 
 /* ================= STATE ================= */
 const KEY="stampy.hk.v1";
-const DEF_AV={skin:"#FBE3CF",hair:"long",hairC:"#E3D29A",eyes:"round",brows:"soft",browC:"hair",hat:"none",hatC:"#C4202E",neck:"none",neckC:"#4C7FD0",sparkle:"off",react:"on",glasses:"#E0524F",clip:"#E0524F",top:"#D9473F",bottom:"shorts",bottomC:"#F6F1E4",shoes:"#D9473F",bag:"backpack",pose:"out",name:"Traveller"};
+const DEF_AV={skin:"#FBE3CF",hair:"long",hairC:"#E3D29A",eyes:"round",irisC:"#6B4430",brows:"soft",browC:"#6B4430",hat:"none",hatC:"#C4202E",neck:"none",neckC:"#4C7FD0",sparkle:"off",react:"on",glasses:"#E0524F",clip:"#E0524F",top:"#D9473F",bottom:"shorts",bottomC:"#F6F1E4",shoes:"#D9473F",bag:"backpack",pose:"out",name:"Traveller"};
 let S={checkins:[],quiz:null,filters:[],avatar:{...DEF_AV},tod:null,here:"tst",wishlist:[],onboarded:false};
 try{const r=JSON.parse(localStorage.getItem(KEY)||"null");if(r)S={...S,...r,avatar:{...DEF_AV,name:(r.avatar&&r.avatar.name)||DEF_AV.name,...(r.avatar&&r.avatar.v===2?r.avatar:{}),v:2}}}catch(e){}
 S.avatar.v=2;
 /* "A bit worried" used to be an eye style; it is now an eyebrow shape. */
 if(S.avatar.eyes==="worried"){S.avatar.eyes="round";S.avatar.brows="worried"}
+if(S.avatar.eyes==="lashes")S.avatar.eyes="big";
+if(S.avatar.browC==="hair")S.avatar.browC="#6B4430";
 if(!Array.isArray(S.wishlist))S.wishlist=[];
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));return true}catch(e){return false}}
 const $=s=>document.querySelector(s);
@@ -744,11 +756,33 @@ function avatarSVG(a0,cls="",mood=null,mini=false){
   // face: the user's chosen look, unless a mood is taking over
   const X=mood?MOOD_FACE[mood]:null;
   const spk=a.sparkle==="on";
-  const ek=X?X.eyes:({sleepy:"sleepy",smiley:"happy",small:spk?"smallS":"small",lashes:spk?"lashesS":"lashes"}[a.eyes]||(spk?"sparkly":"open"));
+  /* the traveller's own eye shape; a mood swaps it only for closed, sleepy, wide or spiral eyes */
+  const own=["round","big","gentle","cat","small"].includes(a.eyes)?a.eyes:"round";
+  const ek=X?({open:"own",sparkly:"own",side:"own",wide:"big"}[X.eyes]||X.eyes):(a.eyes==="smiley"?"happy":a.eyes==="sleepy"?"sleepy":"own");
+  const eSpark=spk||(X&&X.eyes==="sparkly"),eDx=X&&X.eyes==="side"?1.8:0;
   /* a mood can lift or knit the brows; otherwise they are the traveller's own */
   const brow=X&&X.brow!=="none"?X.brow:a.brows;
   const mk=X?X.mouth:"dot";
   const INK="#1A1614";
+  /* Glossy eyes: a coloured iris with a dark pupil, a big catch-light and a heavy upper lid.
+     Lids are drawn for the left eye and mirrored; the light always comes from the top left. */
+  const ic=a.irisC||"#6B4430";
+  const iris=(cx,R,dx)=>{const x=cx+dx,ry=R*1.16,cy=50.5;
+    return `<ellipse cx="${x}" cy="${cy}" rx="${R}" ry="${ry}" fill="${ic}" stroke="${INK}" stroke-width="1"/>`
+     +(mini?"":`<path d="M${x-R} ${cy}a${R} ${ry} 0 0 1 ${2*R} 0z" fill="#000" opacity=".2"/><ellipse cx="${x}" cy="${cy+R*.62}" rx="${R*.55}" ry="${R*.26}" fill="#fff" opacity=".3"/>`)
+     +`<ellipse cx="${x}" cy="${cy+.4}" rx="${R*.44}" ry="${R*.56}" fill="${INK}"/>`
+     +`<circle cx="${x-R*.36}" cy="${cy-R*.46}" r="${R*(eSpark?.42:.34)}" fill="#fff"/><circle cx="${x+R*.42}" cy="${cy+R*.42}" r="${R*.15}" fill="#fff"/>`
+     +(eSpark&&!mini?`<path d="M${x+R*.38} ${cy-R*.95}l.6 1.4 1.4.6-1.4.6-.6 1.4-.6-1.4-1.4-.6 1.4-.6z" fill="#fff"/>`:"")};
+  const lidL=(k,R)=>{const t=50.5-R*1.16,L=39-R,Rr=39+R;
+    if(k==="gentle")return `M${L-1.4} ${50.5-R*.15}Q${38} ${t-2.6} ${Rr+.6} ${50.5-R*.8}`;
+    if(k==="cat")return `M${Rr+.4} ${50.5-R*.45}Q${40} ${t-2.4} ${L-.6} ${50.5-R*.95}L${L-3.2} ${50.5-R*1.45}`;
+    return `M${L-1.2} ${50.5-R*.55}Q39 ${t-2.6} ${Rr+.6} ${50.5-R*.7}M${L-1.2} ${50.5-R*.55}l-1.9-1.3`};
+  const glossy=k=>{const R={big:7,small:4.8}[k]||6.1;
+    const lid=`<path d="${lidL(k,R)}" stroke="${INK}" stroke-width="${mini?2:2.5}" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+    const lash=k==="big"&&!mini?`<path d="M${39-R-1} ${50.5-R*.2}l-2.2-.4" stroke="${INK}" stroke-width="1.4" stroke-linecap="round"/>`:"";
+    return iris(39,R,eDx)+iris(61,R,eDx)+lid+lash+`<g transform="translate(100 0) scale(-1 1)">${lid}${lash}</g>`};
+  const sleepyEye=()=>{const R=6.1,lidFill=cx=>`<path d="M${cx-R-1.5} 50.2Q${cx} 47.6 ${cx+R+1.5} 50.2V42H${cx-R-1.5}Z" fill="${s}"/>`;
+    return iris(39,R,0)+iris(61,R,0)+lidFill(39)+lidFill(61)+`<path d="M${39-R-1.5} 50.2Q39 48.4 ${39+R+1.5} 50.2M${61-R-1.5} 50.2Q61 48.4 ${61+R+1.5} 50.2" stroke="${INK}" stroke-width="2.2" fill="none" stroke-linecap="round"/>`};
   const dotEye=(x,r,dx=0,hi=false)=>`<circle cx="${x+dx}" cy="49.5" r="${r}" fill="${INK}"/>${hi?`<circle cx="${x+dx-1.8}" cy="47.4" r="${r*.32}" fill="#fff"/><circle cx="${x+dx+1.9}" cy="51.6" r="${r*.14}" fill="#fff"/>`:""}`;
   const LASH=`<path d="M33.6 46.4l-3-1.8M34.4 44.2l-2.4-2.6M66.4 46.4l3-1.8M65.6 44.2l2.4-2.6" stroke="${INK}" stroke-width="1.5" stroke-linecap="round"/>`;
   const EYES={
@@ -780,7 +814,7 @@ function avatarSVG(a0,cls="",mood=null,mini=false){
     smile:`<path d="M46 61q4 3.5 8 0" stroke="${INK}" stroke-width="1.6" fill="none" stroke-linecap="round"/>`,
     wavy:`<path d="M45 62q1.7-1.6 3.3 0t3.4 0 3.3 0" stroke="${INK}" stroke-width="1.5" fill="none" stroke-linecap="round"/>`,
     flat:`<path d="M47 62.5h6" stroke="${INK}" stroke-width="1.6" stroke-linecap="round"/>`};
-  const eyes=EYES[ek]+(BROWS[brow]||"");
+  const eyes=(ek==="own"?glossy(own):ek==="big"?glossy("big"):ek==="sleepy"?sleepyEye():EYES[ek]||glossy(own))+(BROWS[brow]||"");
   const mouth=MOUTHS[mk];
   const hasHat=a.hat&&a.hat!=="none";
   /* with a hat on, mood props float a little higher so they don't sit on it */
@@ -1249,9 +1283,10 @@ const OPTS=[
  ["skin","Skin",["#FDEBDD","#FBE3CF","#E9BE98","#B98058","#7A4E33"]],
  ["hair","Hair",[["long","Long"],["bob","Bob"],["bangs","Bangs"],["pigtails","Pigtails"],["short","Short"]]],
  ["hairC","Hair colour",["#E3D29A","#2B2320","#6B4430","#C98B4E","#B9A6E0"]],
- ["eyes","Eyes",[["round","Round"],["small","Small"],["lashes","Lashes"],["smiley","Smiley"],["sleepy","Sleepy"]]],
+ ["eyes","Eyes",[["round","Round"],["big","Big"],["gentle","Gentle"],["cat","Cat-eye"],["small","Small"],["sleepy","Sleepy"],["smiley","Smiley"]]],
+ ["irisC","Eye colour",["#6B4430","#2B2320","#3E7BD6","#2F8F5B","#8B5CC4","#C98B4E"]],
  ["brows","Eyebrows",[["soft","Soft"],["straight","Straight"],["thick","Thick"],["thin","Thin"],["worried","Worried"],["bold","Determined"],["none","None"]]],
- ["browC","Eyebrow colour",[["hair","Like my hair"],"#1A1614","#6B4430","#C98B4E"]],
+ ["browC","Eyebrow colour",["#1A1614","#6B4430","#C98B4E","#E3D29A"]],
  ["hat","Hat",[["none","None"],["beanie","Winter hat"],["cap","Cap"],["beret","Beret"],["bucket","Bucket hat"],["sunhat","Sun hat"],["scarf","Headscarf"],["muffs","Earmuffs"]]],
  ["hatC","Hat colour",["#C4202E","#F2C14E","#4C7FD0","#5DAA6E","#F4A9C0","#FFFDF8","#2E2E36"]],
  ["neck","Around the neck",[["none","None"],["tie","Tie"],["bow","Bow tie"],["scarf","Scarf"],["bandana","Bandana"]]],
@@ -1267,9 +1302,9 @@ const OPTS=[
  ["pose","Pose",[["out","Arms out"],["wave","Waving"],["down","Arms down"]]],
  ["react","Shows my moods",[["on","On"],["off","Off"]]]
 ];
-const OPT_GROUPS=[["Face",["skin","eyes","sparkle","brows","browC"]],["Hair",["hair","hairC","clip"]],["Hats and extras",["hat","hatC","neck","neckC","glasses"]],["Outfit",["top","bottom","bottomC","shoes"]],["Bag and pose",["bag","pose","react"]]];
+const OPT_GROUPS=[["Face",["skin","eyes","irisC","sparkle","brows","browC"]],["Hair",["hair","hairC","clip"]],["Hats and extras",["hat","hatC","neck","neckC","glasses"]],["Outfit",["top","bottom","bottomC","shoes"]],["Bag and pose",["bag","pose","react"]]];
 /* Picture tiles: each option is drawn on your own traveller, cropped to the part that changes. */
-const TILE_VIEW={eyes:"26 28 48 40",brows:"26 26 48 40",hair:"6 -2 88 74",hat:"6 -10 88 74",neck:"22 56 56 42",bottom:"16 84 68 46",bag:"6 52 88 74",pose:"0 26 100 84"};
+const TILE_VIEW={eyes:"28 34 44 32",brows:"26 26 48 40",hair:"6 -2 88 74",hat:"6 -10 88 74",neck:"22 56 56 42",bottom:"16 84 68 46",bag:"6 52 88 74",pose:"0 26 100 84"};
 let meTab=0;
 function optRow([k,l,vals]){
   const vb=TILE_VIEW[k];
@@ -1294,14 +1329,25 @@ $("#meOpts").addEventListener("click",e=>{
 $("#meName").addEventListener("input",e=>{S.avatar.name=e.target.value||"Traveller";save()});
 
 /* ================= WISH LIST ================= */
-const WISH_SUGGEST=["Taipei","Kyoto","Seoul","Hanoi","Lisbon","Mexico City","Japan","Iceland","Italy","Morocco","Peru","New Zealand","Bangkok","Istanbul","Paris","New York","Bali","Patagonia"];
+/* For the type-ahead: countries, then cities with their country. */
+const PLACES=[..."Afghanistan|Albania|Algeria|Andorra|Angola|Argentina|Armenia|Australia|Austria|Azerbaijan|Bahamas|Bahrain|Bangladesh|Barbados|Belarus|Belgium|Belize|Benin|Bhutan|Bolivia|Bosnia and Herzegovina|Botswana|Brazil|Brunei|Bulgaria|Burkina Faso|Cambodia|Cameroon|Canada|Cape Verde|Chile|China|Colombia|Costa Rica|Croatia|Cuba|Cyprus|Czechia|Denmark|Dominican Republic|Ecuador|Egypt|El Salvador|Estonia|Eswatini|Ethiopia|Fiji|Finland|France|Georgia|Germany|Ghana|Greece|Greenland|Guatemala|Honduras|Hungary|Iceland|India|Indonesia|Iran|Iraq|Ireland|Israel|Italy|Jamaica|Japan|Jordan|Kazakhstan|Kenya|Kuwait|Kyrgyzstan|Laos|Latvia|Lebanon|Lithuania|Luxembourg|Madagascar|Malawi|Malaysia|Maldives|Malta|Mauritius|Mexico|Moldova|Monaco|Mongolia|Montenegro|Morocco|Mozambique|Myanmar|Namibia|Nepal|Netherlands|New Zealand|Nicaragua|Nigeria|North Macedonia|Norway|Oman|Pakistan|Palestine|Panama|Papua New Guinea|Paraguay|Peru|Philippines|Poland|Portugal|Qatar|Romania|Rwanda|Samoa|San Marino|Saudi Arabia|Scotland|Senegal|Serbia|Seychelles|Singapore|Slovakia|Slovenia|South Africa|South Korea|Spain|Sri Lanka|Sweden|Switzerland|Taiwan|Tajikistan|Tanzania|Thailand|Tonga|Trinidad and Tobago|Tunisia|Turkey|Uganda|Ukraine|United Arab Emirates|United Kingdom|United States|Uruguay|Uzbekistan|Vanuatu|Vatican City|Venezuela|Vietnam|Wales|Zambia|Zimbabwe".split("|").map(n=>({n,sub:"Country"})),
+ ..."Amsterdam,Netherlands|Athens,Greece|Auckland,New Zealand|Bali,Indonesia|Bangkok,Thailand|Barcelona,Spain|Beijing,China|Berlin,Germany|Bogotá,Colombia|Boston,United States|Brussels,Belgium|Budapest,Hungary|Buenos Aires,Argentina|Busan,South Korea|Cairo,Egypt|Cape Town,South Africa|Cartagena,Colombia|Chengdu,China|Chiang Mai,Thailand|Chicago,United States|Copenhagen,Denmark|Cusco,Peru|Dubai,United Arab Emirates|Dublin,Ireland|Dubrovnik,Croatia|Edinburgh,United Kingdom|Florence,Italy|Fukuoka,Japan|Hanoi,Vietnam|Havana,Cuba|Helsinki,Finland|Hiroshima,Japan|Ho Chi Minh City,Vietnam|Hoi An,Vietnam|Honolulu,United States|Istanbul,Turkey|Jaipur,India|Jeju,South Korea|Kaohsiung,Taiwan|Kathmandu,Nepal|Kraków,Poland|Kuala Lumpur,Malaysia|Kyoto,Japan|Las Vegas,United States|Lima,Peru|Lisbon,Portugal|London,United Kingdom|Los Angeles,United States|Luang Prabang,Laos|Lyon,France|Macau,China|Madrid,Spain|Manila,Philippines|Marrakech,Morocco|Melbourne,Australia|Mexico City,Mexico|Miami,United States|Milan,Italy|Montréal,Canada|Moscow,Russia|Mumbai,India|Munich,Germany|Nairobi,Kenya|Naples,Italy|Nara,Japan|New Orleans,United States|New York,United States|Nice,France|Osaka,Japan|Oslo,Norway|Paris,France|Penang,Malaysia|Perth,Australia|Phnom Penh,Cambodia|Porto,Portugal|Prague,Czechia|Queenstown,New Zealand|Quebec City,Canada|Reykjavík,Iceland|Rio de Janeiro,Brazil|Rome,Italy|San Francisco,United States|Santiago,Chile|Santorini,Greece|Sapporo,Japan|Seattle,United States|Seoul,South Korea|Seville,Spain|Shanghai,China|Siem Reap,Cambodia|Singapore,Singapore|Stockholm,Sweden|Sydney,Australia|Taipei,Taiwan|Tainan,Taiwan|Tallinn,Estonia|Tbilisi,Georgia|Tokyo,Japan|Toronto,Canada|Ulaanbaatar,Mongolia|Vancouver,Canada|Venice,Italy|Vienna,Austria|Xi'an,China|Zürich,Switzerland".split("|").map(x=>{const [n,c]=x.split(",");return {n,sub:c}}),
+ {n:"Patagonia",sub:"Argentina and Chile"},{n:"Lapland",sub:"Finland"},{n:"Swiss Alps",sub:"Switzerland"},{n:"Hokkaido",sub:"Japan"},{n:"Okinawa",sub:"Japan"}];
+const fold=t=>t.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
+function placeMatches(q){
+  q=fold(q.trim());if(!q)return [];
+  const hit=PLACES.filter(p=>!onWish(p.n)&&(fold(p.n).includes(q)||fold(p.sub).startsWith(q)));
+  const rank=p=>fold(p.n).startsWith(q)?0:fold(p.n).split(/[ -]/).some(w=>w.startsWith(q))?1:fold(p.n).includes(q)?2:3;
+  return hit.sort((a,b)=>rank(a)-rank(b)||a.n.localeCompare(b.n)).slice(0,7);
+}
+const WISH_SUGGEST=["Taipei","Kyoto","Seoul","Hanoi","Lisbon","Mexico City","Iceland","Morocco","New Zealand","Patagonia"];
 const onWish=name=>S.wishlist.some(w=>w.toLowerCase()===name.toLowerCase());
 function addWish(name){name=name.trim().replace(/\s+/g," ").slice(0,40);if(!name||onWish(name))return;S.wishlist.push(name);save()}
 function dropWish(name){S.wishlist=S.wishlist.filter(w=>w!==name);save()}
 function wishUI(){
   const sug=WISH_SUGGEST.filter(w=>!onWish(w));
   return `${S.wishlist.length?`<div class="wl">${S.wishlist.map(w=>`<button type="button" class="on" data-drop="${esc(w)}" aria-label="Remove ${esc(w)}">${esc(w)}<i aria-hidden="true">×</i></button>`).join("")}</div>`:`<p class="wl-empty">Nothing on your list yet.</p>`}
-  <div class="wl-add"><input type="text" maxlength="40" placeholder="Add a country or city" aria-label="Add a country or city" autocomplete="off"><button type="button" class="btn" data-add>Add</button></div>
+  <div class="wl-add"><input type="text" maxlength="40" placeholder="Start typing a country or city" aria-label="Add a country or city" role="combobox" aria-autocomplete="list" aria-expanded="false" autocomplete="off"><button type="button" class="btn" data-add>Add</button><ul class="wl-dd" role="listbox" hidden></ul></div>
   ${sug.length?`<div class="wl-sug">${sug.map(w=>`<button type="button" class="chip" data-pick="${esc(w)}">${esc(w)}</button>`).join("")}</div>`:""}`;
 }
 /* One handler for both places the list lives (sign-up and the ME page). */
@@ -1314,7 +1360,28 @@ function wireWish(box){
     else return;
     draw();
   });
-  box.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.matches(".wl-add input")){e.preventDefault();addWish(e.target.value);draw();box.querySelector(".wl-add input").focus()}});
+  /* drop-down of matching places while typing */
+  let act=-1,list=[];
+  const inp=()=>box.querySelector(".wl-add input"),dd=()=>box.querySelector(".wl-dd");
+  const showDD=()=>{const q=inp().value;list=placeMatches(q);act=list.length?0:-1;const u=dd();
+    if(!list.length){u.hidden=true;inp().setAttribute("aria-expanded","false");return}
+    const fq=fold(q.trim());
+    u.innerHTML=list.map((p,i)=>{const k=fold(p.n).indexOf(fq),name=k<0?esc(p.n):esc(p.n.slice(0,k))+"<b>"+esc(p.n.slice(k,k+fq.length))+"</b>"+esc(p.n.slice(k+fq.length));
+      return `<li role="option" data-i="${i}" aria-selected="${i===act}"><span>${name}</span><small>${esc(p.sub)}</small></li>`}).join("");
+    u.hidden=false;inp().setAttribute("aria-expanded","true")};
+  const setAct=i=>{act=(i+list.length)%list.length;dd().querySelectorAll("li").forEach((l,k)=>l.setAttribute("aria-selected",String(k===act)))};
+  const take=name=>{addWish(name);draw();inp().focus()};
+  box.addEventListener("input",e=>{if(e.target.matches(".wl-add input"))showDD()});
+  box.addEventListener("mousedown",e=>{const li=e.target.closest(".wl-dd li");if(li){e.preventDefault();take(list[+li.dataset.i].n)}});
+  box.addEventListener("focusout",e=>{if(e.target.matches(".wl-add input"))setTimeout(()=>{if(dd())dd().hidden=true},120)});
+  box.addEventListener("keydown",e=>{
+    if(!e.target.matches(".wl-add input"))return;
+    const open=!dd().hidden&&list.length;
+    if(e.key==="ArrowDown"&&open){e.preventDefault();setAct(act+1)}
+    else if(e.key==="ArrowUp"&&open){e.preventDefault();setAct(act-1)}
+    else if(e.key==="Escape"&&open){e.preventDefault();e.stopPropagation();dd().hidden=true}
+    else if(e.key==="Enter"){e.preventDefault();take(open&&act>=0?list[act].n:e.target.value)}
+  });
   return draw;
 }
 const drawMeWish=wireWish($("#meWish")),drawHelloWish=wireWish($("#helloWish"));
