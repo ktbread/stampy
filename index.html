@@ -92,6 +92,8 @@ main{padding-block:28px 64px}
 .stage-foot{position:relative;z-index:2;text-align:center;padding:0 16px max(20px,env(safe-area-inset-bottom,0px));pointer-events:none}
 .stage-foot h1{font-family:var(--f-big);font-weight:400;text-transform:uppercase;white-space:nowrap;line-height:.95;font-size:min(calc(112vw / var(--len,9)),15svh)}
 .stage-foot p{margin:8px 0 0;font-size:15px;font-weight:700}
+.view:not(.stage):not([hidden]){animation:viewIn .32s cubic-bezier(.2,.8,.3,1)}
+@keyframes viewIn{from{opacity:0;transform:translateY(8px)}}
 .zoomout{animation:zoom .55s cubic-bezier(.6,0,.4,1) forwards;z-index:40;position:relative}
 @keyframes zoom{to{transform:scale(3.2) rotate(4deg);opacity:0}}
 
@@ -135,7 +137,8 @@ main{padding-block:28px 64px}
 .mapwrap[data-tod="golden"]{--m-sea:#F2B8A2;--m-wave:#F8D2BE;--m-land:#E9D79F;--m-far:#EFE3C4;--m-land2:#DDC686;--m-shadow:#D08F86;--m-hill:#D8BE80;--m-hill2:#C9AB6E;--m-tree:#B59C5C;--m-bld:#FFE9CF;--m-bld2:#F8D3C6;--m-win:#FFD27A;--m-route:#FFF4E6;--m-tint:rgba(255,170,90,.12);--m-label:#4A2A2A;--m-labelbg:#FFF6EA}
 .mapwrap[data-tod="night"]{--m-sea:#1C2A4E;--m-wave:#2A3B66;--m-land:#33406B;--m-far:#2A3457;--m-land2:#3A4A7A;--m-shadow:#0F1733;--m-hill:#3E4D80;--m-hill2:#46578E;--m-tree:#2F5B66;--m-bld:#4A4F7E;--m-bld2:#5A4C7E;--m-win:#FFD66B;--m-route:#6C7DB8;--m-tint:rgba(10,15,40,.05);--m-label:#FFFFFF;--m-labelbg:#2A3560}
 .mapsvg{position:absolute;inset:0;width:100%;height:100%;display:block}
-.mapsvg *{transition:fill .7s ease,stroke .7s ease,opacity .7s ease}
+.mapwrap.tod-anim .mapsvg *{transition:fill .7s ease,stroke .7s ease}
+.mapwrap.tod-anim .neon-glow,.mapwrap.tod-anim .cloud{transition:opacity .7s ease}
 .neon-glow{opacity:0;filter:blur(14px)}
 .mapwrap[data-tod="night"] .neon-glow{opacity:1}
 .mapwrap[data-tod="night"] .cloud{opacity:0}
@@ -166,9 +169,33 @@ main{padding-block:28px 64px}
 .pol{position:absolute;pointer-events:auto;background:#fff;padding:4px 4px 12px;width:52px;box-shadow:0 4px 10px rgba(0,0,0,.25);border:0;transform-origin:50% 0}
 .pol img{width:44px;height:44px;object-fit:cover;display:block}
 .pol::before{content:"";position:absolute;top:-6px;left:50%;width:10px;height:10px;margin-left:-5px;border-radius:50%;background:var(--neon);box-shadow:inset -2px -2px 0 rgba(0,0,0,.2)}
-.me-on-map{position:absolute;width:52px;height:77px;filter:drop-shadow(0 3px 0 rgba(20,30,60,.15));z-index:4;pointer-events:none;transform:translate(-50%,-100%);transition:left .8s cubic-bezier(.5,0,.3,1),top .8s cubic-bezier(.5,0,.3,1)}
-.me-on-map svg{width:100%;height:100%;animation:bob 1.4s ease-in-out infinite}
-@keyframes bob{50%{transform:translateY(-3px)}}
+.me-on-map{position:absolute;left:0;top:0;width:60px;height:89px;will-change:transform;filter:drop-shadow(0 3px 0 rgba(20,30,60,.15));z-index:4;pointer-events:none;transform:translate(-50%,-100%);transition:transform .8s cubic-bezier(.5,0,.3,1)}
+.me-on-map svg{width:100%;height:100%;overflow:visible}
+/* idle: a slow breath, not a bounce */
+.me-on-map .tv-body,#meBig .tv-body{transform-box:fill-box;transform-origin:50% 100%;animation:breathe 3.2s ease-in-out infinite}
+@keyframes breathe{50%{transform:scaleY(1.025)}}
+/* walking between areas: a small waddle */
+.me-on-map.walking svg{animation:waddle .2s ease-in-out 4 alternate}
+@keyframes waddle{from{transform:rotate(-5deg) translateY(0)}to{transform:rotate(5deg) translateY(-3px)}}
+/* reacting to a new mood: hop, then the prop pops in */
+.reacting svg{animation:hop .55s cubic-bezier(.3,1.5,.5,1)}
+@keyframes hop{30%{transform:translateY(-12%) scale(1.04,.96)}60%{transform:translateY(0) scale(.96,1.04)}}
+.reacting .tv-prop{animation:propIn .5s .25s cubic-bezier(.3,1.6,.5,1) both}
+@keyframes propIn{from{opacity:0;transform:translateY(8px) scale(.4)}}
+.tv-prop{transform-box:fill-box;transform-origin:50% 100%}
+/* each prop has its own small idle loop */
+.tv-prop-cloud{animation:drift 4s ease-in-out infinite}
+@keyframes drift{50%{transform:translateX(3px)}}
+.tv-prop-stars,.tv-prop-bolts{animation:twinkle 1.8s ease-in-out infinite}
+@keyframes twinkle{50%{opacity:.45;transform:scale(.9)}}
+.tv-prop-steam,.tv-prop-bubbles{animation:rise 2.6s ease-in-out infinite}
+@keyframes rise{50%{transform:translateY(-3px);opacity:.6}}
+.tv-prop-swirl{transform-origin:50% 50%;animation:spin 3s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.tv-prop-sweat{animation:slide 2.4s ease-in infinite}
+@keyframes slide{0%,40%{transform:none;opacity:1}100%{transform:translateY(5px);opacity:0}}
+.tv-prop-heart,.tv-prop-flower,.tv-prop-qmark,.tv-prop-house,.tv-prop-dots{animation:float 3s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-2px)}}
 
 .pop{position:absolute;z-index:10;width:350px;max-height:calc(100% - 24px);overflow:auto;background:var(--card);color:var(--ink);border-radius:22px;
   box-shadow:0 20px 50px -10px rgba(10,20,50,.45);padding:18px 18px 12px;animation:pop .25s cubic-bezier(.3,1.5,.5,1)}
@@ -642,7 +669,7 @@ const MOOD_PROP={
   swirl:`<path d="M50 4m-1 0a1 1 0 1 1 2 0a3 3 0 1 1-6 0a5 5 0 1 1 10 0a7 7 0 1 1-14 0" stroke="#9C8BD9" stroke-width="1.8" fill="none"/>`
 };
 function currentMood(){if(S.avatar.react==="off")return null;const c=[...S.checkins].reverse().find(c=>c.mood);return c||null}
-function avatarSVG(a0,cls="",mood=null){
+function avatarSVG(a0,cls="",mood=null,mini=false){
   const a={...DEF_AV,...a0};
   if(mood&&!MOOD_FACE[mood])mood=null;
   const O="";
@@ -683,7 +710,7 @@ function avatarSVG(a0,cls="",mood=null){
     flat:`<path d="M47 62.5h6" stroke="${INK}" stroke-width="1.6" stroke-linecap="round"/>`};
   const eyes=EYES[ek]+BROWS[brow];
   const mouth=MOUTHS[mk];
-  const prop=X?MOOD_PROP[X.prop]||"":"";
+  const prop=X?`<g class="tv-prop tv-prop-${X.prop}">${MOOD_PROP[X.prop]||""}</g>`:"";
   if(X&&X.pose)a.pose=X.pose;
   const glasses=a.glasses==="none"?"":`<g fill="none" stroke="${a.glasses}" stroke-width="1.8"><rect x="28.5" y="40" width="21" height="18" rx="8"/><rect x="50.5" y="40" width="21" height="18" rx="8"/><path d="M49.5 47h1M28.5 47l-5-1M71.5 47l5-1"/></g>`;
   const clip=a.clip==="none"?"":`<g transform="rotate(-18 36 30)"><rect x="32" y="24" width="7" height="12" rx="2.5" fill="${a.clip}" ${O}/><rect x="34" y="27" width="3" height="3" rx="1" fill="#FFF3C4"/></g>`;
@@ -703,6 +730,7 @@ function avatarSVG(a0,cls="",mood=null){
   let bottom;
   if(a.bottom==="skirt")bottom=legs+socks+shoes+`<path d="M33 92H67L71 108Q50 112 29 108Z" fill="${b}" ${O}/><path d="M42 94l-2 14M50 94v15M58 94l2 14" stroke="#2B2420" stroke-width="1" opacity=".45"/>`;
   else if(a.bottom==="trousers")bottom=`<path d="M33 92H67L66 116H52L50 102L48 116H34Z" fill="${b}" ${O}/>`+shoes;
+  else if(mini)bottom=legs+shoes+`<path d="M33 92H67L68 106H51L50 100L49 106H32Z" fill="${b}"/>`;
   else bottom=legs+socks+shoes+`<path d="M33 92H67L68 106H51L50 100L49 106H32Z" fill="${b}" ${O}/><rect x="33.5" y="96" width="6" height="6" rx="1" fill="none" stroke="#2B2420" stroke-width="1" opacity=".5"/><rect x="60.5" y="96" width="6" height="6" rx="1" fill="none" stroke="#2B2420" stroke-width="1" opacity=".5"/>`;
   // bag
   let bagBack="",bagFront="";
@@ -711,10 +739,10 @@ function avatarSVG(a0,cls="",mood=null){
   if(a.bag==="camera")bagFront=`<path d="M38 70l6 8M62 70l-6 8" stroke="#2B2420" stroke-width="1.4"/><rect x="40" y="77" width="20" height="13" rx="3" fill="#2E2E36" ${O}/><circle cx="50" cy="83.5" r="4" fill="#9CC8E0" stroke="#fff" stroke-width="1.3"/>`;
   return `<svg class="${cls}" viewBox="0 -18 100 148" aria-hidden="true"><g>
   <ellipse cx="50" cy="126" rx="24" ry="3.5" fill="rgba(0,0,0,.12)"/>
-  ${hair.back}${bagBack}
+  <g class="tv-body">${hair.back}${bagBack}
   ${bottom}
-  <path d="M35 70Q50 66 65 70L67 94H33Z" fill="${t}" ${O}/><path d="M44 68.2q6 4 12 0" fill="none" stroke="rgba(0,0,0,.18)" stroke-width="1.6" stroke-linecap="round"/>
-  ${a.top==="#FFFDF8"?"":`<path d="M46 80q4-3 8 0" stroke="#fff" stroke-width="1.4" fill="none" opacity=".7"/>`}
+  <path d="M35 70Q50 66 65 70L67 94H33Z" fill="${t}" ${O}/>${mini?"":`<path d="M44 68.2q6 4 12 0" fill="none" stroke="rgba(0,0,0,.18)" stroke-width="1.6" stroke-linecap="round"/>
+  ${a.top==="#FFFDF8"?"":`<path d="M46 80q4-3 8 0" stroke="#fff" stroke-width="1.4" fill="none" opacity=".7"/>`}`}
   ${arms}${bagFront}
   <circle cx="22" cy="50" r="7.5" fill="${s}" ${O}/><circle cx="22" cy="51" r="4.5" fill="${blush}" opacity=".45"/>
   <circle cx="78" cy="50" r="7.5" fill="${s}" ${O}/><circle cx="78" cy="51" r="4.5" fill="${blush}" opacity=".45"/>
@@ -723,7 +751,7 @@ function avatarSVG(a0,cls="",mood=null){
   <ellipse cx="33" cy="59" rx="6" ry="3.4" fill="${blush}" opacity=".45"/><ellipse cx="67" cy="59" rx="6" ry="3.4" fill="${blush}" opacity=".45"/>
   ${hair.front}${eyes}
   ${mouth}
-  ${glasses}${clip}${prop}
+  ${mini?"":glasses+clip}</g>${prop}
   </g></svg>`;
 }
 
@@ -803,7 +831,22 @@ function renderPins(){
     h+=`<button type="button" class="pol" data-ck="${c.id}" style="left:calc(${a.x/10}% + ${18+i*16}px);top:calc(${(a.y-100)/6}% - ${54-i*4}px);transform:rotate(${-8+i*9}deg)" aria-label="Photo at ${esc(SPOTS[c.spot].name)}"><img src="${c.img}" alt=""></button>`})});
   $("#pins").innerHTML=h;
 }
-function placeMe(id){const a=AREA[id]||AREA.tst;const m=$("#meOnMap");m.style.left=`calc(${a.x/10}% + 58px)`;m.style.top=`calc(${(a.y-100)/6}% + 22px)`;}
+/* Move with transform (no layout work), and waddle only while travelling. */
+function placeMe(id,walk){
+  const a=AREA[id]||AREA.tst,m=$("#meOnMap"),w=$("#mapwrap");
+  const x=a.x/1000*w.clientWidth-46,y=(a.y-100)/600*w.clientHeight+26;
+  const was=m.dataset.at;m.dataset.at=id;
+  m.style.transform=`translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,0) translate(-50%,-100%)`;
+  if(walk&&was&&was!==id&&!reduced()){m.classList.remove("walking");void m.offsetWidth;m.classList.add("walking");clearTimeout(m._w);m._w=setTimeout(()=>m.classList.remove("walking"),800)}
+}
+/* A hop and a prop pop-in when the mood on show changes (a new check-in, or reactions switched on). */
+function meReact(el,mood){
+  const key=mood||"none";if(el.dataset.mood===key)return;
+  const first=el.dataset.mood===undefined;el.dataset.mood=key;
+  if(first||!mood||reduced())return;
+  el.classList.remove("reacting");void el.offsetWidth;el.classList.add("reacting");
+  setTimeout(()=>el.classList.remove("reacting"),900);
+}
 function renderPop(id){
   const a=AREA[id],p=$("#pop");
   const done=new Set(S.checkins.filter(c=>c.area===id).map(c=>c.spot));
@@ -820,7 +863,7 @@ function renderPop(id){
         :`<button type="button" class="dk" data-spot="${sp.id}">Check in</button>`}</div></div>`}).join("");
     h+=`</div>`;
   }
-  p.innerHTML=h;p.hidden=false;
+  p.innerHTML=h;p.hidden=false;p.style.transformOrigin=a.x>500?"0 30%":"100% 30%";
   // place next to hotspot
   const mw=$("#mapwrap"),W=mw.clientWidth,pw=Math.min(350,W-24);
   const left=mw.offsetLeft+(a.x>500?12:W-pw-12);
@@ -829,16 +872,16 @@ function renderPop(id){
 function openArea(id,pin){
   clearTimeout(hoverT);openId=id;pinned=!!pin;S.here=id;save();
   document.querySelectorAll(".hot").forEach(b=>b.classList.toggle("on",b.dataset.area===id));
-  renderPop(id);placeMe(id);
+  renderPop(id);placeMe(id,true);
 }
 function closePop(){openId=null;pinned=false;$("#pop").hidden=true;document.querySelectorAll(".hot").forEach(b=>b.classList.remove("on"))}
-function setTod(t){S.tod=t;save();$("#mapwrap").dataset.tod=t;document.querySelectorAll(".tod button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.tod===t))}
+function setTod(t){S.tod=t;save();const w=$("#mapwrap");if(w.dataset.tod&&w.dataset.tod!==t&&!reduced()){w.classList.add("tod-anim");clearTimeout(w._t);w._t=setTimeout(()=>w.classList.remove("tod-anim"),800)}w.dataset.tod=t;document.querySelectorAll(".tod button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.tod===t))}
 function renderMap(){
   if(!$("#mapsvg").innerHTML)$("#mapsvg").innerHTML=buildMapSVG();
   const dark=matchMedia("(prefers-color-scheme: dark)").matches&&document.documentElement.dataset.theme!=="light"||document.documentElement.dataset.theme==="dark";
   setTod(S.tod||(dark?"night":"day"));
   renderFilters();renderLegend();renderHots();renderPins();
-  $("#meOnMap").innerHTML=avatarSVG(S.avatar,"",(currentMood()||{}).mood);placeMe(S.here);
+  const mm=(currentMood()||{}).mood;$("#meOnMap").innerHTML=avatarSVG(S.avatar,"",mm,true);meReact($("#meOnMap"),mm);placeMe(S.here);
   const n=new Set(S.checkins.map(c=>c.spot)).size;
   $("#mapProg").textContent=`${n} of ${TOTAL} spots stamped`;
   if(openId)renderPop(openId);
@@ -856,7 +899,7 @@ $("#filters").addEventListener("click",e=>{const b=e.target.closest("[data-tag]"
   if(t==="__clear")S.filters=[];else S.filters=S.filters.includes(t)?S.filters.filter(x=>x!==t):[...S.filters,t];save();renderMap()});
 $("#filterBtn").addEventListener("click",()=>{const f=$("#filters");f.hidden=!f.hidden;$("#filterBtn").setAttribute("aria-expanded",String(!f.hidden));if(openId)renderPop(openId)});
 document.querySelectorAll(".tod button").forEach(b=>b.addEventListener("click",()=>setTod(b.dataset.tod)));
-addEventListener("resize",()=>{if(openId&&!$("#v-map").hidden)renderPop(openId)});
+addEventListener("resize",()=>{if($("#v-map").hidden)return;if(openId)renderPop(openId);placeMe(S.here)});
 
 /* ================= WALL ================= */
 /* Each background is a colour the place is known for. fg is the text on it, ink is the drawing on the stamp. */
@@ -904,9 +947,10 @@ function snapTarget(pos,velocity){
 function paintStage(){
   CAR.slides.forEach((el,i)=>{
     const o=offsetFrom(i-CAR.pos),a=Math.abs(o);
-    el.style.visibility=a>2.4?"hidden":"visible";
-    el.style.zIndex=String(10-Math.round(a));
-    el.style.transform=`translate(-50%,-50%) translateX(${(o*CAR.step).toFixed(1)}px) rotate(${(o*1.5).toFixed(2)}deg) scale(${(1-.16*Math.min(a,1)).toFixed(3)})`;
+    const vis=a>2.4?"hidden":"visible",z=String(10-Math.round(a));
+    if(el.style.visibility!==vis)el.style.visibility=vis;
+    if(el.style.zIndex!==z)el.style.zIndex=z;
+    if(vis==="visible")el.style.transform=`translate(-50%,-50%) translateX(${(o*CAR.step).toFixed(1)}px) rotate(${(o*1.5).toFixed(2)}deg) scale(${(1-.16*Math.min(a,1)).toFixed(3)})`;
   });
   setCurrent();
 }
@@ -927,14 +971,16 @@ function setCurrent(force){
   CAR.slides.forEach((el,k)=>{el.classList.toggle("is-center",k===i);el.tabIndex=k===i?0:-1});
   if(changed&&!reduced())name.animate([{opacity:0,transform:"translateY(.14em)"},{opacity:1,transform:"none"}],{duration:320,easing:"ease-out"});
 }
-function tickStage(){
-  CAR.raf=0;if(CAR.drag)return;
+/* Ease toward the target by time, not frames, so it feels the same on 60Hz and 120Hz screens. */
+function tickStage(now){
+  CAR.raf=0;if(CAR.drag){CAR.last=0;return}
+  const dt=CAR.last?Math.min(now-CAR.last,50):16;CAR.last=now;
   const d=CAR.target-CAR.pos;
-  if(Math.abs(d)<.002||reduced())CAR.pos=CAR.target;
-  else{CAR.pos+=d*.16;CAR.raf=requestAnimationFrame(tickStage)}
+  if(Math.abs(d)<.002||reduced()){CAR.pos=CAR.target;CAR.last=0}
+  else{CAR.pos+=d*(1-Math.exp(-dt/95));CAR.raf=requestAnimationFrame(tickStage)}
   paintStage();
 }
-function goTo(t){CAR.target=t;if(!CAR.raf)CAR.raf=requestAnimationFrame(tickStage)}
+function goTo(t){CAR.target=t;if(!CAR.raf){CAR.last=0;CAR.raf=requestAnimationFrame(tickStage)}}
 function layoutStage(){
   const w=CAR.slides[0].offsetWidth;if(!w)return;
   CAR.step=w*(innerWidth<720?.98:1.12);paintStage();
@@ -948,7 +994,7 @@ function openCity(i){
   const c=CITIES[i],t=CAR.slides[i].querySelector(".tilt");
   if(!c.open){if(!reduced())t.animate([{rotate:"0deg"},{rotate:"-2.5deg"},{rotate:"2.5deg"},{rotate:"0deg"}],{duration:320});return}
   if(reduced()){location.hash="map";return}
-  t.classList.add("zoomout");setTimeout(()=>{location.hash="map";t.classList.remove("zoomout")},520);
+  t.classList.add("zoomout");let done=false;const go=()=>{if(done)return;done=true;location.hash="map";t.classList.remove("zoomout")};t.addEventListener("animationend",go,{once:true});setTimeout(go,700);
 }
 function clearTilt(){const t=CAR.tilted;if(!t)return;t.classList.remove("lit");t.style.removeProperty("--rx");t.style.removeProperty("--ry");CAR.tilted=null}
 function tiltAt(e){
@@ -1122,7 +1168,7 @@ function optRow([k,l,vals]){
 }
 function renderMe(){
   const cm=currentMood();
-  $("#meBig").innerHTML=avatarSVG(S.avatar,"",cm&&cm.mood);$("#meName").value=S.avatar.name;
+  $("#meBig").innerHTML=avatarSVG(S.avatar,"",cm&&cm.mood);meReact($("#meBig"),cm&&cm.mood);$("#meName").value=S.avatar.name;
   $("#meFeel").innerHTML=cm?`Feeling <b>${esc(MOOD[cm.mood].en)}</b> ${MOOD[cm.mood].e} since ${esc(SPOTS[cm.spot].name)}`:(S.avatar.react==="off"?"Mood reactions are off":"Check in somewhere with a mood sticker and your traveller will show it");
   const rows=OPT_GROUPS[meTab][1].map(k=>OPTS.find(o=>o[0]===k));
   $("#meOpts").innerHTML=`<div class="me-tabs">${OPT_GROUPS.map(([t],i)=>`<button type="button" class="chip" data-tab="${i}" aria-pressed="${i===meTab}">${t}</button>`).join("")}</div>
