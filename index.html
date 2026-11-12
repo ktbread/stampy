@@ -783,19 +783,20 @@ function avatarSVG(a0,cls="",mood=null,mini=false){
   const EY=52.5;
   /* eyes have whites: a white almond, a dark iris that runs from top to bottom of the white, and catch-lights only with the sparkle add-on */
   const iris=(cx,R,dx)=>{const x=cx+dx,cy=EY,iy=cy,ir=R*.6;
-    return `<ellipse cx="${cx}" cy="${cy}" rx="${R+1.5}" ry="${R}" fill="#fff" stroke="${INK}" stroke-width="${mini?0:.9}"/>`
-     +`<ellipse cx="${x}" cy="${cy}" rx="${ir}" ry="${R-.2}" fill="${ic}"/><ellipse cx="${x}" cy="${cy}" rx="${ir*.5}" ry="${R*.56}" fill="${INK}"/>`
-     +(eSpark?STAR(x-ir*.3,iy-R*.4,ir*.5):"")};
+    const ry=Math.max(R,4.9);
+    return `<ellipse cx="${cx}" cy="${cy}" rx="${R+1.5}" ry="${ry}" fill="#fff" stroke="${INK}" stroke-opacity=".28" stroke-width="${mini?0:.6}"/>`
+     +`<ellipse cx="${x}" cy="${cy}" rx="4.7" ry="${Math.min(4.7,ry-.2)}" fill="${ic}"/>`
+     +(eSpark?STAR(x-1.3,cy-1.8,1.9):"")+lowLash(cx,R+1.5,ry)};
   const lidL=(k,R)=>{const t=EY-R*.95,L=36.5-R,Rr=36.5+R;
     if(k==="gentle")return `M${L-1.4} ${EY-R*.15}Q${38} ${t-2.6} ${Rr+.6} ${EY-R*.8}`;
     if(k==="cat")return `M${Rr+.4} ${EY-R*.45}Q${40} ${t-2.4} ${L-.6} ${EY-R*.95}L${L-3.2} ${EY-R*1.45}`;
     return `M${L-1.2} ${EY-R*.55}Q36.5 ${t-2.6} ${Rr+.6} ${EY-R*.7}M${L-1.2} ${EY-R*.55}l-1.9-1.3`};
   /* deadpan: a flat, heavy lid over the top half of a small iris */
-  const deadpan=()=>{const W=6.6,D=8,T=EY-2.6;
+  const deadpan=()=>{const W=6.6,D=9.6,T=EY-2.6;
     const one=(cx,toNose)=>{const px=cx+toNose*1.5+eDx;
-      return `<path d="M${cx-W} ${T}H${cx+W}A${W} ${D} 0 0 1 ${cx-W} ${T}Z" fill="#fff" stroke="${INK}" stroke-width="${mini?0:.9}"/>`
-       +`<circle cx="${px}" cy="${T+4.3}" r="3.7" fill="${ic}"/>`
-       +(eSpark?STAR(px-1,T+3,1.5):"")
+      return `<path d="M${cx-W} ${T}H${cx+W}A${W} ${D} 0 0 1 ${cx-W} ${T}Z" fill="#fff" stroke="${INK}" stroke-opacity=".28" stroke-width="${mini?0:.6}"/>`
+       +`<circle cx="${px}" cy="${T+4.8}" r="4.7" fill="${ic}"/>`
+       +(eSpark?STAR(px-1.3,T+3.2,1.9):"")+lowLash(cx,W,D,T)
        +`<path d="M${cx-W-.6} ${T}H${cx+W+.6}" stroke="${INK}" stroke-width="1.7" stroke-linecap="round"/>`};
     return one(36.5,1)+one(63.5,-1)};
   /* Doll eyes: a round white, a big dark pupil sitting high and toward the nose, a thin lash line with flicks
@@ -803,7 +804,8 @@ function avatarSVG(a0,cls="",mood=null,mini=false){
   /* sparkle: a soft five-point star in the pupil */
   const STAR=(x,y,r)=>`<path d="${[...Array(10)].map((_,k)=>{const a=-Math.PI/2+k*Math.PI/5,q=k%2?r*.48:r;return (k?"L":"M")+(x+q*Math.cos(a)).toFixed(2)+" "+(y+q*Math.sin(a)).toFixed(2)}).join("")}Z" fill="#F7E3A6" stroke="#F7E3A6" stroke-width="${(r*.22).toFixed(2)}" stroke-linejoin="round"/>`;
   const topLash=(cx,o,y)=>mini?"":`<path d="M${cx+o*6.2} ${y-1.2}l${o*2.2} -1.4M${cx+o*5.4} ${y-2.8}l${o*1.9} -2M${cx+o*4.2} ${y-4.1}l${o*1.4} -2.3" stroke="${INK}" stroke-width="1.1" stroke-linecap="round"/>`;
-  const lowLash=(cx,y)=>mini?"":`<path d="M${cx-3.4} ${y+.4}l-.7 1.6M${cx-.8} ${y+.9}l-.2 1.7M${cx+1.8} ${y+.7}l.3 1.7M${cx+4.2} ${y}l.8 1.5" stroke="${INK}" stroke-width=".55" stroke-linecap="round" opacity=".35"/>`;
+  /* bottom lashes: four faint ticks that start on the edge of the white and fan out */
+  const lowLash=(cx,rx,ry,cy=EY)=>mini?"":`<path d="${[-3.6,-1.2,1.2,3.6].map(d=>{const x=cx+d*rx/6.4,y=cy+ry*Math.sqrt(Math.max(0,1-(x-cx)**2/rx**2));return `M${x.toFixed(2)} ${(y-.2).toFixed(2)}l${(d*.22).toFixed(2)} 1.6`}).join("")}" stroke="${INK}" stroke-width=".55" stroke-linecap="round" opacity=".35"/>`;
   const doll=(k=1,lid=false)=>{const one=(cx,n)=>{const px=cx+n*.9+eDx,o=-n,rx=6.4*k,ry=6*k,pr=4.7*k;
       const lidY=EY-1.2*k;
       return `<ellipse cx="${cx}" cy="${EY}" rx="${rx}" ry="${ry}" fill="#fff" stroke="${INK}" stroke-opacity=".28" stroke-width="${mini?0:.6}"/>`
@@ -811,12 +813,12 @@ function avatarSVG(a0,cls="",mood=null,mini=false){
        +(eSpark?STAR(px-1.3*k,EY-2.6*k,1.9*k):"")
        +(lid?`<path d="M${cx-rx-1} ${EY-.4}H${cx+rx+1}V${EY-ry-2}H${cx-rx-1}Z" fill="${s}"/><path d="M${cx-rx-.4} ${EY-.4}Q${cx} ${EY-1.6} ${cx+rx+.4} ${EY-.4}" stroke="${INK}" stroke-width="1.5" fill="none" stroke-linecap="round"/>`+topLash(cx,o,EY+3.2)
            :`<path d="M${cx-6.6*k} ${lidY}Q${cx} ${EY-8.4*k} ${cx+6.6*k} ${lidY}" stroke="${INK}" stroke-width="1.5" fill="none" stroke-linecap="round"/>`+topLash(cx,o,EY))
-       +lowLash(cx,EY+ry)};
+       +lowLash(cx,rx,ry)};
     return one(36.5,1)+one(63.5,-1)};
   /* closed eyes with lashes: up is a happy arc, down is a calm, lowered lid */
   const closed=up=>{const one=(cx,o)=>{
       const arc=up?`M${cx-6} ${EY+1.5}Q${cx} ${EY-5} ${cx+6} ${EY+1.5}`:`M${cx-6} ${EY-1}Q${cx} ${EY+5} ${cx+6} ${EY-1}`;
-      const lash=mini?"":up?`<path d="M${cx+o*5.6} ${EY-.4}l${o*2} -1.2M${cx+o*4.4} ${EY-2.2}l${o*1.6} -1.8" stroke="${INK}" stroke-width="1.1" stroke-linecap="round"/>`
+      const lash=mini?"":up?`<path d="M${cx-o*5.6} ${EY-.4}l${-o*2} -1.2M${cx-o*4.4} ${EY-2.2}l${-o*1.6} -1.8" stroke="${INK}" stroke-width="1.1" stroke-linecap="round"/>`
         :`<path d="M${cx-3.6} ${EY+2.2}l-.8 2M${cx-1.2} ${EY+2.9}l-.3 2.1M${cx+1.4} ${EY+2.9}l.3 2.1M${cx+3.8} ${EY+2.1}l.8 2" stroke="${INK}" stroke-width="1" stroke-linecap="round"/>`;
       return `<path d="${arc}" stroke="${INK}" stroke-width="1.7" fill="none" stroke-linecap="round"/>`+lash};
     return one(36.5,1)+one(63.5,-1)};
@@ -905,10 +907,11 @@ function avatarSVG(a0,cls="",mood=null,mini=false){
   const glasses=a.glasses==="none"?"":`<g transform="translate(0 2.5)" fill="none" stroke="${a.glasses}" stroke-width="1.8"><rect x="${28.5-bs}" y="40" width="21" height="18" rx="8"/><rect x="${50.5+bs}" y="40" width="21" height="18" rx="8"/><path d="M${49.5-bs} 47h${1+2*bs}M${28.5-bs} 47l-5-1M${71.5+bs} 47l5-1"/></g>`;
   const clip=a.clip==="none"?"":`<g transform="rotate(-18 36 30)"><rect x="32" y="24" width="7" height="12" rx="2.5" fill="${a.clip}" ${O}/><rect x="34" y="27" width="3" height="3" rx="1" fill="#FFF3C4"/></g>`;
   // arms per pose
-  const sleeve=`<path d="M36 70L27 74L30 82L37 79Z" fill="${t}" ${O}/>`;
+  const sleeve=`<path d="M36.5 70L26.5 75.1Q25.4 78.5 26.6 81.8L36.5 80.4Z" fill="${t}" ${O}/>`;
   const armOut=`${sleeve}<path d="M29 75L15 77Q9 78 10 81.5Q11 84.5 15.5 83.5L31 81Z" fill="${s}" ${O}/>`;
-  const armDown=`<path d="M35 72Q27 82 28 92Q30 97 34 94L38 80Z" fill="${s}" ${O}/><path d="M36 70L29 76L34 82L38 78Z" fill="${t}" ${O}/>`;
-  const armWave=`<path d="M64 72L79 61Q83 55 86.5 58.5Q88.5 61.5 84.5 64.5L70 80Z" fill="${s}" ${O}/><path d="M64 70L73 66L74 74L67 79Z" fill="${t}" ${O}/>`;
+  const armDown=`<path d="M35 72Q27 82 28 92Q30 97 34 94L38 80Z" fill="${s}" ${O}/><path d="M36 70Q30.6 72.4 29.8 80.6L37.8 81Z" fill="${t}" ${O}/>`;
+  /* the waving hand is held out to the side so the bigger head doesn't hide it */
+  const armWave=`<path d="M64 72L84 64Q90 57.5 93.6 60.8Q95.8 64.4 91 67.6L70 80Z" fill="${s}" ${O}/><path d="M64 70L73.4 67.4Q77 71.4 76 76.2L67 80Z" fill="${t}" ${O}/>`;
   let arms;
   if(a.pose==="down")arms=armDown+mirror(armDown);
   else if(a.pose==="wave")arms=armOut+armWave;
