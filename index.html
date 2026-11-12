@@ -663,7 +663,7 @@ const PERSONA={
 
 /* ================= STATE ================= */
 const KEY="stampy.hk.v1";
-const DEF_AV={skin:"#FBE3CF",hair:"wrap",mouth:"pout",line:"on",ears:"hoops",hairC:"#2B2320",eyes:"deadpan",irisC:"#2B2320",brows:"soft",browC:"#6B4430",hat:"none",hatC:"#C4202E",neck:"none",neckC:"#4C7FD0",sparkle:"off",react:"on",glasses:"#E0524F",clip:"#E0524F",top:"#D9473F",bottom:"shorts",bottomC:"#F6F1E4",shoes:"#D9473F",bag:"backpack",pose:"out",name:"Traveller"};
+const DEF_AV={skin:"#FBE3CF",hair:"parted",mouth:"pout",line:"on",ears:"hoops",hairC:"#2B2320",eyes:"doll",irisC:"#2B2320",brows:"thin",browC:"#6B4430",hat:"none",hatC:"#C4202E",neck:"none",neckC:"#4C7FD0",sparkle:"off",react:"on",glasses:"#E0524F",clip:"#E0524F",top:"#D9473F",bottom:"shorts",bottomC:"#F6F1E4",shoes:"#D9473F",bag:"backpack",pose:"out",name:"Traveller"};
 let S={checkins:[],quiz:null,filters:[],avatar:{...DEF_AV},tod:null,here:"tst",wishlist:[],onboarded:false};
 try{const r=JSON.parse(localStorage.getItem(KEY)||"null");if(r)S={...S,...r,avatar:{...DEF_AV,name:(r.avatar&&r.avatar.name)||DEF_AV.name,...(r.avatar&&r.avatar.v===2?r.avatar:{}),v:2}}}catch(e){}
 S.avatar.v=2;
@@ -675,6 +675,7 @@ if(!Array.isArray(S.wishlist))S.wishlist=[];
 if(!S.avatar.v3){Object.assign(S.avatar,{hair:"wrap",hairC:"#2B2320",eyes:"deadpan",mouth:"pout",line:"on",ears:"hoops"});S.avatar.v3=1}
 if(S.avatar.eyes==="big")S.avatar.eyes="round";
 if(!S.avatar.v4){S.avatar.irisC="#2B2320";S.avatar.sparkle="off";S.avatar.v4=1}
+if(!S.avatar.v5){Object.assign(S.avatar,{eyes:"doll",hair:"parted",brows:"thin"});S.avatar.v5=1}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));return true}catch(e){return false}}
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -753,6 +754,8 @@ function avatarSVG(a0,cls="",mood=null,mini=false){
     bob:{back:`<path d="M22 42C22 16 78 16 78 42L79 64Q76 68 70 66Q50 70 30 66Q24 68 21 64Z" fill="${h}" ${O}/>`,front:`<path d="M24 48C19 3 81 1 77 46C72 32 62 26 53 24C47 31 37 37 24 48Z" fill="${h}" ${O}/>`},
     bangs:{back:`<path d="M21 40C21 14 79 14 79 40V70Q50 75 21 70Z" fill="${h}" ${O}/>`,front:`<path d="M24 47C19 2 81 2 76 47L75 39Q50 36 25 39Z" fill="${h}" ${O}/>`},
     pigtails:{back:`<ellipse cx="17" cy="44" rx="7" ry="13" transform="rotate(20 17 44)" fill="${h}" ${O}/><ellipse cx="83" cy="44" rx="7" ry="13" transform="rotate(-20 83 44)" fill="${h}" ${O}/>`,front:`<path d="M24 47C19 2 81 2 76 47L75 39Q50 36 25 39Z" fill="${h}" ${O}/>`},
+    parted:{back:`<path d="M17 40C17 9 83 9 83 40L86 106Q50 112 14 106Z" fill="${h}" ${O}/>`,
+      front:`<path d="M50 9C30 9 20 22 21 48L21 72Q25 75 29 71L29.5 48Q31 30 50 13.5Q69 30 70.5 48L71 71Q75 75 79 72L79 48C80 22 70 9 50 9Z" fill="${h}" ${O}/>${mini?"":`<path d="M50 10v6" stroke="${shade(h,.6)}" stroke-width=".8"/><path d="M47 14q-6 8-4 18q1 5-1.6 8" stroke="${h}" stroke-width="1.1" fill="none" stroke-linecap="round"/><path d="M28 20q6-7 14-9" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" opacity=".22"/>`}`},
     wrap:{back:`<path d="M19 42C19 13 81 13 81 42L82 67Q78 72 72 69Q50 74 28 69Q22 72 18 67Z" fill="${h}" ${O}/>`,
       front:`<path d="M22 50C16 1 84 1 78 50L79 66Q75 71 70.5 67L70 47Q69 41.5 66 40L61 42 56 39.6 50 42.2 44 39.6 39 42 34 40Q31 41.5 30 47L29.5 67Q25 71 21 66Z" fill="${h}" ${O}/>${mini?"":`<path d="M31 20q8-7 19-8" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" opacity=".28"/>`}`},
     braids:{back:`<path d="M21 42C21 15 79 15 79 42L80 66Q50 72 20 66Z" fill="${h}"/>${[20,80].map(x=>`<g fill="${h}">${[70,77,84,91].map((y,i)=>`<ellipse cx="${x+(x<50?1:-1)*i*.4}" cy="${y}" rx="${4.6-i*.3}" ry="4.4"/>`).join("")}<path d="M${x-2.4} 94l2.4 6 2.4-6z"/></g>${mini?"":`<path d="M${x-3} 74q3 1.4 6 0M${x-2.8} 81q2.8 1.4 5.6 0M${x-2.6} 88q2.6 1.4 5.2 0" stroke="${shade(h,.8)}" stroke-width="1" fill="none"/>`}<rect x="${x-2.6}" y="93" width="5.2" height="2.4" rx="1.2" fill="${a.clip==="none"?shade(h,.7):a.clip}"/>`).join("")}`,
@@ -792,12 +795,26 @@ function avatarSVG(a0,cls="",mood=null,mini=false){
        +(eSpark?`<circle cx="${px-1.2}" cy="${T+1.4}" r=".9" fill="#fff"/>`:"")
        +`<path d="M${cx-W-.6} ${T}H${cx+W+.6}" stroke="${INK}" stroke-width="1.7" stroke-linecap="round"/>`};
     return one(39,1)+one(61,-1)};
-  const doll=()=>{const one=(cx,n)=>{const px=cx+n*.9+eDx,o=-n;
-      return `<ellipse cx="${cx}" cy="${EY}" rx="6.4" ry="6" fill="#fff" stroke="${INK}" stroke-width="${mini?0:.8}"/>`
-       +`<circle cx="${px}" cy="${EY-1}" r="4.7" fill="${ic}"/>`
-       +(eSpark?`<circle cx="${px-1.6}" cy="${EY-2.6}" r="1" fill="#fff"/>`:"")
-       +`<path d="M${cx-6.6} ${EY-1.2}Q${cx} ${EY-8.4} ${cx+6.6} ${EY-1.2}" stroke="${INK}" stroke-width="1.5" fill="none" stroke-linecap="round"/>`
-       +(mini?"":`<path d="M${cx+o*6.2} ${EY-2.4}l${o*2.2} -1.4M${cx+o*5.4} ${EY-4}l${o*1.9} -2M${cx+o*4.2} ${EY-5.3}l${o*1.4} -2.3" stroke="${INK}" stroke-width="1.1" stroke-linecap="round"/>`)};
+  /* Doll eyes: a round white, a big dark pupil sitting high and toward the nose, a thin lash line with flicks
+     on top and little lash ticks underneath. Every mood is drawn in the same hand. */
+  const STAR=(x,y,r)=>`<path d="M${x} ${y-r}L${x+r*.3} ${y-r*.3} ${x+r} ${y} ${x+r*.3} ${y+r*.3} ${x} ${y+r} ${x-r*.3} ${y+r*.3} ${x-r} ${y} ${x-r*.3} ${y-r*.3}Z" fill="#fff"/>`;
+  const topLash=(cx,o,y)=>mini?"":`<path d="M${cx+o*6.2} ${y-1.2}l${o*2.2} -1.4M${cx+o*5.4} ${y-2.8}l${o*1.9} -2M${cx+o*4.2} ${y-4.1}l${o*1.4} -2.3" stroke="${INK}" stroke-width="1.1" stroke-linecap="round"/>`;
+  const lowLash=(cx,y)=>mini?"":`<path d="M${cx-3.4} ${y+.4}l-.7 1.6M${cx-.8} ${y+.9}l-.2 1.7M${cx+1.8} ${y+.7}l.3 1.7M${cx+4.2} ${y}l.8 1.5" stroke="${INK}" stroke-width=".8" stroke-linecap="round" opacity=".75"/>`;
+  const doll=(k=1,lid=false)=>{const one=(cx,n)=>{const px=cx+n*.9+eDx,o=-n,rx=6.4*k,ry=6*k,pr=4.7*k;
+      const lidY=EY-1.2*k;
+      return `<ellipse cx="${cx}" cy="${EY}" rx="${rx}" ry="${ry}" fill="#fff" stroke="${INK}" stroke-width="${mini?0:.8}"/>`
+       +`<circle cx="${px}" cy="${EY-1*k}" r="${pr}" fill="${ic}"/>`
+       +(eSpark?STAR(px-1.4*k,EY-2.8*k,1.9*k)+`<circle cx="${px+1.8*k}" cy="${EY+.6*k}" r=".6" fill="#fff"/>`:"")
+       +(lid?`<path d="M${cx-rx-1} ${EY-.4}H${cx+rx+1}V${EY-ry-2}H${cx-rx-1}Z" fill="${s}"/><path d="M${cx-rx-.4} ${EY-.4}Q${cx} ${EY-1.6} ${cx+rx+.4} ${EY-.4}" stroke="${INK}" stroke-width="1.5" fill="none" stroke-linecap="round"/>`+topLash(cx,o,EY+3.2)
+           :`<path d="M${cx-6.6*k} ${lidY}Q${cx} ${EY-8.4*k} ${cx+6.6*k} ${lidY}" stroke="${INK}" stroke-width="1.5" fill="none" stroke-linecap="round"/>`+topLash(cx,o,EY))
+       +lowLash(cx,EY+ry)};
+    return one(39,1)+one(61,-1)};
+  /* closed eyes with lashes: up is a happy arc, down is a calm, lowered lid */
+  const closed=up=>{const one=(cx,o)=>{
+      const arc=up?`M${cx-6} ${EY+1.5}Q${cx} ${EY-5} ${cx+6} ${EY+1.5}`:`M${cx-6} ${EY-1}Q${cx} ${EY+5} ${cx+6} ${EY-1}`;
+      const lash=mini?"":up?`<path d="M${cx+o*5.6} ${EY-.4}l${o*2} -1.2M${cx+o*4.4} ${EY-2.2}l${o*1.6} -1.8" stroke="${INK}" stroke-width="1.1" stroke-linecap="round"/>`
+        :`<path d="M${cx-3.6} ${EY+2.2}l-.8 2M${cx-1.2} ${EY+2.9}l-.3 2.1M${cx+1.4} ${EY+2.9}l.3 2.1M${cx+3.8} ${EY+2.1}l.8 2" stroke="${INK}" stroke-width="1" stroke-linecap="round"/>`;
+      return `<path d="${arc}" stroke="${INK}" stroke-width="1.7" fill="none" stroke-linecap="round"/>`+lash};
     return one(39,1)+one(61,-1)};
   const glossy=k=>{if(k==="deadpan")return deadpan();if(k==="doll")return doll();const R={big:5.8,small:3.9,deadpan:5}[k]||4.9;
     const lid=`<path d="${lidL(k,R)}" stroke="${INK}" stroke-width="${mini?2:2.5}" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
@@ -841,7 +858,8 @@ function avatarSVG(a0,cls="",mood=null,mini=false){
     smile:`<path d="M46.4 62.6L50 66 53.6 62.6" stroke-linejoin="round" stroke="${INK}" stroke-width="1.6" fill="none" stroke-linecap="round"/>`,
     wavy:`<path d="M45 63.5q1.7-1.6 3.3 0t3.4 0 3.3 0" stroke="${INK}" stroke-width="1.5" fill="none" stroke-linecap="round"/>`,
     flat:`<path d="M47 64h6" stroke="${INK}" stroke-width="1.6" stroke-linecap="round"/>`};
-  const eyes=(ek==="own"?glossy(own):ek==="round"?glossy("round"):ek==="sleepy"?sleepyEye():(EYES[ek]?`<g transform="translate(0 2.5)">${EYES[ek]}</g>`:glossy(own)))+(BROWS[brow]||"");
+  const D=own==="doll";
+  const eyes=D&&ek==="happy"?closed(true)+(BROWS[brow]||""):D&&(ek==="down"||ek==="sleepy"&&!X)?closed(false)+(BROWS[brow]||""):D&&ek==="sleepy"?doll(1,true)+(BROWS[brow]||""):D&&ek==="round"?doll(1.12)+(BROWS[brow]||""):(ek==="own"?glossy(own):ek==="round"?glossy("round"):ek==="sleepy"?sleepyEye():(EYES[ek]?`<g transform="translate(0 2.5)">${EYES[ek]}</g>`:glossy(own)))+(BROWS[brow]||"");
   const mouth=MOUTHS[mk];
   const EAR={hoops:`<g fill="none" stroke="#E0B03C" stroke-width="1.6"><circle cx="18" cy="60" r="3.2"/><circle cx="82" cy="60" r="3.2"/></g>`,
     studs:`<g fill="#E0B03C"><circle cx="17.5" cy="57.5" r="1.7"/><circle cx="82.5" cy="57.5" r="1.7"/></g>`};
@@ -914,10 +932,11 @@ function avatarSVG(a0,cls="",mood=null,mini=false){
   <circle cx="78" cy="50" r="7.5" fill="${s}" ${O}/><circle cx="78" cy="51" r="4.5" fill="${blush}" opacity=".45"/>
   <path d="M50 21C66 21 76 32 76 48C76 62 66 71 50 71C34 71 24 62 24 48Z" fill="rgba(0,0,0,.08)"/>
   <path d="M50 18C67 18 77 30 77 47C77 61 67 69.5 50 69.5C33 69.5 23 61 23 47C23 30 33 18 50 18Z" fill="${s}" ${O}/>
-  <ellipse cx="31.5" cy="61" rx="5.6" ry="3.2" fill="${blush}" opacity=".5"/><ellipse cx="68.5" cy="61" rx="5.6" ry="3.2" fill="${blush}" opacity=".5"/>${mini?"":`<ellipse cx="50" cy="58.6" rx="1.1" ry=".8" fill="#E89A92"/>`}
+  <ellipse cx="31" cy="62" rx="7" ry="4.6" fill="${blush}" opacity=".45"/><ellipse cx="69" cy="62" rx="7" ry="4.6" fill="${blush}" opacity=".45"/>${mini?"":`<g fill="#B9655A" opacity=".55"><circle cx="28.5" cy="61" r=".55"/><circle cx="31" cy="62.6" r=".55"/><circle cx="33.4" cy="61.2" r=".55"/><circle cx="66.6" cy="61.2" r=".55"/><circle cx="69" cy="62.6" r=".55"/><circle cx="71.5" cy="61" r=".55"/></g>
+  <circle cx="50" cy="59" r="2.2" fill="${blush}" opacity=".55"/><path d="M48.9 59.4q1.1.9 2.2 0" stroke="#B9655A" stroke-width=".8" fill="none" stroke-linecap="round"/>`}
   ${hair.front}${eyes}
   ${mouth}
-  ${mini?"":glasses+(bigHat||a.hair==="braids"||a.hair==="wrap"?"":clip)}${EAR[a.ears]||""}${hat}</g></g><g transform="translate(50 70) scale(1.06) translate(-50 -70)">${prop}</g>
+  ${mini?"":glasses+(bigHat||["braids","wrap","parted"].includes(a.hair)?"":clip)}${EAR[a.ears]||""}${hat}</g></g><g transform="translate(50 70) scale(1.06) translate(-50 -70)">${prop}</g>
   </g></svg>`;
 }
 
@@ -1311,9 +1330,9 @@ $("#quizBody").addEventListener("click",e=>{
 /* ================= ME ================= */
 const OPTS=[
  ["skin","Skin",["#FDEBDD","#FBE3CF","#E9BE98","#B98058","#7A4E33"]],
- ["hair","Hair",[["wrap","Face-hugging bob"],["braids","Braids"],["long","Long"],["bob","Bob"],["bangs","Bangs"],["pigtails","Pigtails"],["short","Short"]]],
+ ["hair","Hair",[["parted","Long, middle part"],["wrap","Face-hugging bob"],["braids","Braids"],["long","Long"],["bob","Bob"],["bangs","Bangs"],["pigtails","Pigtails"],["short","Short"]]],
  ["hairC","Hair colour",["#E3D29A","#2B2320","#6B4430","#C98B4E","#B9A6E0"]],
- ["eyes","Eyes",[["deadpan","Deadpan"],["doll","Doll"],["round","Round"],["gentle","Gentle"],["cat","Cat-eye"],["small","Small"],["sleepy","Sleepy"],["smiley","Smiley"],["relaxed","Relaxed"]]],
+ ["eyes","Eyes",[["doll","Doll"],["deadpan","Deadpan"],["round","Round"],["gentle","Gentle"],["cat","Cat-eye"],["small","Small"],["sleepy","Sleepy"],["smiley","Smiley"],["relaxed","Relaxed"]]],
  ["mouth","Mouth",[["pout","Pout"],["cat","Cat"],["tiny","Tiny smile"],["dot","Little o"],["smile","Smile"]]],
  ["irisC","Eye colour",["#2B2320","#6B4430","#3E7BD6","#2F8F5B","#8B5CC4","#C98B4E"]],
  ["brows","Eyebrows",[["soft","Soft"],["straight","Straight"],["thick","Thick"],["thin","Thin"],["worried","Worried"],["bold","Determined"],["none","None"]]],
