@@ -663,7 +663,7 @@ const PERSONA={
 
 /* ================= STATE ================= */
 const KEY="stampy.hk.v1";
-const DEF_AV={skin:"#FBE3CF",hair:"parted",mouth:"pout",line:"on",ears:"hoops",hairC:"#2B2320",eyes:"doll",irisC:"#2B2320",brows:"thin",browC:"#6B4430",hat:"none",hatC:"#C4202E",neck:"none",neckC:"#4C7FD0",sparkle:"off",react:"on",glasses:"#E0524F",clip:"#E0524F",top:"#D9473F",bottom:"shorts",bottomC:"#F6F1E4",shoes:"#D9473F",bag:"backpack",pose:"out",name:"Traveller"};
+const DEF_AV={body:"f",skin:"#FBE3CF",hair:"parted",mouth:"pout",line:"on",ears:"hoops",hairC:"#2B2320",eyes:"doll",irisC:"#2B2320",brows:"thin",browC:"#6B4430",hat:"none",hatC:"#C4202E",neck:"none",neckC:"#4C7FD0",sparkle:"off",react:"on",glasses:"#E0524F",clip:"#E0524F",top:"#D9473F",bottom:"shorts",bottomC:"#F6F1E4",shoes:"#D9473F",bag:"backpack",pose:"out",name:"Traveller"};
 let S={checkins:[],quiz:null,filters:[],avatar:{...DEF_AV},tod:null,here:"tst",wishlist:[],onboarded:false};
 try{const r=JSON.parse(localStorage.getItem(KEY)||"null");if(r)S={...S,...r,avatar:{...DEF_AV,name:(r.avatar&&r.avatar.name)||DEF_AV.name,...(r.avatar&&r.avatar.v===2?r.avatar:{}),v:2}}}catch(e){}
 S.avatar.v=2;
@@ -676,6 +676,11 @@ if(!S.avatar.v3){Object.assign(S.avatar,{hair:"wrap",hairC:"#2B2320",eyes:"deadp
 if(S.avatar.eyes==="big")S.avatar.eyes="round";
 if(!S.avatar.v4){S.avatar.irisC="#2B2320";S.avatar.sparkle="off";S.avatar.v4=1}
 if(!S.avatar.v5){Object.assign(S.avatar,{eyes:"doll",hair:"parted",brows:"thin"});S.avatar.v5=1}
+/* retired options */
+if(S.avatar.eyes==="small")S.avatar.eyes="round";
+if(S.avatar.mouth==="smile")S.avatar.mouth="tiny";
+S.avatar.line="on";
+if(!S.avatar.body)S.avatar.body="f";
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));return true}catch(e){return false}}
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -752,16 +757,27 @@ function avatarSVG(a0,cls="",mood=null,mini=false){
   const mirror=x=>`<g transform="translate(100 0) scale(-1 1)">${x}</g>`;
   // hair
   const H={
-    long:{back:`<path d="M22 42C22 16 78 16 78 42L80 88Q78 92 72 90Q69 93 64 91Q50 94 36 91Q31 93 28 90Q22 92 20 88Z" fill="${h}" ${O}/>`,front:`<path d="M24 48C19 3 81 1 77 46C72 32 62 26 53 24C47 31 37 37 24 48Z" fill="${h}" ${O}/><path d="M53 25q-3 8-10 13" stroke="#2B2420" stroke-width="1" fill="none" opacity=".5"/>`},
+    long:{back:`<path d="M22 42C22 16 78 16 78 42L80 88Q78 92 72 90Q69 93 64 91Q50 94 36 91Q31 93 28 90Q22 92 20 88Z" fill="${h}" ${O}/>`,front:`<path d="M23 50C18 3 82 1 77 48L76 42C73 33 64 27 54 26C46 33 36 40 25 45Z" fill="${h}" ${O}/>${mini?"":`<path d="M54 27q-4 8-12 13" stroke="${shade(h,.6)}" stroke-width="1" fill="none" opacity=".6"/>`}`},
     bob:{back:`<path d="M22 42C22 16 78 16 78 42L79 64Q76 68 70 66Q50 70 30 66Q24 68 21 64Z" fill="${h}" ${O}/>`,front:`<path d="M24 48C19 3 81 1 77 46C72 32 62 26 53 24C47 31 37 37 24 48Z" fill="${h}" ${O}/>`},
-    bangs:{back:`<path d="M21 40C21 14 79 14 79 40V70Q50 75 21 70Z" fill="${h}" ${O}/>`,front:`<path d="M24 47C19 2 81 2 76 47L75 39Q50 36 25 39Z" fill="${h}" ${O}/>`},
-    pigtails:{back:`<ellipse cx="17" cy="44" rx="7" ry="13" transform="rotate(20 17 44)" fill="${h}" ${O}/><ellipse cx="83" cy="44" rx="7" ry="13" transform="rotate(-20 83 44)" fill="${h}" ${O}/>`,front:`<path d="M24 47C19 2 81 2 76 47L75 39Q50 36 25 39Z" fill="${h}" ${O}/>`},
+    bangs:{back:`<path d="M21 40C21 14 79 14 79 40V70Q50 75 21 70Z" fill="${h}" ${O}/>`,front:`<path d="M23 49C18 2 82 2 77 49L76.4 44.4Q50 42.2 23.6 44.4Z" fill="${h}" ${O}/>`},
+    pigtails:{back:`<ellipse cx="17" cy="44" rx="7" ry="13" transform="rotate(20 17 44)" fill="${h}" ${O}/><ellipse cx="83" cy="44" rx="7" ry="13" transform="rotate(-20 83 44)" fill="${h}" ${O}/>`,front:`<path d="M23 49C18 2 82 2 77 49L76.4 44.4Q50 42.2 23.6 44.4Z" fill="${h}" ${O}/>`},
     parted:{back:`<path d="M17 40C17 9 83 9 83 40L86 106Q50 112 14 106Z" fill="${h}" ${O}/>`,
-      front:`<path d="M50 9C30 9 20 22 21 48L21 72Q25 75 29 71L29.5 48Q31 30 50 17Q69 30 70.5 48L71 71Q75 75 79 72L79 48C80 22 70 9 50 9Z" fill="${h}" ${O}/>${mini?"":`<path d="M50 10v6" stroke="${shade(h,.6)}" stroke-width=".8"/><path d="M47 14q-6 8-4 18q1 5-1.6 8" stroke="${h}" stroke-width="1.1" fill="none" stroke-linecap="round"/><path d="M28 20q6-7 14-9" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" opacity=".22"/>`}`},
+      front:`<path d="M50 11C31 11 20 23 21 48L21 72Q25 75 29 71L29.4 50Q30.4 36 40 26.6Q45.4 21.6 50 21Q54.6 21.6 60 26.6Q69.6 36 70.6 50L71 71Q75 75 79 72L79 48C80 23 69 11 50 11Z" fill="${h}" ${O}/>${mini?"":`<path d="M28 21q6-7 14-9" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" opacity=".22"/>`}`},
     wrap:{back:`<path d="M19 42C19 13 81 13 81 42L82 67Q78 72 72 69Q50 74 28 69Q22 72 18 67Z" fill="${h}" ${O}/>`,
       front:`<path d="M22 50C16 1 84 1 78 50L79 66Q75 71 70.5 67L70 47Q69 41.5 66 40L61 42 56 39.6 50 42.2 44 39.6 39 42 34 40Q31 41.5 30 47L29.5 67Q25 71 21 66Z" fill="${h}" ${O}/>${mini?"":`<path d="M31 20q8-7 19-8" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" opacity=".28"/>`}`},
-    braids:{back:`<path d="M21 42C21 15 79 15 79 42L80 66Q50 72 20 66Z" fill="${h}"/>${[20,80].map(x=>`<g fill="${h}">${[70,77,84,91].map((y,i)=>`<ellipse cx="${x+(x<50?1:-1)*i*.4}" cy="${y}" rx="${4.6-i*.3}" ry="4.4"/>`).join("")}<path d="M${x-2.4} 94l2.4 6 2.4-6z"/></g>${mini?"":`<path d="M${x-3} 74q3 1.4 6 0M${x-2.8} 81q2.8 1.4 5.6 0M${x-2.6} 88q2.6 1.4 5.2 0" stroke="${shade(h,.8)}" stroke-width="1" fill="none"/>`}<rect x="${x-2.6}" y="93" width="5.2" height="2.4" rx="1.2" fill="${a.clip==="none"?shade(h,.7):a.clip}"/>`).join("")}`,
+    braids:{back:`<path d="M21 42C21 15 79 15 79 42L80 66Q50 72 20 66Z" fill="${h}" ${O}/>${[20,80].map(x=>{const d=x<50?1:-1;return `<path d="M${x-4.6} 52L${x-4.4} 70Q${x-4.6} 82 ${x-3.4} 92L${x} 98 ${x+3.4} 92Q${x+4.6} 82 ${x+4.4} 70L${x+4.6} 52Z" fill="${h}" ${O}/>${mini?"":`<path d="M${x-4} 70q4 2.6 8 0M${x-4} 77q4 2.6 8 0M${x-3.8} 84q3.8 2.6 7.6 0" stroke="${shade(h,.7)}" stroke-width="1" fill="none"/>`}<rect x="${x-3}" y="90" width="6" height="2.6" rx="1.3" fill="${a.clip==="none"?shade(h,.7):a.clip}"/>`}).join("")}`,
       front:`<path d="M23 48C18 2 82 1 77 47L74 37 70 40.5 66 31 61 40 55 30.5 48 40 42 31 36 40.5 31 34Z" fill="${h}"/>${mini?"":`<path d="M30 20q8-8 20-9" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" opacity=".35"/>`}`},
+    crop:{back:`<path d="M21 44C21 12 79 12 79 44L78 54Q50 50 22 54Z" fill="${h}" ${O}/>`,
+      front:`<path d="M22 44C18 4 82 4 78 44L76 35 72 38.5 68 31 63 36 58 30 52 35 46 30 41 36 36 31 31 37 27 33Z" fill="${h}" ${O}/>`},
+    sidepart:{back:`<path d="M21 44C21 12 79 12 79 44L78 54Q50 50 22 54Z" fill="${h}" ${O}/>`,
+      front:`<path d="M22 46C18 2 82 2 78 46C77 36 74 29 64 25C55 31 40 34 27 37Q23.5 41 22 46Z" fill="${h}" ${O}/>`},
+    fluffy:{back:`<path d="M19 46C17 10 83 10 81 46L80 58Q50 54 20 58Z" fill="${h}" ${O}/>`,
+      front:`<path d="M20 44C14 0 86 0 80 44Q76 38 72 41Q70 34 64 37Q60 30 54 35Q50 29 45 35Q40 31 36 38Q31 35 28 41Q24 38 20 44Z" fill="${h}" ${O}/>`},
+    curtains:{back:`<path d="M20 44C20 10 80 10 80 44L80 58Q50 54 20 58Z" fill="${h}" ${O}/>`,
+      front:`<path d="M50 11C31 11 20 23 21 48L24 54Q26 38 37 28Q44 22 50 21.6Q56 22 63 28Q74 38 76 54L79 48C80 23 69 11 50 11Z" fill="${h}" ${O}/>`},
+    buzz:{back:"",front:`<path d="M23.5 42C21 9 79 9 76.5 42Q75 32 68 27Q50 22 32 27Q25 32 23.5 42Z" fill="${h}" opacity=".9" ${O}/>`},
+    bun:{back:`<circle cx="50" cy="8" r="9" fill="${h}" ${O}/><path d="M21 44C21 12 79 12 79 44L78 54Q50 50 22 54Z" fill="${h}" ${O}/>`,
+      front:`<path d="M22 46C18 4 82 4 78 46C74 34 66 28 58 28C52 25 44 26 38 29C30 32 25 38 22 46Z" fill="${h}" ${O}/>`},
     short:{back:"",front:`<path d="M24 46C18 2 82 2 76 46C72 30 64 26 56 28C50 24 40 28 34 30C29 34 26 39 24 46Z" fill="${h}" ${O}/>`}
   }[a.hair]||null;
   const hair=H||{back:"",front:""};
@@ -774,7 +790,7 @@ function avatarSVG(a0,cls="",mood=null,mini=false){
   const bs=2.5; /* eyes sit at 36.5 and 63.5 for every style, like the Doll face */
   const eSpark=spk||(X&&X.eyes==="sparkly"),eDx=X&&X.eyes==="side"?1.8:0;
   /* a mood can lift or knit the brows; otherwise they are the traveller's own */
-  const brow=X&&X.brow!=="none"?X.brow:a.brows;
+  const brow=["bangs","pigtails"].includes(a.hair)?"none":X&&X.brow!=="none"?X.brow:a.brows;
   const mk=X?X.mouth:(a.mouth||"cat");
   const INK="#1A1614";
   /* Glossy eyes: a coloured iris with a dark pupil, a big catch-light and a heavy upper lid.
@@ -803,7 +819,7 @@ function avatarSVG(a0,cls="",mood=null,mini=false){
      on top and little lash ticks underneath. Every mood is drawn in the same hand. */
   /* sparkle: a soft five-point star in the pupil */
   const STAR=(x,y,r)=>`<path d="${[...Array(10)].map((_,k)=>{const a=-Math.PI/2+k*Math.PI/5,q=k%2?r*.48:r;return (k?"L":"M")+(x+q*Math.cos(a)).toFixed(2)+" "+(y+q*Math.sin(a)).toFixed(2)}).join("")}Z" fill="#F7E3A6" stroke="#F7E3A6" stroke-width="${(r*.22).toFixed(2)}" stroke-linejoin="round"/>`;
-  const topLash=(cx,o,y)=>mini?"":`<path d="M${cx+o*6.2} ${y-1.2}l${o*2.2} -1.4M${cx+o*5.4} ${y-2.8}l${o*1.9} -2M${cx+o*4.2} ${y-4.1}l${o*1.4} -2.3" stroke="${INK}" stroke-width="1.1" stroke-linecap="round"/>`;
+  const topLash=(cx,o,y)=>mini||a.body==="m"?"":`<path d="M${cx+o*6.2} ${y-1.2}l${o*2.2} -1.4M${cx+o*5.4} ${y-2.8}l${o*1.9} -2M${cx+o*4.2} ${y-4.1}l${o*1.4} -2.3" stroke="${INK}" stroke-width="1.1" stroke-linecap="round"/>`;
   /* bottom lashes: four faint ticks that start on the edge of the white and fan out */
   const lowLash=(cx,rx,ry,cy=EY)=>mini?"":`<path d="${[-3.6,-1.2,1.2,3.6].map(d=>{const x=cx+d*rx/6.4,y=cy+ry*Math.sqrt(Math.max(0,1-(x-cx)**2/rx**2));return `M${x.toFixed(2)} ${(y-.2).toFixed(2)}l${(d*.22).toFixed(2)} 1.6`}).join("")}" stroke="${INK}" stroke-width=".55" stroke-linecap="round" opacity=".35"/>`;
   const doll=(k=1,lid=false)=>{const one=(cx,n)=>{const px=cx+n*.9+eDx,o=-n,rx=6.4*k,ry=6*k,pr=4.7*k;
@@ -945,7 +961,7 @@ function avatarSVG(a0,cls="",mood=null,mini=false){
   <circle cx="50" cy="59" r="2.2" fill="${blush}" opacity=".55"/><path d="M48.9 59.4q1.1.9 2.2 0" stroke="#B9655A" stroke-width=".8" fill="none" stroke-linecap="round"/>`}
   ${hair.front}${eyes}
   ${mouth}
-  ${mini?"":glasses+(bigHat||["braids","wrap","parted"].includes(a.hair)?"":clip)}${EAR[a.ears]||""}${hat}</g></g><g transform="translate(50 70) scale(1.06) translate(-50 -70)">${prop}</g>
+  ${mini?"":glasses+(bigHat||a.body==="m"||["braids","wrap","parted"].includes(a.hair)?"":clip)}${EAR[a.ears]||""}${hat}</g></g><g transform="translate(50 70) scale(1.06) translate(-50 -70)">${prop}</g>
   </g></svg>`;
 }
 
@@ -1339,10 +1355,12 @@ $("#quizBody").addEventListener("click",e=>{
 /* ================= ME ================= */
 const OPTS=[
  ["skin","Skin",["#FDEBDD","#FBE3CF","#E9BE98","#B98058","#7A4E33"]],
- ["hair","Hair",[["parted","Long, middle part"],["wrap","Face-hugging bob"],["braids","Braids"],["long","Long"],["bob","Bob"],["bangs","Bangs"],["pigtails","Pigtails"],["short","Short"]]],
+ ["body","Body",[["f","Female"],["m","Male"]]],
+ ["hair","Hair",[["parted","Long, middle part"],["wrap","Face-hugging bob"],["braids","Braids"],["long","Long"],["bob","Bob"],["bangs","Bangs"],["pigtails","Pigtails"],["short","Short"],
+   ["crop","Textured crop"],["sidepart","Side part"],["fluffy","Fluffy"],["curtains","Curtains"],["buzz","Buzz cut"],["bun","Top knot"]]],
  ["hairC","Hair colour",["#E3D29A","#2B2320","#6B4430","#C98B4E","#B9A6E0"]],
- ["eyes","Eyes",[["doll","Doll"],["deadpan","Deadpan"],["round","Round"],["gentle","Gentle"],["cat","Cat-eye"],["small","Small"],["sleepy","Sleepy"],["smiley","Smiley"],["relaxed","Relaxed"]]],
- ["mouth","Mouth",[["pout","Pout"],["cat","Cat"],["tiny","Tiny smile"],["dot","Little o"],["smile","Smile"]]],
+ ["eyes","Eyes",[["doll","Doll"],["deadpan","Deadpan"],["round","Round"],["gentle","Gentle"],["cat","Cat-eye"],["sleepy","Sleepy"],["smiley","Smiley"],["relaxed","Relaxed"]]],
+ ["mouth","Mouth",[["pout","Pout"],["cat","Cat"],["tiny","Tiny smile"],["dot","Little o"]]],
  ["irisC","Eye colour",["#2B2320","#6B4430","#3E7BD6","#2F8F5B","#8B5CC4","#C98B4E"]],
  ["brows","Eyebrows",[["soft","Soft"],["straight","Straight"],["thick","Thick"],["thin","Thin"],["worried","Worried"],["bold","Determined"],["none","None"]]],
  ["browC","Eyebrow colour",["#1A1614","#6B4430","#C98B4E","#E3D29A"]],
@@ -1359,15 +1377,17 @@ const OPTS=[
  ["shoes","Shoes",["#D9473F","#4C7FD0","#F2C14E","#FFFDF8"]],
  ["bag","Carrying",[["backpack","Backpack"],["crossbody","Crossbody"],["camera","Camera"],["none","Nothing"]]],
  ["pose","Pose",[["out","Arms out"],["wave","Waving"],["down","Arms down"]]],
- ["line","Outline",[["on","Outlined"],["off","Flat"]]],
  ["ears","Earrings",[["none","None"],["hoops","Hoops"],["studs","Studs"]]],
  ["react","Shows my moods",[["on","On"],["off","Off"]]]
 ];
-const OPT_GROUPS=[["Face",["line","skin","eyes","irisC","sparkle","brows","browC","mouth"]],["Hair",["hair","hairC","clip"]],["Hats and extras",["hat","hatC","neck","neckC","glasses","ears"]],["Outfit",["top","bottom","bottomC","shoes"]],["Bag and pose",["bag","pose","react"]]];
+const OPT_GROUPS=[["Face",["body","skin","eyes","irisC","sparkle","brows","browC","mouth"]],["Hair",["hair","hairC","clip"]],["Hats and extras",["hat","hatC","neck","neckC","glasses","ears"]],["Outfit",["top","bottom","bottomC","shoes"]],["Bag and pose",["bag","pose","react"]]];
 /* Picture tiles: each option is drawn on your own traveller, cropped to the part that changes. */
-const TILE_VIEW={ears:"6 40 40 34",mouth:"37 54 26 18",eyes:"27 38 46 30",brows:"27 30 46 34",hair:"0 -8 100 100",hat:"0 -18 100 92",neck:"22 56 56 42",bottom:"16 84 68 46",bag:"6 52 88 74",pose:"0 26 100 84"};
+const TILE_VIEW={body:"8 -8 84 84",ears:"6 40 40 34",mouth:"37 54 26 18",eyes:"27 38 46 30",brows:"27 30 46 34",hair:"0 -8 100 100",hat:"0 -18 100 92",neck:"22 56 56 42",bottom:"16 84 68 46",bag:"6 52 88 74",pose:"0 26 100 84"};
 let meTab=0;
+/* hairstyles offered for each body; the first one is the default when switching */
+const HAIR_FOR={f:["parted","wrap","braids","long","bob","bangs","pigtails","short"],m:["crop","sidepart","fluffy","curtains","short","buzz","bun"]};
 function optRow([k,l,vals]){
+  if(k==="hair")vals=vals.filter(([v])=>HAIR_FOR[S.avatar.body||"f"].includes(v));
   const vb=TILE_VIEW[k];
   if(vb)return `<div class="me-row" role="group" aria-label="${l}"><span class="eyebrow">${l}</span><div class="tiles">${vals.map(([v,t])=>
      `<button type="button" class="tile" data-k="${k}" data-v="${v}" aria-pressed="${S.avatar[k]===v}">${avatarSVG({...S.avatar,[k]:v}).replace('viewBox="0 -18 100 148"',`viewBox="${vb}"`)}<span>${t}</span></button>`).join("")}</div></div>`;
@@ -1386,7 +1406,9 @@ function renderMe(){
 }
 $("#meOpts").addEventListener("click",e=>{
   const t=e.target.closest("[data-tab]");if(t){meTab=+t.dataset.tab;renderMe();return}
-  const b=e.target.closest("[data-k]");if(!b)return;S.avatar[b.dataset.k]=b.dataset.v;save();renderMe()});
+  const b=e.target.closest("[data-k]");if(!b)return;S.avatar[b.dataset.k]=b.dataset.v;
+  if(b.dataset.k==="body"){const ok=HAIR_FOR[b.dataset.v];if(!ok.includes(S.avatar.hair))S.avatar.hair=ok[0];if(b.dataset.v==="m"&&S.avatar.ears==="hoops")S.avatar.ears="none"}
+  save();renderMe()});
 $("#meName").addEventListener("input",e=>{S.avatar.name=e.target.value||"Traveller";save()});
 
 /* ================= WISH LIST ================= */
