@@ -742,7 +742,9 @@ function mixHex(c,w,k){const n=parseInt(c.slice(1),16),f=x=>Math.round(x*k+w*(1-
 const shade=(c,k)=>/^#[0-9a-f]{6}$/i.test(c)?mixHex(c,0,k):c;
 const tint=(c,k)=>/^#[0-9a-f]{6}$/i.test(c)?mixHex(c,255,1-k):c;
 function currentMood(){if(S.avatar.react==="off")return null;const c=[...S.checkins].reverse().find(c=>c.mood);return c||null}
+let AV_UID=0;
 function avatarSVG(a0,cls="",mood=null,mini=false){
+  const uid=++AV_UID;
   const a={...DEF_AV,...a0};
   if(mood&&!MOOD_FACE[mood])mood=null;
   const O=a.line==="on"&&!mini?`stroke="#2B2420" stroke-width="1.5" stroke-linejoin="round"`:"";
@@ -769,7 +771,7 @@ function avatarSVG(a0,cls="",mood=null,mini=false){
   /* the traveller's own eye shape; a mood swaps it only for closed, sleepy, wide or spiral eyes */
   const own=["round","gentle","cat","small","deadpan","doll"].includes(a.eyes)?a.eyes:"round";
   const ek=X?({open:"own",sparkly:"own",side:"own",wide:"round"}[X.eyes]||X.eyes):(a.eyes==="smiley"?"happy":a.eyes==="relaxed"?"down":a.eyes==="sleepy"?"sleepy":"own");
-  const bs=a.eyes==="doll"?2.5:0;
+  const bs=2.5; /* eyes sit at 36.5 and 63.5 for every style, like the Doll face */
   const eSpark=spk||(X&&X.eyes==="sparkly"),eDx=X&&X.eyes==="side"?1.8:0;
   /* a mood can lift or knit the brows; otherwise they are the traveller's own */
   const brow=X&&X.brow!=="none"?X.brow:a.brows;
@@ -784,10 +786,10 @@ function avatarSVG(a0,cls="",mood=null,mini=false){
     return `<ellipse cx="${cx}" cy="${cy}" rx="${R+1.5}" ry="${R}" fill="#fff" stroke="${INK}" stroke-width="${mini?0:.9}"/>`
      +`<ellipse cx="${x}" cy="${cy}" rx="${ir}" ry="${R-.2}" fill="${ic}"/><ellipse cx="${x}" cy="${cy}" rx="${ir*.5}" ry="${R*.56}" fill="${INK}"/>`
      +(eSpark?STAR(x-ir*.3,iy-R*.4,ir*.5):"")};
-  const lidL=(k,R)=>{const t=EY-R*.95,L=39-R,Rr=39+R;
+  const lidL=(k,R)=>{const t=EY-R*.95,L=36.5-R,Rr=36.5+R;
     if(k==="gentle")return `M${L-1.4} ${EY-R*.15}Q${38} ${t-2.6} ${Rr+.6} ${EY-R*.8}`;
     if(k==="cat")return `M${Rr+.4} ${EY-R*.45}Q${40} ${t-2.4} ${L-.6} ${EY-R*.95}L${L-3.2} ${EY-R*1.45}`;
-    return `M${L-1.2} ${EY-R*.55}Q39 ${t-2.6} ${Rr+.6} ${EY-R*.7}M${L-1.2} ${EY-R*.55}l-1.9-1.3`};
+    return `M${L-1.2} ${EY-R*.55}Q36.5 ${t-2.6} ${Rr+.6} ${EY-R*.7}M${L-1.2} ${EY-R*.55}l-1.9-1.3`};
   /* deadpan: a flat, heavy lid over the top half of a small iris */
   const deadpan=()=>{const W=6.6,D=8,T=EY-2.6;
     const one=(cx,toNose)=>{const px=cx+toNose*1.5+eDx;
@@ -795,7 +797,7 @@ function avatarSVG(a0,cls="",mood=null,mini=false){
        +`<circle cx="${px}" cy="${T+4.3}" r="3.7" fill="${ic}"/>`
        +(eSpark?STAR(px-1,T+3,1.5):"")
        +`<path d="M${cx-W-.6} ${T}H${cx+W+.6}" stroke="${INK}" stroke-width="1.7" stroke-linecap="round"/>`};
-    return one(39,1)+one(61,-1)};
+    return one(36.5,1)+one(63.5,-1)};
   /* Doll eyes: a round white, a big dark pupil sitting high and toward the nose, a thin lash line with flicks
      on top and little lash ticks underneath. Every mood is drawn in the same hand. */
   /* sparkle: a soft five-point star in the pupil */
@@ -818,27 +820,27 @@ function avatarSVG(a0,cls="",mood=null,mini=false){
         :`<path d="M${cx-3.6} ${EY+2.2}l-.8 2M${cx-1.2} ${EY+2.9}l-.3 2.1M${cx+1.4} ${EY+2.9}l.3 2.1M${cx+3.8} ${EY+2.1}l.8 2" stroke="${INK}" stroke-width="1" stroke-linecap="round"/>`;
       return `<path d="${arc}" stroke="${INK}" stroke-width="1.7" fill="none" stroke-linecap="round"/>`+lash};
     return one(36.5,1)+one(63.5,-1)};
-  const glossy=k=>{if(k==="deadpan")return deadpan();if(k==="doll")return doll();const R={big:5.8,small:3.9,deadpan:5}[k]||4.9;
+  const glossy=k=>{if(k==="deadpan")return deadpan();if(k==="doll")return doll();const R={big:5.8,small:4.4,deadpan:5}[k]||4.9;
     const lid=`<path d="${lidL(k,R)}" stroke="${INK}" stroke-width="${mini?2:2.5}" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
-    const lash=k==="big"&&!mini?`<path d="M${39-R-1} ${EY-R*.2}l-2.2-.4" stroke="${INK}" stroke-width="1.4" stroke-linecap="round"/>`:"";
-    return iris(39,R,eDx)+iris(61,R,eDx)+lid+lash+`<g transform="translate(100 0) scale(-1 1)">${lid}${lash}</g>`};
+    const lash=k==="big"&&!mini?`<path d="M${36.5-R-1} ${EY-R*.2}l-2.2-.4" stroke="${INK}" stroke-width="1.4" stroke-linecap="round"/>`:"";
+    return iris(36.5,R,eDx)+iris(63.5,R,eDx)+lid+lash+`<g transform="translate(100 0) scale(-1 1)">${lid}${lash}</g>`};
   const sleepyEye=()=>{const R=4.9,lidFill=cx=>`<path d="M${cx-R-1.5} 51.8Q${cx} 49.2 ${cx+R+1.5} 51.8V43H${cx-R-1.5}Z" fill="${s}"/>`;
-    return iris(39,R,0)+iris(61,R,0)+lidFill(39)+lidFill(61)+`<path d="M${39-R-1.5} 51.8Q39 50 ${39+R+1.5} 51.8M${61-R-1.5} 51.8Q61 50 ${61+R+1.5} 51.8" stroke="${INK}" stroke-width="2.2" fill="none" stroke-linecap="round"/>`};
+    return iris(36.5,R,0)+iris(63.5,R,0)+lidFill(36.5)+lidFill(63.5)+`<path d="M${36.5-R-1.5} 51.8Q36.5 50 ${36.5+R+1.5} 51.8M${63.5-R-1.5} 51.8Q63.5 50 ${63.5+R+1.5} 51.8" stroke="${INK}" stroke-width="2.2" fill="none" stroke-linecap="round"/>`};
   const dotEye=(x,r,dx=0,hi=false)=>`<circle cx="${x+dx}" cy="49.5" r="${r}" fill="${INK}"/>${hi?`<circle cx="${x+dx-1.8}" cy="47.4" r="${r*.32}" fill="#fff"/><circle cx="${x+dx+1.9}" cy="51.6" r="${r*.14}" fill="#fff"/>`:""}`;
   const LASH=`<path d="M33.6 46.4l-3-1.8M34.4 44.2l-2.4-2.6M66.4 46.4l3-1.8M65.6 44.2l2.4-2.6" stroke="${INK}" stroke-width="1.5" stroke-linecap="round"/>`;
   const EYES={
-    open:dotEye(39,5.6)+dotEye(61,5.6),
-    sparkly:dotEye(39,6.2,0,true)+dotEye(61,6.2,0,true),
-    wide:dotEye(39,6.8,0,true)+dotEye(61,6.8,0,true),
-    side:dotEye(39,5.4,2.4)+dotEye(61,5.4,2.4),
+    open:dotEye(36.5,5.6)+dotEye(63.5,5.6),
+    sparkly:dotEye(36.5,6.2,0,true)+dotEye(63.5,6.2,0,true),
+    wide:dotEye(36.5,6.8,0,true)+dotEye(63.5,6.8,0,true),
+    side:dotEye(36.5,5.4,2.4)+dotEye(63.5,5.4,2.4),
     sleepy:`<path d="M33 50q6 4 12 0M55 50q6 4 12 0" stroke="${INK}" stroke-width="2.2" fill="none" stroke-linecap="round"/>`,
     down:`<path d="M33 50q6 5 12 0M55 50q6 5 12 0" stroke="${INK}" stroke-width="2.2" fill="none" stroke-linecap="round"/>`,
     happy:`<path d="M33 52q6-6 12 0M55 52q6-6 12 0" stroke="${INK}" stroke-width="2.2" fill="none" stroke-linecap="round"/>`,
-    small:dotEye(39,4.2)+dotEye(61,4.2),
-    smallS:dotEye(39,4.4,0,true)+dotEye(61,4.4,0,true),
-    lashes:dotEye(39,5.6)+dotEye(61,5.6)+LASH,
-    lashesS:dotEye(39,6.2,0,true)+dotEye(61,6.2,0,true)+LASH,
-    spiral:`<path d="M39 49.5m-1 0a1 1 0 1 1 2 0a2.5 2.5 0 1 1-5 0a4 4 0 1 1 8 0a5.5 5.5 0 1 1-11 0M61 49.5m-1 0a1 1 0 1 1 2 0a2.5 2.5 0 1 1-5 0a4 4 0 1 1 8 0a5.5 5.5 0 1 1-11 0" stroke="${INK}" stroke-width="1.4" fill="none"/>`
+    small:dotEye(36.5,4.2)+dotEye(63.5,4.2),
+    smallS:dotEye(36.5,4.4,0,true)+dotEye(63.5,4.4,0,true),
+    lashes:dotEye(36.5,5.6)+dotEye(63.5,5.6)+LASH,
+    lashesS:dotEye(36.5,6.2,0,true)+dotEye(63.5,6.2,0,true)+LASH,
+    spiral:`<path d="M36.5 49.5m-1 0a1 1 0 1 1 2 0a2.5 2.5 0 1 1-5 0a4 4 0 1 1 8 0a5.5 5.5 0 1 1-11 0M63.5 49.5m-1 0a1 1 0 1 1 2 0a2.5 2.5 0 1 1-5 0a4 4 0 1 1 8 0a5.5 5.5 0 1 1-11 0" stroke="${INK}" stroke-width="1.4" fill="none"/>`
   };
   /* brows: drawn once for the left eye, mirrored for the right */
   const BC=a.browC==="hair"?shade(h,.55):a.browC;
@@ -861,7 +863,7 @@ function avatarSVG(a0,cls="",mood=null,mini=false){
     wavy:`<path d="M45 63.5q1.7-1.6 3.3 0t3.4 0 3.3 0" stroke="${INK}" stroke-width="1.5" fill="none" stroke-linecap="round"/>`,
     flat:`<path d="M47 64h6" stroke="${INK}" stroke-width="1.6" stroke-linecap="round"/>`};
   const D=own==="doll";
-  const eyes=D&&ek==="happy"?closed(true)+(BROWS[brow]||""):D&&(ek==="down"||ek==="sleepy"&&!X)?closed(false)+(BROWS[brow]||""):D&&ek==="sleepy"?doll(1,true)+(BROWS[brow]||""):D&&ek==="round"?doll(1.12)+(BROWS[brow]||""):(ek==="own"?glossy(own):ek==="round"?glossy("round"):ek==="sleepy"?sleepyEye():(EYES[ek]?`<g transform="translate(0 2.5)">${EYES[ek]}</g>`:glossy(own)))+(BROWS[brow]||"");
+  const eyes=ek==="happy"?closed(true)+(BROWS[brow]||""):ek==="down"||D&&ek==="sleepy"&&!X?closed(false)+(BROWS[brow]||""):D&&ek==="sleepy"?doll(1,true)+(BROWS[brow]||""):D&&ek==="round"?doll(1.12)+(BROWS[brow]||""):(ek==="own"?glossy(own):ek==="round"?glossy("round"):ek==="sleepy"?sleepyEye():(EYES[ek]?`<g transform="translate(0 2.5)">${EYES[ek]}</g>`:glossy(own)))+(BROWS[brow]||"");
   const mouth=MOUTHS[mk];
   const EAR={hoops:`<g fill="none" stroke="#E0B03C" stroke-width="1.6"><circle cx="18" cy="60" r="3.2"/><circle cx="82" cy="60" r="3.2"/></g>`,
     studs:`<g fill="#E0B03C"><circle cx="17.5" cy="57.5" r="1.7"/><circle cx="82.5" cy="57.5" r="1.7"/></g>`};
@@ -936,7 +938,7 @@ function avatarSVG(a0,cls="",mood=null,mini=false){
   <circle cx="78" cy="50" r="7.5" fill="${s}" ${O}/><circle cx="78" cy="51" r="4.5" fill="${blush}" opacity=".45"/>
   <path d="M50 21C66 21 76 32 76 48C76 62 66 71 50 71C34 71 24 62 24 48Z" fill="rgba(0,0,0,.08)"/>
   <path d="M50 18C67 18 77 30 77 47C77 61 67 69.5 50 69.5C33 69.5 23 61 23 47C23 30 33 18 50 18Z" fill="${s}" ${O}/>
-  <ellipse cx="31" cy="62" rx="7" ry="4.6" fill="${blush}" opacity=".45"/><ellipse cx="69" cy="62" rx="7" ry="4.6" fill="${blush}" opacity=".45"/>${mini?"":`<g fill="#B9655A" opacity=".55"><circle cx="28.5" cy="61" r=".55"/><circle cx="31" cy="62.6" r=".55"/><circle cx="33.4" cy="61.2" r=".55"/><circle cx="66.6" cy="61.2" r=".55"/><circle cx="69" cy="62.6" r=".55"/><circle cx="71.5" cy="61" r=".55"/></g>
+  <clipPath id="fc${uid}"><path d="M50 18C67 18 77 30 77 47C77 61 67 69.5 50 69.5C33 69.5 23 61 23 47C23 30 33 18 50 18Z"/></clipPath><g clip-path="url(#fc${uid})"><ellipse cx="32" cy="61" rx="6.4" ry="4.2" fill="${blush}" opacity=".45"/><ellipse cx="68" cy="61" rx="6.4" ry="4.2" fill="${blush}" opacity=".45"/></g>${mini?"":`<g fill="#B9655A" opacity=".55"><circle cx="29.8" cy="60.4" r=".55"/><circle cx="32" cy="62" r=".55"/><circle cx="34.3" cy="60.6" r=".55"/><circle cx="65.7" cy="60.6" r=".55"/><circle cx="68" cy="62" r=".55"/><circle cx="70.2" cy="60.4" r=".55"/></g>
   <circle cx="50" cy="59" r="2.2" fill="${blush}" opacity=".55"/><path d="M48.9 59.4q1.1.9 2.2 0" stroke="#B9655A" stroke-width=".8" fill="none" stroke-linecap="round"/>`}
   ${hair.front}${eyes}
   ${mouth}
