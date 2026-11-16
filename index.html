@@ -15,7 +15,7 @@
   --ink:#1F2A44;        /* night-ferry navy */
   --ink-soft:#5E5A60;
   --line:rgba(60,40,30,.16);
-  --tram:#2F8F5B;       /* ding ding tram green */
+  --tram:#277A4D;--on-accent:#fff;       /* ding ding tram green */
   --neon:#C4202E;       /* postal red, same as the landing page */
   --sun:#F4B942;
   --sea:#7CC6CF;
@@ -31,10 +31,10 @@
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --wall:#1E1815;--card:#2A221D;--ink:#F6F0DF;--ink-soft:#BDB2A2;--line:rgba(246,240,223,.14);
-  --tram:#4FBF84;--neon:#F0545C;--sun:#F7C75E;--sea:#2D5D73;--chip:#3A2F28;color-scheme:dark}}
+  --tram:#4FBF84;--neon:#F0545C;--on-accent:#1B1420;--sun:#F7C75E;--sea:#2D5D73;--chip:#3A2F28;color-scheme:dark}}
 :root[data-theme="dark"]{
   --wall:#1E1815;--card:#2A221D;--ink:#F6F0DF;--ink-soft:#BDB2A2;--line:rgba(246,240,223,.14);
-  --tram:#4FBF84;--neon:#F0545C;--sun:#F7C75E;--sea:#2D5D73;--chip:#3A2F28;color-scheme:dark}
+  --tram:#4FBF84;--neon:#F0545C;--on-accent:#1B1420;--sun:#F7C75E;--sea:#2D5D73;--chip:#3A2F28;color-scheme:dark}
 
 *{box-sizing:border-box}
 [hidden]{display:none!important}
@@ -63,7 +63,7 @@ main{padding-block:28px 64px}
 .eyebrow{font-weight:700;font-size:14px;color:var(--ink-soft)}
 .btn{display:inline-flex;align-items:center;gap:8px;border:0;border-radius:999px;padding:10px 18px;font-weight:800;background:var(--ink);color:var(--wall);text-decoration:none}
 .btn.ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 2px var(--line)}
-.btn.pink{background:var(--neon);color:#fff}
+.btn.pink{background:var(--neon);color:var(--on-accent)}
 .btn:disabled{opacity:.4;cursor:not-allowed}
 
 /* ---------- stamps ---------- */
@@ -124,7 +124,7 @@ main{padding-block:28px 64px}
 .tod button[aria-pressed="true"]{background:var(--ink);color:var(--wall)}
 .filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px}
 .chip{border:0;border-radius:999px;padding:6px 12px;font-size:13px;font-weight:800;background:var(--chip);color:var(--ink-soft)}
-.chip[aria-pressed="true"]{background:var(--tram);color:#fff}
+.chip[aria-pressed="true"]{background:var(--tram);color:var(--on-accent)}
 .chip.link{background:none;text-decoration:underline;text-underline-offset:3px}
 .forme{font-size:13px;color:var(--ink-soft);margin-right:6px}
 .forme b{color:var(--ink)}
@@ -147,13 +147,13 @@ main{padding-block:28px 64px}
 #hots .hot .badge,#hots .hot .lbl{display:none}
 .hot:hover,.hot:focus-visible,.hot.on{z-index:5}
 #hots .hot:hover .dot,#hots .hot:focus-visible .dot,#hots .hot.on .dot{display:none}
-#hots .hot:hover .badge,#hots .hot:focus-visible .badge,#hots .hot.on .badge{display:grid;animation:popin .22s cubic-bezier(.3,1.6,.5,1)}
+#hots .hot:hover .badge,#hots .hot:focus-visible .badge,#hots .hot.on .badge{display:grid;animation:popin .22s cubic-bezier(.2,.8,.3,1)}
 #hots .hot:hover .lbl,#hots .hot:focus-visible .lbl,#hots .hot.on .lbl{display:block}
 @keyframes popin{from{transform:scale(.3)}}
-.hot .badge{width:58px;height:58px;border-radius:50%;background:var(--m-labelbg);display:grid;place-items:center;box-shadow:0 5px 0 rgba(20,30,60,.18);transition:transform .25s cubic-bezier(.3,1.6,.5,1)}
+.hot .badge{width:58px;height:58px;border-radius:50%;background:var(--m-labelbg);display:grid;place-items:center;box-shadow:0 5px 0 rgba(20,30,60,.18);transition:transform .25s cubic-bezier(.2,.8,.3,1)}
 .hot .badge svg{width:42px;height:42px}
 .hot .lbl{font-family:var(--f-display);font-weight:700;font-size:13px;color:var(--m-label);background:var(--m-labelbg);padding:1px 9px;border-radius:999px;white-space:nowrap;box-shadow:0 2px 0 rgba(20,30,60,.12)}
-.hot .count{position:absolute;top:-4px;right:-6px;background:var(--neon);color:#fff;font-size:11px;font-weight:800;min-width:22px;height:22px;border-radius:999px;display:grid;place-items:center;padding:0 5px;box-shadow:0 0 0 2px var(--m-labelbg)}
+.hot .count{position:absolute;top:-4px;right:-6px;background:var(--neon);color:var(--on-accent);font-size:11px;font-weight:800;min-width:22px;height:22px;border-radius:999px;display:grid;place-items:center;padding:0 5px;box-shadow:0 0 0 2px var(--m-labelbg)}
 .hot .done{background:var(--tram)}
 .hot.on .badge{transform:rotate(-4deg)}
 .hot.dim{opacity:.45}
@@ -161,9 +161,10 @@ main{padding-block:28px 64px}
 .legend{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
 .legend button{display:flex;align-items:center;gap:6px;border:0;border-radius:999px;padding:5px 11px 5px 7px;font-size:12px;font-weight:800;background:var(--card);color:var(--ink);box-shadow:0 2px 0 rgba(20,30,60,.12)}
 .legend i{width:12px;height:12px;border-radius:50%}
-.legend button.off{opacity:.5}
+.legend button.off{color:var(--ink-soft);box-shadow:none}
+.legend button.off i{opacity:.35}
 .legend button[aria-pressed="true"]{box-shadow:0 0 0 2px var(--ink)}
-.mapcredit{position:absolute;right:10px;bottom:6px;z-index:3;font-size:10px;font-weight:600;color:var(--m-label);opacity:.6}
+.mapcredit{position:absolute;right:10px;bottom:6px;z-index:3;font-size:10px;font-weight:700;color:var(--m-label)}
 .pins{position:absolute;inset:0;pointer-events:none;z-index:2}
 .pol{position:absolute;pointer-events:auto;background:#fff;padding:4px 4px 12px;width:52px;box-shadow:0 4px 10px rgba(0,0,0,.25);border:0;transform-origin:50% 0}
 .pol img{width:44px;height:44px;object-fit:cover;display:block}
@@ -177,9 +178,9 @@ main{padding-block:28px 64px}
 .me-on-map.walking svg{animation:glide .8s ease-in-out}
 @keyframes glide{50%{transform:translateY(-2px)}}
 /* reacting to a new mood: hop, then the prop pops in */
-.reacting svg{animation:hop .55s cubic-bezier(.3,1.5,.5,1)}
+.reacting svg{animation:hop .55s cubic-bezier(.2,.8,.3,1)}
 @keyframes hop{30%{transform:translateY(-12%) scale(1.04,.96)}60%{transform:translateY(0) scale(.96,1.04)}}
-.reacting .tv-prop{animation:propIn .5s .25s cubic-bezier(.3,1.6,.5,1) both}
+.reacting .tv-prop{animation:propIn .5s .25s cubic-bezier(.2,.8,.3,1) both}
 @keyframes propIn{from{opacity:0;transform:translateY(8px) scale(.4)}}
 .tv-prop{transform-box:fill-box;transform-origin:50% 100%}
 /* each prop has its own small idle loop */
@@ -197,22 +198,23 @@ main{padding-block:28px 64px}
 @keyframes float{50%{transform:translateY(-2px)}}
 
 .pop{position:absolute;z-index:10;width:350px;max-height:calc(100% - 24px);overflow:auto;background:var(--card);color:var(--ink);border-radius:22px;
-  box-shadow:0 20px 50px -10px rgba(10,20,50,.45);padding:18px 18px 12px;animation:pop .25s cubic-bezier(.3,1.5,.5,1)}
+  box-shadow:0 20px 50px -10px rgba(10,20,50,.45);padding:18px 18px 12px;animation:pop .25s cubic-bezier(.2,.8,.3,1)}
 @keyframes pop{from{transform:scale(.85);opacity:0}}
 .pop-h{display:flex;gap:12px;align-items:center}
 .pop-h svg{width:46px;height:46px;flex:none}
-.pop-h h3{font-size:22px}
+.pop-h h2{font-size:22px}
 .pop .blurb{font-size:14px;color:var(--ink-soft);margin:8px 0 4px}
 .pop .prog{font-size:12px;font-weight:800;color:var(--tram)}
 .pop .x{position:absolute;right:10px;top:10px;border:0;background:var(--chip);width:30px;height:30px;border-radius:50%;font-weight:800}
 .grp{margin-top:12px}
-.grp h4{margin:0 0 6px;font-family:var(--f-display);font-size:14px;display:flex;align-items:center;gap:6px;color:var(--ink-soft)}
+.grp h3{margin:0 0 6px;font-family:var(--f-display);font-size:14px;display:flex;align-items:center;gap:6px;color:var(--ink-soft)}
 .spot{display:grid;grid-template-columns:1fr auto;gap:4px 10px;padding:8px 0;border-top:1px dashed var(--line);align-items:center}
 .spot .n{font-weight:800;font-size:15px;line-height:1.25}
 .spot .d{font-size:13px;color:var(--ink-soft);grid-column:1;line-height:1.35}
 .spot .act{grid-column:2;grid-row:1/span 2}
-.spot.dim{opacity:.42}
-.dk{border:0;border-radius:12px;background:var(--neon);color:#fff;font-weight:800;font-size:13px;padding:7px 10px;line-height:1.1;text-align:center}
+.spot.dim .n{color:var(--ink-soft);font-weight:700}
+.spot.dim .dk{background:var(--chip);color:var(--ink)}
+.dk{border:0;border-radius:12px;background:var(--neon);color:var(--on-accent);font-weight:800;font-size:13px;padding:7px 10px;line-height:1.1;text-align:center}
 .dkd{border:0;background:none;padding:0;width:52px;height:52px;position:relative}
 .dkd img{width:52px;height:52px;object-fit:cover;border-radius:8px;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.2);transform:rotate(4deg)}
 .dkd i{position:absolute;left:-8px;bottom:-6px;font-style:normal;font-size:18px}
@@ -226,15 +228,15 @@ main{padding-block:28px 64px}
 .perf{max-width:320px}
 .qcard h2{font-family:var(--f-big);font-weight:400;font-size:clamp(28px,4.4vw,46px);line-height:1.05;margin:4px 0 28px;max-width:18ch}
 .opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:22px}
-.opt{border:0;background:none;padding:0;text-align:left;color:var(--stamp-ink);transition:transform .25s cubic-bezier(.3,1.4,.5,1)}
+.opt{border:0;background:none;padding:0;text-align:left;color:var(--stamp-ink);transition:transform .25s cubic-bezier(.2,.8,.3,1)}
 .opt .stamp{--hole:6px;padding:9px;aspect-ratio:4/5}
-.opt .stamp-face{background:var(--oc);display:flex;flex-direction:column;justify-content:flex-end;padding:12px;color:#fff;border:0}
+.opt .stamp-face{background:var(--oc);display:flex;flex-direction:column;justify-content:flex-end;padding:12px;color:var(--ot,#fff);border:0}
 .opt:nth-child(odd){transform:rotate(-1.5deg)}
 .opt:nth-child(even){transform:rotate(1.2deg)}
 .opt:hover,.opt:focus-visible{transform:rotate(0) translateY(-5px)}
-.opt .val{position:absolute;top:10px;left:12px;font-family:var(--f-big);font-size:20px;line-height:1;opacity:.9}
+.opt .val{position:absolute;top:10px;left:12px;font-family:var(--f-big);font-size:20px;line-height:1}
 .opt span{font-family:var(--f-big);font-size:19px;line-height:1.05;display:block}
-.opt small{display:block;margin-top:6px;font-size:13px;font-weight:700;opacity:.9}
+.opt small{display:block;margin-top:6px;font-size:13px;font-weight:700}
 .result{text-align:center}
 .postcard{background:var(--stamp-paper);color:var(--stamp-ink);border-radius:6px;padding:28px;display:grid;grid-template-columns:1.3fr 1fr;gap:24px;text-align:left;box-shadow:0 18px 30px -16px rgba(20,30,60,.5);transform:rotate(-1deg);margin:8px 0 24px}
 .postcard .l{border-right:2px dashed rgba(31,42,68,.2);padding-right:22px}
@@ -261,7 +263,7 @@ main{padding-block:28px 64px}
 .wish{margin:40px 0 0;padding-top:28px;border-top:2px dashed var(--line)}
 .wish h2{font-size:24px}
 .wl{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:14px 0 4px}
-.wl .on{display:inline-flex;align-items:center;gap:6px;border:0;border-radius:999px;padding:7px 8px 7px 14px;font-weight:800;font-size:14px;background:var(--neon);color:#fff}
+.wl .on{display:inline-flex;align-items:center;gap:6px;border:0;border-radius:999px;padding:7px 8px 7px 14px;font-weight:800;font-size:14px;background:var(--neon);color:var(--on-accent)}
 .wl .on i{font-style:normal;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.25);font-size:13px;line-height:1}
 .wl-empty{color:var(--ink-soft);font-size:14px;margin:14px 0 4px}
 .wl-add{display:flex;gap:8px;justify-content:center;margin:14px auto 12px;max-width:360px}
@@ -297,6 +299,13 @@ main{padding-block:28px 64px}
 dialog{border:0;padding:0;border-radius:28px;background:var(--card);color:var(--ink);width:min(560px,calc(100% - 24px));max-height:calc(100% - 24px)}
 dialog::backdrop{background:rgba(16,22,40,.55);backdrop-filter:blur(3px)}
 .dlg{padding:22px;display:grid;gap:18px}
+@media (pointer:coarse){
+  .chip,.tod button,.legend button,.dk{min-height:44px}
+  .dk{padding-inline:14px}
+  .pop .x{width:44px;height:44px}
+  .hot{padding:14px}
+}
+main:focus{outline:none}
 .dlg h2{font-size:26px}
 .dlg .row{position:sticky;bottom:0;background:var(--card);padding-block:12px;margin-block:-12px;z-index:1}
 .mood[hidden]{display:none}
@@ -320,7 +329,7 @@ dialog::backdrop{background:rgba(16,22,40,.55);backdrop-filter:blur(3px)}
 .dlg input[type=text]{width:100%;border:0;border-bottom:2px dashed var(--line);background:none;font-family:var(--f-hand);font-size:18px;padding:4px 2px}
 .row{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
 .thud{position:fixed;inset:0;display:grid;place-items:center;z-index:60;pointer-events:none}
-.thud .stamp{width:220px;aspect-ratio:4/5;animation:thud .6s cubic-bezier(.2,1.6,.4,1)}
+.thud .stamp{width:220px;aspect-ratio:4/5;animation:thud .6s cubic-bezier(.2,.8,.3,1)}
 .thud .stamp-face img{width:100%;height:100%;object-fit:cover;display:block}
 .thud .postmark{animation:ink .3s .35s both}
 @keyframes thud{from{transform:scale(1.8) rotate(12deg);opacity:0}}
@@ -398,7 +407,7 @@ dialog::backdrop{background:rgba(16,22,40,.55);backdrop-filter:blur(3px)}
   </div>
 </header>
 
-<main class="wrap">
+<main class="wrap" id="main" tabindex="-1">
   <!-- WALL -->
   <section id="v-wall" class="view stage">
     <div class="track" id="track"></div>
@@ -438,11 +447,12 @@ dialog::backdrop{background:rgba(16,22,40,.55);backdrop-filter:blur(3px)}
       <div id="hots"></div>
       <a class="mapcredit" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">Map data © OpenStreetMap contributors</a>
     </div></div>
-    <div class="pop" id="pop" hidden></div>
+    <div class="pop" id="pop" role="dialog" aria-labelledby="popT" hidden></div>
   </section>
 
   <!-- QUIZ -->
   <section id="v-quiz" class="view quiz" hidden>
+    <h1 class="sr">Quiz</h1>
     <div id="quizBody"></div>
   </section>
 
@@ -1071,12 +1081,12 @@ function renderPop(id){
   const a=AREA[id],p=$("#pop");
   const done=new Set(S.checkins.filter(c=>c.area===id).map(c=>c.spot));
   let h=`<button type="button" class="x" data-close aria-label="Close">×</button>
-  <div class="pop-h"><svg><use href="#${a.icon}"/></svg><div><h3>${esc(a.name)}</h3></div></div>
+  <div class="pop-h"><svg><use href="#${a.icon}"/></svg><div><h2 id="popT">${esc(a.name)}</h2></div></div>
   <p class="blurb">${esc(a.blurb)}</p><div class="prog">${done.size} of ${a.spots.length} stamped</div>`;
   for(const [k,en] of Object.entries(TYPES)){
     const list=a.spots.filter(s=>s.type===k);if(!list.length)continue;
     list.sort((x,y)=>spotMatch(y)-spotMatch(x));
-    h+=`<div class="grp"><h4>${en}</h4>`;
+    h+=`<div class="grp"><h3>${en}</h3>`;
     h+=list.map(sp=>{const c=doneFor(sp.id).slice(-1)[0];
       return `<div class="spot${spotMatch(sp)?"":" dim"}"><div class="n">${esc(sp.name)}</div><div class="d">${esc(sp.note)}</div>
       <div class="act">${c?`<button type="button" class="dkd" data-ck="${c.id}" aria-label="Open your photo"><img src="${c.img}" alt="">${c.mood?`<i>${MOOD[c.mood].e}</i>`:""}</button>`
@@ -1093,8 +1103,11 @@ function openArea(id,pin){
   clearTimeout(hoverT);openId=id;pinned=!!pin;S.here=id;save();
   document.querySelectorAll(".hot").forEach(b=>b.classList.toggle("on",b.dataset.area===id));
   renderPop(id);placeMe(id,true);
+  document.querySelectorAll(".hot").forEach(b=>b.setAttribute("aria-expanded",b.dataset.area===id));
+  if(pin){const x=$("#pop .x");if(x)x.focus({preventScroll:true})}
 }
-function closePop(){openId=null;pinned=false;$("#pop").hidden=true;document.querySelectorAll(".hot").forEach(b=>b.classList.remove("on"))}
+function closePop(){const back=$("#pop").contains(document.activeElement)&&openId;openId=null;pinned=false;$("#pop").hidden=true;document.querySelectorAll(".hot").forEach(b=>{b.classList.remove("on");b.setAttribute("aria-expanded","false")});
+  if(back){const h=$(`.hot[data-area="${back}"]`);if(h)h.focus({preventScroll:true})}}
 function setTod(t){S.tod=t;save();const w=$("#mapwrap");if(w.dataset.tod&&w.dataset.tod!==t&&!reduced()){w.classList.add("tod-anim");clearTimeout(w._t);w._t=setTimeout(()=>w.classList.remove("tod-anim"),800)}w.dataset.tod=t;document.querySelectorAll(".tod button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.tod===t))}
 function renderMap(){
   if(!$("#mapsvg").innerHTML)$("#mapsvg").innerHTML=buildMapSVG();
@@ -1326,12 +1339,14 @@ function alertInline(msg){const s=$("#dakaForm .sub");s.textContent=msg;s.style.
 
 /* ================= LIGHTBOX ================= */
 let lbId=null,delArmed=false;
-function openLB(id){const c=S.checkins.find(x=>x.id===id);if(!c)return;lbId=id;delArmed=false;
+let lbBack=null;
+function openLB(id){const c=S.checkins.find(x=>x.id===id);if(!c)return;lbId=id;delArmed=false;lbBack=document.activeElement;
   $("#lbImg").src=c.img;$("#lbImg").alt=(c.illus?"Illustrated stamp for ":"Photo at ")+SPOTS[c.spot].name;
   $("#lbT").textContent=SPOTS[c.spot].name+" · "+AREA[c.area].name;
   $("#lbM").textContent=[fmtDate(c.t),c.mood?MOOD[c.mood].en+" "+MOOD[c.mood].e:"",c.note?"“"+c.note+"”":""].filter(Boolean).join("  ·  ");
   $("#lbDel").textContent="Remove stamp";$("#lb").hidden=false;$("#lbX").focus()}
-function closeLB(){$("#lb").hidden=true;lbId=null}
+function closeLB(){$("#lb").hidden=true;lbId=null;if(lbBack&&document.contains(lbBack))lbBack.focus({preventScroll:true});lbBack=null}
+$("#lb").addEventListener("keydown",e=>{if(e.key!=="Tab")return;const f=[$("#lbDel"),$("#lbX")],i=f.indexOf(document.activeElement);e.preventDefault();f[(i+(e.shiftKey?f.length-1:1))%f.length].focus()});
 $("#lbX").addEventListener("click",closeLB);
 $("#lb").addEventListener("click",e=>{if(e.target.id==="lb")closeLB()});
 $("#lbDel").addEventListener("click",()=>{if(!delArmed){delArmed=true;$("#lbDel").textContent="Tap again to remove";return}
@@ -1341,13 +1356,13 @@ addEventListener("keydown",e=>{if(e.key==="Escape"){if(!$("#lb").hidden)closeLB(
 /* ================= QUIZ ================= */
 let qStep=0,qAns=[];
 /* print inks for the quiz stamps: postal red, tram green, harbour blue, taxi amber */
-const OPT_INKS=["#C4202E","#2F8F5B","#2F6FB3","#D98A1C"];
+const OPT_INKS=["#C4202E","#23784A","#2F6FB3","#D98A1C"],OPT_TEXT={"#D98A1C":"#1F2A44"};
 function renderQuiz(){
   const body=$("#quizBody");
   if(qStep<QUESTIONS.length){const Q=QUESTIONS[qStep];
     body.innerHTML=`<div class="qcard"><div class="perf">${QUESTIONS.map((_,i)=>`<i class="${i<=qStep?"on":""}"></i>`).join("")}</div>
      <h2>${Q.q}</h2>
-     <div class="opts">${Q.o.map((o,i)=>`<button type="button" class="opt" data-o="${i}" style="--oc:${OPT_INKS[(qStep+i)%OPT_INKS.length]}"><div class="stamp"><div class="stamp-face"><span class="val">$${[1,2,3,5][i]}</span><span>${o[1]}</span>${o[2]?`<small>${o[2]}</small>`:""}</div></div></button>`).join("")}</div>
+     <div class="opts">${Q.o.map((o,i)=>`<button type="button" class="opt" data-o="${i}" style="--oc:${OPT_INKS[(qStep+i)%OPT_INKS.length]};--ot:${OPT_TEXT[OPT_INKS[(qStep+i)%OPT_INKS.length]]||"#fff"}"><div class="stamp"><div class="stamp-face"><span class="val">$${[1,2,3,5][i]}</span><span>${o[1]}</span>${o[2]?`<small>${o[2]}</small>`:""}</div></div></button>`).join("")}</div>
      ${qStep?`<p style="margin:18px 0 0"><button type="button" class="chip link" data-back>Back</button></p>`:""}</div>`;
     return}
   const score={};qAns.forEach(tags=>tags.forEach((t,i)=>score[t]=(score[t]||0)+(i?1:1.2)));
@@ -1423,10 +1438,10 @@ function renderMe(){
    <p class="me-quiz"><a class="chip link" href="#quiz">${S.quiz?"You're a "+esc(PERSONA[S.quiz.tags[0]][0]):"What are you into? Take the quiz"}</a></p>`;
 }
 $("#meOpts").addEventListener("click",e=>{
-  const t=e.target.closest("[data-tab]");if(t){meTab=+t.dataset.tab;renderMe();return}
+  const t=e.target.closest("[data-tab]");if(t){meTab=+t.dataset.tab;renderMe();const f=$(`#meOpts [data-tab="${meTab}"]`);if(f)f.focus({preventScroll:true});return}
   const b=e.target.closest("[data-k]");if(!b)return;S.avatar[b.dataset.k]=b.dataset.v;
   if(b.dataset.k==="body")S.avatar.hair=HAIR_FOR[b.dataset.v][0];
-  save();renderMe()});
+  save();renderMe();const f=$(`#meOpts [data-k="${b.dataset.k}"][data-v="${CSS.escape(b.dataset.v)}"]`);if(f)f.focus({preventScroll:true})});
 $("#meName").addEventListener("input",e=>{S.avatar.name=e.target.value||"Traveller";save()});
 
 /* ================= WISH LIST ================= */
@@ -1518,6 +1533,7 @@ function route(){
   if(v==="map")renderMap();
   if(v==="quiz"){if(S.quiz&&qStep===0&&!qAns.length)showResult();else renderQuiz()}
   if(v==="me"){renderMe();drawMeWish()}
+  if(route.seen&&route.seen!==v)$("#main").focus({preventScroll:true});route.seen=v;
   scrollTo(0,0);
 }
 addEventListener("hashchange",route);route();maybeHello();
