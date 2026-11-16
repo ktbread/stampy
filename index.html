@@ -52,12 +52,11 @@ button{cursor:pointer}
 /* top bar */
 .top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--wall) 88%,transparent);backdrop-filter:blur(8px)}
 body[data-view="wall"] .top{position:fixed;left:0;right:0;background:none;backdrop-filter:none;color:var(--stage-fg,var(--cream));transition:color .6s ease}
-.top .wrap{max-width:none;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding-block:10px}
-.nav{display:contents}
+.top .wrap{max-width:none;padding-block:10px}
+.nav{display:flex;justify-content:space-between;align-items:center;gap:12px}
 .nav a{justify-self:start;text-decoration:none;color:inherit;font-weight:800;font-size:13px;letter-spacing:.06em;text-transform:uppercase;padding:10px 0;white-space:nowrap}
-.nav a:nth-child(2){justify-self:center}
-.nav a:nth-child(3){justify-self:end}
-.nav a[aria-current="page"]::after{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:currentColor;margin-left:8px;vertical-align:1px}
+.nav a[aria-current="page"]::after{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:currentColor;margin-left:6px;vertical-align:1px}
+@media (max-width:420px){.nav a{font-size:12px;letter-spacing:.03em}.nav a[aria-current="page"]::after{width:6px;height:6px;margin-left:4px}}
 .bighead{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin:8px 0 28px}
 .bighead h1{font-family:var(--f-big);font-weight:400;text-transform:uppercase;font-size:clamp(44px,9vw,120px);line-height:.95}
 main{padding-block:28px 64px}
@@ -299,6 +298,9 @@ dialog{border:0;padding:0;border-radius:28px;background:var(--card);color:var(--
 dialog::backdrop{background:rgba(16,22,40,.55);backdrop-filter:blur(3px)}
 .dlg{padding:22px;display:grid;gap:18px}
 .dlg h2{font-size:26px}
+.dlg .row{position:sticky;bottom:0;background:var(--card);padding-block:12px;margin-block:-12px;z-index:1}
+.mood[hidden]{display:none}
+#moodMore{margin-top:8px}
 .dlg .sub{color:var(--ink-soft);font-size:14px;margin-top:2px}
 .drop{border:2.5px dashed var(--line);border-radius:18px;padding:18px;display:grid;place-items:center;text-align:center;gap:6px;min-height:150px;position:relative;color:var(--ink-soft)}
 .drop.over{border-color:var(--neon)}
@@ -388,6 +390,8 @@ dialog::backdrop{background:rgba(16,22,40,.55);backdrop-filter:blur(3px)}
   <div class="wrap">
     <nav class="nav" aria-label="Sections">
       <a href="#wall" data-v="wall">Stampy</a>
+      <a href="#map" data-v="map">Map</a>
+      <a href="#quiz" data-v="quiz">Quiz</a>
       <a href="#book" data-v="book">My stamps</a>
       <a href="#me" data-v="me">Me</a>
     </nav>
@@ -483,13 +487,13 @@ dialog::backdrop{background:rgba(16,22,40,.55);backdrop-filter:blur(3px)}
     <div>
       <span class="eyebrow" id="dkArea"></span>
       <h2 id="dkTitle"></h2>
-      <div class="sub">Check in with a photo you took. It stays exactly as you shot it.</div>
+      <div class="sub">Add a photo you took and it stays exactly as you shot it. No photo yet? Stamp it with our illustration and add one another day.</div>
     </div>
     <div class="drop" id="drop">
       <input id="dkFile" type="file" accept="image/*" aria-label="Choose a photo">
       <div id="dkPrev"><b>Drop a photo here</b><br><span>or tap to choose one</span></div>
     </div>
-    <div class="seg" id="coverSeg">
+    <div class="seg" id="coverSeg" hidden>
       <span>Stamp cover:</span>
       <button type="button" class="chip" data-cover="real" aria-pressed="true">Real photo</button>
       <button type="button" class="chip" data-cover="toon" aria-pressed="false">Cartoon it</button>
@@ -498,6 +502,7 @@ dialog::backdrop{background:rgba(16,22,40,.55);backdrop-filter:blur(3px)}
     <div>
       <span class="lbl2">How did it feel? <span>Pick a sticker, or skip.</span></span>
       <div class="sheet" id="sheet" role="group" aria-label="Mood sticker"></div>
+      <button type="button" class="chip link" id="moodMore" aria-expanded="false" aria-controls="sheet">More feelings</button>
     </div>
     <div>
       <label class="lbl2" for="dkNote">A line for the back <span>(optional)</span></label>
@@ -505,7 +510,7 @@ dialog::backdrop{background:rgba(16,22,40,.55);backdrop-filter:blur(3px)}
     </div>
     <div class="row">
       <button type="button" class="btn ghost" id="dkCancel">Not now</button>
-      <button type="submit" class="btn pink" id="dkGo" disabled>Stamp it</button>
+      <button type="submit" class="btn pink" id="dkGo">Stamp it</button>
     </div>
   </form>
 </dialog>
@@ -631,8 +636,8 @@ const MOODS=[
  {id:"buzzing",en:"Buzzing",e:"⚡",c:"#FFD0E0"},
  {id:"curious",en:"Curious",e:"🔍",c:"#D3ECF5"},
  {id:"blue",en:"A bit blue",e:"🌧️",c:"#D6DDEA"},
- {id:"stuffed",en:"Stuffed",e:"🥟",c:"#FBE6C6"},
  {id:"peaceful",en:"Peaceful",e:"🌊",c:"#CDEFE7"},
+ {id:"stuffed",en:"Stuffed",e:"🥟",c:"#FBE6C6"},
  {id:"lost",en:"Happily lost",e:"🧭",c:"#E6F1CF"},
  {id:"homesick",en:"Homesick",e:"🏠",c:"#F2DCE6"},
  {id:"nostalgic",en:"Nostalgic",e:"📼",c:"#EADFCF"},
@@ -1277,19 +1282,27 @@ $("#bookGrid").addEventListener("click",e=>{const k=e.target.closest("[data-ck]"
 /* ================= CHECK-IN ================= */
 let dk={spot:null,img:null,mood:null,cover:"real"};
 $("#sheet").innerHTML=MOODS.map(m=>`<button type="button" class="mood" data-mood="${m.id}" aria-pressed="false"><i style="background:${m.c}">${m.e}</i>${m.en}</button>`).join("");
+/* A stamp face for a check-in with no photo: the district's own icon, printed large on its kind colour. */
+function illusImg(areaId){
+  const a=AREA[areaId],sym=document.getElementById(a.icon),c=(KINDS[KIND_OF[areaId]]||{c:"#8A8F9C"}).c;
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500"><rect width="400" height="500" fill="#FFFDF6"/><rect width="400" height="500" fill="${c}" opacity=".16"/><circle cx="300" cy="120" r="56" fill="${c}" opacity=".45"/><g transform="translate(70 150) scale(6.5)">${sym?sym.innerHTML:""}</g></svg>`;
+  return "data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svg)}
+function moodSheet(all){document.querySelectorAll(".mood").forEach((b,i)=>b.hidden=!all&&i>=6&&b.getAttribute("aria-pressed")!=="true");
+  $("#moodMore").setAttribute("aria-expanded",all);$("#moodMore").textContent=all?"Fewer feelings":"More feelings"}
+$("#moodMore").addEventListener("click",()=>moodSheet($("#moodMore").getAttribute("aria-expanded")!=="true"));
 function openDaka(id){
   const sp=SPOTS[id];dk={spot:id,img:null,mood:null,cover:"real"};
   $("#dkArea").textContent=AREA[sp.area].name+" · "+TYPES[sp.type];$("#dkTitle").textContent=sp.name;
   $("#dkPrev").innerHTML=`<b>Drop a photo here</b><br><span>or tap to choose one</span>`;$("#dkFile").value="";$("#dkNote").value="";
   document.querySelectorAll(".mood").forEach(b=>b.setAttribute("aria-pressed","false"));
   document.querySelectorAll("[data-cover]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.cover==="real"));
-  $("#dkGo").disabled=true;$("#daka").showModal();
+  $("#coverSeg").hidden=true;moodSheet(false);$("#daka").showModal();
 }
 function readImg(file){return new Promise((res,rej)=>{const u=URL.createObjectURL(file);const im=new Image();im.onload=()=>{
   const M=900,k=Math.min(1,M/Math.max(im.width,im.height));const c=document.createElement("canvas");c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);
   c.getContext("2d").drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);res(c.toDataURL("image/jpeg",.8))};im.onerror=rej;im.src=u})}
 async function takeFile(f){if(!f||!f.type.startsWith("image/"))return;try{dk.img=await readImg(f);
-  $("#dkPrev").innerHTML=`<div class="pv"><img src="${dk.img}" alt="Your photo" class="${dk.cover==="toon"?"toon":""}"></div>`;$("#dkGo").disabled=false}catch(e){$("#dkPrev").innerHTML="<b>That file didn't open as a photo.</b><br>Try a JPG or PNG."}}
+  $("#dkPrev").innerHTML=`<div class="pv"><img src="${dk.img}" alt="Your photo" class="${dk.cover==="toon"?"toon":""}"></div>`;$("#coverSeg").hidden=false}catch(e){$("#dkPrev").innerHTML="<b>That file didn't open as a photo.</b><br>Try a JPG or PNG."}}
 $("#dkFile").addEventListener("change",e=>takeFile(e.target.files[0]));
 $("#drop").addEventListener("dragover",e=>{e.preventDefault();$("#drop").classList.add("over")});
 $("#drop").addEventListener("dragleave",()=>$("#drop").classList.remove("over"));
@@ -1299,8 +1312,8 @@ $("#sheet").addEventListener("click",e=>{const b=e.target.closest(".mood");if(!b
 $("#coverSeg").addEventListener("click",e=>{const b=e.target.closest("[data-cover]");if(!b)return;dk.cover=b.dataset.cover;
   document.querySelectorAll("[data-cover]").forEach(x=>x.setAttribute("aria-pressed",x===b));const i=$("#dkPrev img");if(i)i.classList.toggle("toon",dk.cover==="toon")});
 $("#dkCancel").addEventListener("click",()=>$("#daka").close());
-$("#dakaForm").addEventListener("submit",e=>{e.preventDefault();if(!dk.img)return;
-  const sp=SPOTS[dk.spot];const c={id:"c"+Date.now(),spot:sp.id,area:sp.area,img:dk.img,mood:dk.mood,cover:dk.cover,note:$("#dkNote").value.trim(),t:Date.now()};
+$("#dakaForm").addEventListener("submit",e=>{e.preventDefault();
+  const sp=SPOTS[dk.spot];const c={id:"c"+Date.now(),spot:sp.id,area:sp.area,img:dk.img||illusImg(sp.area),illus:!dk.img,mood:dk.mood,cover:dk.img?dk.cover:"real",note:$("#dkNote").value.trim(),t:Date.now()};
   S.checkins.push(c);
   if(!save()){S.checkins.pop();alertInline("Your browser's storage is full, so this stamp couldn't be saved. Remove an older stamp and try again.");return}
   $("#daka").close();
@@ -1314,7 +1327,7 @@ function alertInline(msg){const s=$("#dakaForm .sub");s.textContent=msg;s.style.
 /* ================= LIGHTBOX ================= */
 let lbId=null,delArmed=false;
 function openLB(id){const c=S.checkins.find(x=>x.id===id);if(!c)return;lbId=id;delArmed=false;
-  $("#lbImg").src=c.img;$("#lbImg").alt="Photo at "+SPOTS[c.spot].name;
+  $("#lbImg").src=c.img;$("#lbImg").alt=(c.illus?"Illustrated stamp for ":"Photo at ")+SPOTS[c.spot].name;
   $("#lbT").textContent=SPOTS[c.spot].name+" · "+AREA[c.area].name;
   $("#lbM").textContent=[fmtDate(c.t),c.mood?MOOD[c.mood].en+" "+MOOD[c.mood].e:"",c.note?"“"+c.note+"”":""].filter(Boolean).join("  ·  ");
   $("#lbDel").textContent="Remove stamp";$("#lb").hidden=false;$("#lbX").focus()}
