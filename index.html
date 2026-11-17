@@ -6,7 +6,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Caveat:wght@600&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700&display=swap">
 <style>
 /* Layout: a pinboard of stamps; each city stamp opens an illustrated, pastel top-down map. Photos stay real, the world is drawn. */
 :root{
@@ -106,6 +106,9 @@ main{padding-block:28px 64px}
 .mini .stamp-face img{width:100%;height:100%;object-fit:cover;display:block}
 .mini .name{font-weight:800;font-size:14px;margin-top:8px;line-height:1.25}
 .mini .meta{font-size:12px;color:var(--ink-soft)}
+.scrawl{display:flex;align-items:flex-end;gap:4px;margin-top:2px;color:var(--ink)}
+.scrawl svg{flex:none}
+.scrawl span{font-family:"Caveat",var(--f-hand);font-weight:600;font-size:21px;line-height:1.05}
 .mini:nth-child(3n) .stamp{transform:rotate(1.6deg)}
 .mini:nth-child(3n+1) .stamp{transform:rotate(-1.2deg)}
 .postmark{position:absolute;right:-18px;top:-10px;width:120px;height:80px;pointer-events:none;mix-blend-mode:multiply;opacity:.82}
@@ -359,11 +362,16 @@ main:focus{outline:none}
 @keyframes ink{from{opacity:0;transform:scale(1.4)}}
 
 /* lightbox: neutral on purpose, so the photo is shown as taken */
-.lb{position:fixed;inset:0;z-index:70;background:rgba(14,14,16,.95);color:#EDEDED;display:grid;grid-template-rows:1fr auto;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
-.lb img{max-width:100%;max-height:100%;object-fit:contain;margin:auto;display:block;min-height:0}
-.lb .cap{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;padding-top:14px;font-size:14px}
-.lb .cap b{font-size:16px;color:#fff}
+.lb{position:fixed;inset:0;z-index:70;background:rgba(14,14,16,.95);color:#EDEDED;display:grid;place-items:center;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.lb-fig{position:relative;max-width:100%;max-height:100%;display:flex;min-height:0}
+.lb img{max-width:100%;max-height:calc(100vh - 32px);max-height:calc(100dvh - 32px);object-fit:contain;display:block}
+.lb img.illus{width:min(86vw,440px);aspect-ratio:4/5;height:auto}
+.frost{position:absolute;left:clamp(10px,4%,28px);bottom:clamp(10px,5%,28px);max-width:min(72%,320px);padding:12px 16px 14px;background:rgba(255,253,246,.62);-webkit-backdrop-filter:blur(14px) saturate(1.2);backdrop-filter:blur(14px) saturate(1.2);border:1px solid rgba(255,255,255,.55);color:#1F2A44}
+.frost b{display:block;font-family:var(--f-big);font-weight:400;font-size:clamp(18px,3.2vw,26px);line-height:1.1}
+.frost span{display:block;margin-top:5px;font-size:13px;font-weight:700}
+.frost span:empty{display:none}
 .lb button{background:#2A2A2E;color:#EDEDED;border:0;border-radius:999px;padding:8px 14px;font-weight:700}
+#lbDel{position:absolute;top:max(16px,env(safe-area-inset-top,0px));left:max(16px,env(safe-area-inset-left,0px))}
 .lb .close{position:absolute;top:max(16px,env(safe-area-inset-top,0px));right:max(16px,env(safe-area-inset-right,0px))}
 
 @media (max-width:720px){
@@ -555,8 +563,8 @@ main:focus{outline:none}
 </dialog>
 
 <div class="lb" id="lb" hidden role="dialog" aria-modal="true" aria-label="Photo">
-  <img id="lbImg" alt="">
-  <div class="cap"><div><b id="lbT"></b><div id="lbM"></div></div><button type="button" id="lbDel">Remove stamp</button></div>
+  <div class="lb-fig"><img id="lbImg" alt=""><div class="frost"><b id="lbT"></b><span id="lbM"></span></div></div>
+  <button type="button" id="lbDel">Remove stamp</button>
   <button type="button" class="close" id="lbX">Close</button>
 </div>
 
@@ -1161,7 +1169,7 @@ addEventListener("resize",()=>{if($("#v-map").hidden)return;if(openId)renderPop(
 
 /* ================= WALL ================= */
 /* Each background is a colour the place is known for. fg is the text on it, ink is the drawing on the stamp. */
-const CITIES=[
+const BASE_CITIES=[
  {id:"hk",en:"Hong Kong",bg:"#C4202E",open:true},                /* regional flag and the red taxis */
  {id:"taipei",en:"Taipei",bg:"#0E7472"},                         /* the blue-green glass of Taipei 101 */
  {id:"hanoi",en:"Hanoi",bg:"#8F5E0D"},                           /* the ochre walls of the Old Quarter */
@@ -1170,6 +1178,8 @@ const CITIES=[
  {id:"lisbon",en:"Lisbon",bg:"#F4BE1C",fg:"#1F2A44",ink:"#1F2A44"}, /* the yellow Tram 28 */
  {id:"cdmx",en:"Mexico City",bg:"#CE1270"}                       /* rosa mexicano */
 ];
+/* a wish list place has no landmark drawing yet: a paper plane on its way there */
+const WISH_ART=`<path d="M36 150L164 92 126 196 104 154Z"/><path d="M104 154L164 92 92 180Z" opacity=".55"/><path d="M34 204q30-6 50-26" fill="none" stroke="currentColor" stroke-width="5" stroke-dasharray="1 13" stroke-linecap="round"/>`;
 const CITY_ART={
  taipei:`<rect x="97" y="22" width="6" height="38"/>${[...Array(8)].map((_,i)=>`<path d="M84 ${76+i*18}H116L124 ${60+i*18}H76Z"/>`).join("")}<rect x="72" y="204" width="56" height="12"/>`,
  kyoto:`<path d="M36 62Q100 84 164 62L158 82Q100 98 42 82Z"/><rect x="62" y="92" width="12" height="120"/><rect x="126" y="92" width="12" height="120"/><rect x="52" y="112" width="96" height="9"/><rect x="94" y="96" width="12" height="18"/><rect x="30" y="210" width="140" height="4"/>`,
@@ -1181,7 +1191,7 @@ const CITY_ART={
 function cityArt(c){
   if(c.open)return hkStampArt();
   return `<svg viewBox="0 0 200 250" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%;display:block;color:${c.ink||c.bg}" aria-hidden="true">
-  <rect width="200" height="250" fill="${c.bg}" opacity=".14"/><circle cx="150" cy="66" r="26" fill="${c.bg}" opacity=".45"/><g fill="${c.ink||c.bg}">${CITY_ART[c.id]}</g></svg>`;
+  <rect width="200" height="250" fill="${c.bg}" opacity=".14"/><circle cx="150" cy="66" r="26" fill="${c.bg}" opacity=".45"/><g fill="${c.ink||c.bg}">${CITY_ART[c.id]||WISH_ART}</g></svg>`;
 }
 function stampOverlay(c){
   const ink=c.open?"#1F2A44":(c.ink||c.bg);
@@ -1190,7 +1200,15 @@ function stampOverlay(c){
 }
 
 /* ---------- carousel: pos is a float, 0 is the first stamp, and it never wraps. Only the drawing wraps. ---------- */
-const N=CITIES.length;
+/* The wall shows the built-in cities plus every wish list place that isn't one of them. */
+const WISH_INKS=["#6B4A8C","#2B5F8A","#A8452E","#2E6B4A","#B5771A"];
+let CITIES=BASE_CITIES,N=CITIES.length,wallKey="";
+function syncCities(){
+  const extra=S.wishlist.filter(w=>!BASE_CITIES.some(c=>c.en.toLowerCase()===w.toLowerCase()));
+  const key=extra.join("|");if(key===wallKey&&CAR.slides)return;wallKey=key;
+  CITIES=[...BASE_CITIES,...extra.map((w,i)=>({id:"wish"+i,en:w,bg:WISH_INKS[i%WISH_INKS.length],wish:true}))];
+  N=CITIES.length;CAR.slides=null;CAR.cur=-1;CAR.pos=CAR.target=Math.min(Math.round(CAR.pos),N-1);
+}
 const CAR={pos:0,target:0,cur:-1,raf:0,drag:null,v:0,step:400,slides:null,tilted:null,justDragged:false};
 const reduced=()=>matchMedia("(prefers-reduced-motion: reduce)").matches;
 const offsetFrom=o=>((o+N/2)%N+N)%N-N/2; /* shortest way round the loop, between -N/2 and N/2 */
@@ -1244,6 +1262,7 @@ function layoutStage(){
   CAR.step=w*(innerWidth<720?.98:1.12);paintStage();
 }
 function buildStage(){
+  syncCities();
   if(CAR.slides)return;
   $("#track").innerHTML=CITIES.map((c,i)=>`<button type="button" class="slide" data-i="${i}" tabindex="-1" aria-label="${c.open?"Open "+c.en:c.en+", not open yet"}"><div class="tilt"><div class="stamp"><div class="stamp-face">${cityArt(c)}${stampOverlay(c)}<i class="shine"></i></div></div></div></button>`).join("");
   CAR.slides=[...document.querySelectorAll("#track .slide")];
@@ -1309,7 +1328,7 @@ function renderBook(){
   $("#bookGrid").className=list.length?"book":"";
   $("#bookGrid").innerHTML=list.length?list.map(c=>{const sp=SPOTS[c.spot];return `<button type="button" class="mini" data-ck="${c.id}">
      <div class="stamp"><div class="stamp-face"><img src="${c.img}" alt="" class="${c.cover==="toon"?"toon":""}">${postmark(AREA[c.area].name.split(" ")[0],c.t)}</div>${c.mood?`<span class="sticker" title="${MOOD[c.mood].en}">${MOOD[c.mood].e}</span>`:""}</div>
-     <div class="name">${esc(sp.name)}</div><div class="meta">${fmtDate(c.t)}${c.note?" · “"+esc(c.note)+"”":""}</div></button>`}).join("")
+     <div class="name">${esc(sp.name)}</div><div class="meta">${fmtDate(c.t)}</div>${c.note?`<div class="scrawl"><svg viewBox="0 0 22 26" width="22" height="26" aria-hidden="true"><path d="M17 24C7 22 4 13 6 3M2 8l4-5.4L11 7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>${esc(c.note)}</span></div>`:""}</button>`}).join("")
    : `<div class="empty"><p>Your first stamp lands here.</p><a class="btn" href="#map">Open Hong Kong</a></div>`;
   const counts={};S.checkins.forEach(c=>{if(c.mood)counts[c.mood]=(counts[c.mood]||0)+1});
   $("#moodStrip").hidden=!Object.keys(counts).length;
@@ -1323,7 +1342,7 @@ $("#sheet").innerHTML=MOODS.map(m=>`<button type="button" class="mood" data-mood
 /* A stamp face for a check-in with no photo: the district's own icon, printed large on its kind colour. */
 function illusImg(areaId){
   const a=AREA[areaId],sym=document.getElementById(a.icon),c=(KINDS[KIND_OF[areaId]]||{c:"#8A8F9C"}).c;
-  const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500"><rect width="400" height="500" fill="#FFFDF6"/><rect width="400" height="500" fill="${c}" opacity=".16"/><circle cx="300" cy="120" r="56" fill="${c}" opacity=".45"/><g transform="translate(70 150) scale(6.5)">${sym?sym.innerHTML:""}</g></svg>`;
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="400" height="500" viewBox="0 0 400 500"><rect width="400" height="500" fill="#FFFDF6"/><rect width="400" height="500" fill="${c}" opacity=".16"/><circle cx="300" cy="120" r="56" fill="${c}" opacity=".45"/><g transform="translate(70 150) scale(6.5)">${sym?sym.innerHTML:""}</g></svg>`;
   return "data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svg)}
 function moodSheet(all){document.querySelectorAll(".mood").forEach((b,i)=>b.hidden=!all&&i>=6&&b.getAttribute("aria-pressed")!=="true");
   $("#moodMore").setAttribute("aria-expanded",all);$("#moodMore").textContent=all?"Fewer feelings":"More feelings"}
@@ -1366,9 +1385,9 @@ function alertInline(msg){const s=$("#dakaForm .sub");s.textContent=msg;s.style.
 let lbId=null,delArmed=false;
 let lbBack=null;
 function openLB(id){const c=S.checkins.find(x=>x.id===id);if(!c)return;lbId=id;delArmed=false;lbBack=document.activeElement;
-  $("#lbImg").src=c.img;$("#lbImg").alt=(c.illus?"Illustrated stamp for ":"Photo at ")+SPOTS[c.spot].name;
-  $("#lbT").textContent=SPOTS[c.spot].name+" · "+AREA[c.area].name;
-  $("#lbM").textContent=[fmtDate(c.t),c.mood?MOOD[c.mood].en+" "+MOOD[c.mood].e:"",c.note?"“"+c.note+"”":""].filter(Boolean).join("  ·  ");
+  $("#lbImg").src=c.img;$("#lbImg").classList.toggle("illus",!!c.illus);$("#lbImg").alt=(c.illus?"Illustrated stamp for ":"Photo at ")+SPOTS[c.spot].name;
+  $("#lbT").textContent=SPOTS[c.spot].name;
+  $("#lbM").textContent=[fmtDate(c.t),c.mood?MOOD[c.mood].en:""].filter(Boolean).join(" · ");
   $("#lbDel").textContent="Remove stamp";$("#lb").hidden=false;$("#lbX").focus()}
 function closeLB(){$("#lb").hidden=true;lbId=null;if(lbBack&&document.contains(lbBack))lbBack.focus({preventScroll:true});lbBack=null}
 $("#lb").addEventListener("keydown",e=>{if(e.key!=="Tab")return;const f=[$("#lbDel"),$("#lbX")],i=f.indexOf(document.activeElement);e.preventDefault();f[(i+(e.shiftKey?f.length-1:1))%f.length].focus()});
