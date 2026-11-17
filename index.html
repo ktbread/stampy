@@ -117,14 +117,29 @@ main{padding-block:28px 64px}
 .moodstrip .m i{font-style:normal;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:17px}
 
 /* ---------- map ---------- */
-.maphead{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:14px}
-.maptools{display:flex;gap:12px;align-items:center}
-.tod{display:inline-flex;background:var(--card);border-radius:999px;padding:4px;box-shadow:inset 0 0 0 1px var(--line)}
-.tod button{border:0;background:none;border-radius:999px;padding:6px 12px;font-weight:800;font-size:13px;color:var(--ink-soft)}
-.tod button[aria-pressed="true"]{background:var(--ink);color:var(--wall)}
-.filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px}
+.maphead{display:flex;gap:10px 24px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:12px}
+.maptools{display:flex;gap:10px;align-items:center}
+/* time of day: one segmented control; the chosen segment is a raised piece of paper */
+.tod{display:inline-flex;background:var(--chip);border-radius:12px;padding:3px}
+.tod button{border:0;background:none;border-radius:9px;padding:7px 12px;font-weight:800;font-size:13px;color:var(--ink-soft);transition:background-color .15s,color .15s}
+.tod button[aria-pressed="true"]{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(20,30,60,.2)}
+.mapbtn{display:inline-flex;align-items:center;gap:7px;border:0;background:none;border-radius:12px;padding:8px 12px;font-weight:800;font-size:13px;color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--line);transition:background-color .15s,color .15s,box-shadow .15s}
+.mapbtn b{min-width:18px;height:18px;border-radius:9px;display:grid;place-items:center;font-size:11px;background:var(--neon);color:var(--on-accent);padding:0 5px}
+.mapbtn[aria-expanded="true"]{background:var(--ink);color:var(--wall);box-shadow:none}
+@media (hover:hover){
+  .tod button:not([aria-pressed="true"]):hover{color:var(--ink)}
+  .mapbtn:not([aria-expanded="true"]):hover{box-shadow:inset 0 0 0 1.5px var(--ink)}
+  .legend button:hover{border-bottom-color:var(--line)}
+  .filters .chip:not(.link):not([aria-pressed="true"]):hover{box-shadow:inset 0 0 0 1.5px var(--ink);color:var(--ink)}
+  .dk:hover{background:var(--neon);color:var(--on-accent);box-shadow:none}
+  .pop .x:hover{background:var(--chip)}
+}
+.tod button:active,.mapbtn:active,.dk:active{transform:translateY(1px)}
+.filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px;background:var(--card);border-radius:14px;padding:10px 12px;box-shadow:inset 0 0 0 1px var(--line)}
+.filters .chip:not(.link){background:none;box-shadow:inset 0 0 0 1.5px var(--line);border-radius:10px;transition:background-color .15s,color .15s,box-shadow .15s}
+.filters .chip[aria-pressed="true"]{background:var(--ink);box-shadow:none}
 .chip{border:0;border-radius:999px;padding:6px 12px;font-size:13px;font-weight:800;background:var(--chip);color:var(--ink-soft)}
-.chip[aria-pressed="true"]{background:var(--tram);color:var(--on-accent)}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--wall)}
 .chip.link{background:none;text-decoration:underline;text-underline-offset:3px}
 .forme{font-size:13px;color:var(--ink-soft);margin-right:6px}
 .forme b{color:var(--ink)}
@@ -165,12 +180,13 @@ main{padding-block:28px 64px}
 .hot.on .badge{transform:rotate(-4deg)}
 .hot.dim{opacity:.45}
 #hots .hot.dim{pointer-events:none}
-.legend{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
-.legend button{display:flex;align-items:center;gap:6px;border:0;border-radius:999px;padding:5px 11px 5px 7px;font-size:12px;font-weight:800;background:var(--card);color:var(--ink);box-shadow:0 2px 0 rgba(20,30,60,.12)}
-.legend i{width:12px;height:12px;border-radius:1px}
-.legend button.off{color:var(--ink-soft);box-shadow:none}
+/* the key reads as printed text, not as buttons-in-pills: a swatch, a name, an ink underline when chosen */
+.legend{display:flex;flex-wrap:wrap;gap:2px 20px}
+.legend button{display:flex;align-items:center;gap:8px;border:0;border-bottom:2px solid transparent;background:none;padding:8px 1px 6px;font-size:13px;font-weight:800;color:var(--ink);transition:color .15s,border-color .15s}
+.legend i{width:13px;height:13px;border-radius:1px;transition:opacity .15s}
+.legend button.off{color:var(--ink-soft)}
 .legend button.off i{opacity:.35}
-.legend button[aria-pressed="true"]{box-shadow:0 0 0 2px var(--ink)}
+.legend button[aria-pressed="true"]{border-bottom-color:var(--ink)}
 .mapcredit{position:absolute;right:10px;bottom:6px;z-index:3;font-size:10px;font-weight:700;color:var(--m-label)}
 .pins{position:absolute;inset:0;pointer-events:none;z-index:2}
 .pol{position:absolute;pointer-events:auto;background:#fff;padding:4px 4px 12px;width:52px;box-shadow:0 4px 10px rgba(0,0,0,.25);border:0;transform-origin:50% 0}
@@ -207,12 +223,12 @@ main{padding-block:28px 64px}
 .pop{position:absolute;z-index:10;width:350px;max-height:calc(100% - 24px);overflow:auto;background:var(--card);color:var(--ink);border-radius:22px;
   box-shadow:0 20px 50px -10px rgba(10,20,50,.45);padding:18px 18px 12px;animation:pop .25s cubic-bezier(.2,.8,.3,1)}
 @keyframes pop{from{transform:scale(.85);opacity:0}}
-.pop-h{display:flex;gap:12px;align-items:center}
+.pop-h{display:flex;gap:12px;align-items:center;padding-right:38px}
 .pop-h svg{width:46px;height:46px;flex:none}
 .pop-h h2{font-size:22px}
 .pop .blurb{font-size:14px;color:var(--ink-soft);margin:8px 0 4px}
 .pop .prog{font-size:12px;font-weight:800;color:var(--tram)}
-.pop .x{position:absolute;right:10px;top:10px;border:0;background:var(--chip);width:30px;height:30px;border-radius:50%;font-weight:800}
+.pop .x{position:absolute;right:10px;top:10px;border:0;background:none;color:var(--ink);width:36px;height:36px;border-radius:10px;display:grid;place-items:center;box-shadow:inset 0 0 0 1.5px var(--line);transition:background-color .15s}
 .grp{margin-top:12px}
 .grp h3{margin:0 0 6px;font-family:var(--f-display);font-size:14px;display:flex;align-items:center;gap:6px;color:var(--ink-soft)}
 .spot{display:grid;grid-template-columns:1fr auto;gap:4px 10px;padding:8px 0;border-top:1px dashed var(--line);align-items:center}
@@ -220,8 +236,8 @@ main{padding-block:28px 64px}
 .spot .d{font-size:13px;color:var(--ink-soft);grid-column:1;line-height:1.35}
 .spot .act{grid-column:2;grid-row:1/span 2}
 .spot.dim .n{color:var(--ink-soft);font-weight:700}
-.spot.dim .dk{background:var(--chip);color:var(--ink)}
-.dk{border:0;border-radius:12px;background:var(--neon);color:var(--on-accent);font-weight:800;font-size:13px;padding:7px 10px;line-height:1.1;text-align:center}
+.spot.dim .dk{box-shadow:inset 0 0 0 1.5px var(--line);color:var(--ink-soft)}
+.dk{border:0;border-radius:10px;background:none;color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink);font-weight:800;font-size:13px;padding:8px 12px;line-height:1.1;text-align:center;white-space:nowrap;transition:background-color .15s,color .15s,box-shadow .15s}
 .dkd{border:0;background:none;padding:0;width:52px;height:52px;position:relative}
 .dkd img{width:52px;height:52px;object-fit:cover;border-radius:8px;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.2);transform:rotate(4deg)}
 .dkd i{position:absolute;left:-8px;bottom:-6px;font-style:normal;font-size:18px}
@@ -307,7 +323,7 @@ dialog{border:0;padding:0;border-radius:28px;background:var(--card);color:var(--
 dialog::backdrop{background:rgba(16,22,40,.55);backdrop-filter:blur(3px)}
 .dlg{padding:22px;display:grid;gap:18px}
 @media (pointer:coarse){
-  .chip,.tod button,.legend button,.dk{min-height:44px}
+  .chip,.tod button,.legend button,.dk,.mapbtn{min-height:44px}
   .dk{padding-inline:14px}
   .pop .x{width:44px;height:44px}
   .hot{padding:14px}
@@ -353,6 +369,10 @@ main:focus{outline:none}
 @media (max-width:720px){
   .mapscroll{overflow-x:auto;margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding-inline:max(16px,env(safe-area-inset-left,0px));scrollbar-width:none}
   .mapsheet{width:fit-content;padding:14px;--hole:7px}
+  .maphead{flex-direction:column;align-items:stretch;gap:6px}
+  .legend{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;gap:2px 18px;margin-inline:-16px;padding-inline:16px}
+  .legend button{flex:none}
+  .maptools{justify-content:space-between}
   .mapwrap{width:980px;max-width:none}
   .hot .badge{width:46px;height:46px}
   .hot .badge svg{width:34px;height:34px}
@@ -436,18 +456,18 @@ main:focus{outline:none}
   <section id="v-map" class="view" hidden style="position:relative">
     <h1 class="sr">Hong Kong</h1>
     <div class="maphead">
+      <div class="legend" id="legend" role="group" aria-label="Kinds of places"></div>
       <div class="maptools">
-        <button type="button" class="chip" id="filterBtn" aria-expanded="false" aria-controls="filters">Filter</button>
-        <span class="forme" id="mapProg"></span>
-      </div>
+        <button type="button" class="mapbtn" id="filterBtn" aria-expanded="false" aria-controls="filters">Interests</button>
+        <span class="sr" id="mapProg" aria-live="polite"></span>
       <div class="tod" role="group" aria-label="Time of day">
         <button type="button" data-tod="day">Day</button>
         <button type="button" data-tod="golden">Golden hour</button>
         <button type="button" data-tod="night">Night</button>
       </div>
+      </div>
     </div>
     <div class="filters" id="filters" hidden></div>
-    <div class="legend" id="legend" role="group" aria-label="Kinds of places"></div>
     <div class="mapscroll" id="mapscroll"><div class="mapsheet"><div class="mapwrap" id="mapwrap" data-tod="day">
       <span class="mapval" style="top:14px;font-size:clamp(26px,3.6vw,44px)">$5</span><span class="mapval" style="bottom:14px;font-size:14px;letter-spacing:.14em">HONG KONG</span>
       <svg class="mapsvg" id="mapsvg" viewBox="0 100 1000 600" preserveAspectRatio="xMidYMid slice" aria-hidden="true"></svg>
@@ -1035,7 +1055,7 @@ function spotMatch(sp){return !S.filters.length||sp.tags.some(t=>S.filters.inclu
 function renderFilters(){
   const f=$("#filters");
   let h="";
-  $("#filterBtn").textContent=S.filters.length?`Filter (${S.filters.length})`:"Filter";
+  $("#filterBtn").innerHTML=`<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M2 4h12M4.5 8h7M7 12h2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg>Interests${S.filters.length?`<b>${S.filters.length}</b>`:""}`;
   if(S.quiz){h+=`<span class="forme">For a <b>${esc(PERSONA[S.quiz.tags[0]][0])}</b>:</span>`}
   h+=Object.entries(TAGS).map(([k,v])=>`<button type="button" class="chip" data-tag="${k}" aria-pressed="${S.filters.includes(k)}">${v}</button>`).join("");
   if(S.filters.length)h+=`<button type="button" class="chip link" data-tag="__clear">Show everything</button>`;
@@ -1085,7 +1105,7 @@ function meReact(el,mood){
 function renderPop(id){
   const a=AREA[id],p=$("#pop");
   const done=new Set(S.checkins.filter(c=>c.area===id).map(c=>c.spot));
-  let h=`<button type="button" class="x" data-close aria-label="Close">×</button>
+  let h=`<button type="button" class="x" data-close aria-label="Close"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
   <div class="pop-h"><svg><use href="#${a.icon}"/></svg><div><h2 id="popT">${esc(a.name)}</h2></div></div>
   <p class="blurb">${esc(a.blurb)}</p><div class="prog">${done.size} of ${a.spots.length} stamped</div>`;
   for(const [k,en] of Object.entries(TYPES)){
